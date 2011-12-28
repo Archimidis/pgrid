@@ -27,5 +27,6 @@ import java.net.UnknownHostException;
  */
 public interface HostFactory {
     public Host create(String ip, int port) throws UnknownHostException, IllegalArgumentException;
+
     public Host create(InetAddress ip, int port) throws IllegalArgumentException;
 }
