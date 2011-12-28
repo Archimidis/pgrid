@@ -19,6 +19,8 @@
 
 package entity.internal;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import entity.Key;
 
 /**
@@ -28,7 +30,8 @@ public class PGridKey implements Key {
 
     private String key_;
 
-    public PGridKey(String key) {
+    @AssistedInject
+    public PGridKey(@Assisted String key) {
         if (key == null) {
             throw new NullPointerException(
                     "PGridKey needs not null values to instantiate");

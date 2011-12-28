@@ -48,8 +48,8 @@ public class PGridHost implements Host {
     /**
      * Constructs a PGridHost.
      *
-     * @param ip   The IP address of the host.
-     * @param port The port of the host.
+     * @param ip   the IP address of the host.
+     * @param port the port of the host.
      * @throws UnknownHostException     if the given IP could not be determined.
      * @throws IllegalArgumentException in case the port argument is negative.
      */
@@ -67,8 +67,8 @@ public class PGridHost implements Host {
     /**
      * Constructs a PGridHost.
      *
-     * @param ip   The IP address of the host encapsulated in an InetAddress.
-     * @param port The port of the host.
+     * @param ip   the IP address of the host encapsulated in an InetAddress.
+     * @param port the port of the host.
      * @throws IllegalArgumentException in case the port argument is negative.
      */
     @AssistedInject
@@ -147,7 +147,6 @@ public class PGridHost implements Host {
         KeyRange range = new PGridKeyRange(path_.toKey(), path_.toKey());
         return range.contains(key);
     }
-
 
     @Override
     public void setUUID(UUID uuid) {

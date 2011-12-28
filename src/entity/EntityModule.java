@@ -24,6 +24,8 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import entity.clock.LamportClock;
 import entity.clock.PeerClock;
 import entity.internal.PGridHost;
+import entity.internal.PGridKey;
+import entity.internal.PGridKeyRange;
 import entity.routingtable.PersistenceDelegate;
 import entity.routingtable.RoutingTable;
 import entity.routingtable.internal.XMLPersistenceDelegate;
@@ -32,19 +34,22 @@ import entity.routingtable.internal.XMLPersistenceDelegate;
  * @author Vourlakis Nikolas
  */
 public class EntityModule extends AbstractModule {
+
     @Override
     protected void configure() {
-        //bind(Key.class).to(PGridKey.class);
-        //bind(KeyRange.class).to(PGridKeyRange.class);
-
-        // XXX: hides exceptions thrown by PGridHost
+        // XXX: does not force checked exceptions thrown by PGridHost at construction time.
         install(new FactoryModuleBuilder()
                 .implement(Host.class, PGridHost.class)
-                .build(HostFactory.class));
+                .implement(Key.class, PGridKey.class)
+                .implement(KeyRange.class, PGridKeyRange.class)
+                .build(EntityFactory.class));
 
+        bind(PGridPath.class);
+        
         bind(PeerClock.class).to(LamportClock.class);
 
         bind(RoutingTable.class);
         bind(PersistenceDelegate.class).to(XMLPersistenceDelegate.class);
     }
 }
+

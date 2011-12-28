@@ -19,6 +19,8 @@
 
 package entity.internal;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import entity.Key;
 import entity.KeyRange;
 
@@ -30,7 +32,8 @@ public class PGridKeyRange implements KeyRange {
     private Key minKey_;
     private Key maxKey_;
 
-    public PGridKeyRange(Key minKey, Key maxKey) {
+    @AssistedInject
+    public PGridKeyRange(@Assisted("minKey") Key minKey, @Assisted("maxKey") Key maxKey) {
         if (minKey == null || maxKey == null) {
             throw new NullPointerException(
                     "PGridKeyRange needs not null values to instantiate");
