@@ -19,7 +19,7 @@
 
 package entity.routingtable;
 
-import entity.PGridHost;
+import entity.internal.PGridHost;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -475,4 +476,56 @@ public class RoutingTableTest {
         Assert.assertTrue(result.contains(host0) || result.contains(host1));
     }
     //////////////////////////////////////////////////////////////////////////////
+
+    // public void update(RoutingTable routingTable, int level)
+    @Test
+    public void WhenUpdatingWithValidArguments_ExpectUpdate() throws UnknownHostException {
+        RoutingTable localRT = new RoutingTable();
+        localhost_.setHostPath("000000");
+        localRT.setLocalhost(localhost_);
+
+        RoutingTable remoteRT = new RoutingTable();
+        PGridHost remoteHost = new PGridHost("127.0.0.1", 12345);
+        remoteHost.setHostPath("00001");
+        remoteRT.setLocalhost(remoteHost);
+
+        int commonLength = localhost_.getHostPath().commonPrefix(remoteHost.getHostPath()).length();
+        int refMax = 2;
+
+        List<List<PGridHost>> expected = new ArrayList<List<PGridHost>>();
+
+        for (int i = 0; i < 4; i++) {
+            PGridHost forLocal = new PGridHost("127.0.0.1", (111 + i));
+            localRT.addReference(i, forLocal);
+            PGridHost forRemote = new PGridHost("127.0.0.1", (222 + i));
+            remoteRT.addReference(i, forRemote);
+            List<PGridHost> list = new ArrayList<PGridHost>(2);
+            list.add(forLocal);
+            list.add(forRemote);
+            expected.add(list);
+        }
+        // add the remote host and then empty levels according to local routing table path.
+        List<PGridHost> addedLevel = new ArrayList<PGridHost>(1);
+        addedLevel.add(remoteHost);
+        expected.add(addedLevel);
+        int excessLevels = localRT.levelNumber() - commonLength - 1;
+        for (int i = 0; i < excessLevels; i++) {
+            expected.add(new ArrayList<PGridHost>());
+        }
+
+        localRT.update(remoteRT, commonLength, refMax);
+
+        Assert.assertTrue(expected.size() == localRT.levelNumber());
+
+        int levelCount = 0;
+        for (Collection<PGridHost> level : localRT.getAllHostsByLevels()) {
+            List<PGridHost> expectedLevel = expected.get(levelCount);
+            Assert.assertTrue(expectedLevel.size() == level.size());
+            for (PGridHost host : level) {
+                //System.out.println("["+levelCount+"]"+host.getAddress()+":"+host.getPort());
+                Assert.assertTrue(expectedLevel.contains(host));
+            }
+            levelCount++;
+        }
+    }
 }

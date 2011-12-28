@@ -19,7 +19,7 @@
 
 package entity.routingtable.internal;
 
-import entity.PGridHost;
+import entity.internal.PGridHost;
 import entity.routingtable.PersistenceDelegate;
 import entity.routingtable.PersistencyException;
 import entity.routingtable.RoutingTable;

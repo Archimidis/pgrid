@@ -20,8 +20,10 @@
 package entity;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import entity.clock.LamportClock;
 import entity.clock.PeerClock;
+import entity.internal.PGridHost;
 import entity.routingtable.PersistenceDelegate;
 import entity.routingtable.RoutingTable;
 import entity.routingtable.internal.XMLPersistenceDelegate;
@@ -32,9 +34,13 @@ import entity.routingtable.internal.XMLPersistenceDelegate;
 public class EntityModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(Key.class).to(PGridKey.class);
-        bind(KeyRange.class).to(PGridKeyRange.class);
-        bind(Peer.class).to(PGridHost.class);
+        //bind(Key.class).to(PGridKey.class);
+        //bind(KeyRange.class).to(PGridKeyRange.class);
+
+        // XXX: hides exceptions thrown by PGridHost
+        install(new FactoryModuleBuilder()
+                .implement(Host.class, PGridHost.class)
+                .build(HostFactory.class));
 
         bind(PeerClock.class).to(LamportClock.class);
 

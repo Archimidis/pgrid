@@ -19,7 +19,7 @@
 
 package entity.routingtable;
 
-import entity.PGridHost;
+import entity.internal.PGridHost;
 import entity.routingtable.internal.XMLPersistenceDelegate;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -124,44 +124,47 @@ public class RoutingTablePersistencyXMLTest {
         //************ Invalid File Construction ************//
 
         OutputStream out = new FileOutputStream(INVALID_ADDRESS_FILE);
-        String invalidAddress = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "\n<RoutingTable>" +
-                "\n\t<localpeer>" +
-                "\n\t\t<address>-1</address>" +
-                "\n\t\t<port>3000</port>" +
-                "\n\t\t<path>000</path>" +
-                "\n\t\t<timestamp>10001</timestamp>" +
-                "\n\t\t<uuid>12345678-1231-1234-1234-0123456789ad</uuid>" +
-                "\n\t</localpeer>" +
-                "\n</RoutingTable>";
+        String invalidAddress = new StringBuilder()
+                .append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                .append("\n<RoutingTable>")
+                .append("\n\t<localpeer>")
+                .append("\n\t\t<address>-1</address>") // Error: Invalid ip address
+                .append("\n\t\t<port>3000</port>")
+                .append("\n\t\t<path>000</path>")
+                .append("\n\t\t<timestamp>10001</timestamp>")
+                .append("\n\t\t<uuid>12345678-1231-1234-1234-0123456789ad</uuid>")
+                .append("\n\t</localpeer>")
+                .append("\n</RoutingTable>").toString();
         out.write(invalidAddress.getBytes());
         out.close();
 
         out = new FileOutputStream(INVALID_PORT_FILE);
-        String invalidPort = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "\n<RoutingTable>" +
-                "\n\t<localpeer>" +
-                "\n\t\t<address>localhost</address>" +
-                "\n\t\t<port>-1</port>" +
-                "\n\t\t<path>000</path>" +
-                "\n\t\t<timestamp>10001</timestamp>" +
-                "\n\t\t<uuid>12345678-1231-1234-1234-0123456789ad</uuid>" +
-                "\n\t</localpeer>" +
-                "\n</RoutingTable>";
+        String invalidPort = new StringBuilder()
+                .append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                .append("\n<RoutingTable>")
+                .append("\n\t<localpeer>")
+                .append("\n\t\t<address>localhost</address>")
+                .append("\n\t\t<port>-1</port>") // Error: Negative port
+                .append("\n\t\t<path>000</path>")
+                .append("\n\t\t<timestamp>10001</timestamp>")
+                .append("\n\t\t<uuid>12345678-1231-1234-1234-0123456789ad</uuid>")
+                .append("\n\t</localpeer>")
+                .append("\n</RoutingTable>").toString();
         out.write(invalidPort.getBytes());
         out.close();
 
         out = new FileOutputStream(INVALID_UUID_FILE);
-        String invalidUUID = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "\n<RoutingTable>" +
-                "\n\t<localpeer>" +
-                "\n\t\t<address>localhost</address>" +
-                "\n\t\t<port>3000</port>" +
-                "\n\t\t<path>000</path>" +
-                "\n\t\t<timestamp>10001</timestamp>" +
-                "\n\t\t<uuid>sdfg457h*(</uuid>" +
-                "\n\t</localpeer>" +
-                "\n</RoutingTable>";
+        String invalidUUID = new StringBuilder()
+                .append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                .append("\n<RoutingTable>")
+                .append("\n\t<localpeer>")
+                .append("\n\t\t<address>localhost</address>")
+                .append("\n\t\t<port>3000</port>")
+                .append("\n\t\t<path>000</path>")
+                .append("\n\t\t<timestamp>10001</timestamp>")
+                .append("\n\t\t<uuid>sdfg457h*(</uuid>") // Error: invalid UUID format
+                .append("\n\t</localpeer>")
+                .append("\n</RoutingTable>").toString();
         out.write(invalidUUID.getBytes());
         out.close();
     }
@@ -201,7 +204,8 @@ public class RoutingTablePersistencyXMLTest {
         try {
             persistenceDelegate_.load(VALID_FILE, routingTable);
         } catch (FileNotFoundException e) {
-        } catch (PersistencyException e) { }
+        } catch (PersistencyException e) {
+        }
 
         PGridHost localpeer = routingTable.getLocalhost();
 

@@ -19,6 +19,8 @@
 
 package entity;
 
+import entity.internal.PGridKey;
+import entity.internal.PGridKeyRange;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,14 +31,14 @@ public class PGridKeyRangeTest {
 
     @Test(expected = NullPointerException.class)
     public void WhenNullKeys_ExpectNullPointerException() {
-        PGridKeyRange keyRange =
+        KeyRange keyRange =
                 new PGridKeyRange(new PGridKey(""), new PGridKey(""));
         keyRange.contains(null);
     }
 
     @Test
     public void WhenNotNullKeys_ExpectResults() {
-        PGridKeyRange keyRange =
+        KeyRange keyRange =
                 new PGridKeyRange(new PGridKey("00"), new PGridKey("00"));
         Assert.assertTrue(keyRange.contains(new PGridKey("001010101")));
     }

@@ -41,7 +41,7 @@ public interface PersistenceDelegate {
      *                               initialization of the routing table.
      *                               Examples of such failures are invalid
      *                               file format or failure to construct a
-     *                               valid {@link entity.PGridHost} or other
+     *                               valid {@link entity.internal.PGridHost} or other
      *                               types that the implementor can think of.
      *                               If such failures occur then the load
      *                               process must stop.

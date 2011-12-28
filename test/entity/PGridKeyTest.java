@@ -19,6 +19,7 @@
 
 package entity;
 
+import entity.internal.PGridKey;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,8 +29,8 @@ import org.junit.Test;
 public class PGridKeyTest {
     @Test
     public void WhenComparingKeys_ExpectResults() {
-        PGridKey key1 = new PGridKey("");
-        PGridKey key2 = new PGridKey("");
+        Key key1 = new PGridKey("");
+        Key key2 = new PGridKey("");
         Assert.assertTrue(key1.compareTo(key2) == 0);
 
         key1 = new PGridKey("");
@@ -46,7 +47,7 @@ public class PGridKeyTest {
         // in prefix relation
         Assert.assertTrue(key1.compareTo(key2) == 0);
 
-        PGridKey in = new PGridKey("000001");
+        Key in = new PGridKey("000001");
         // key is in the range [key1, key2]
         Assert.assertTrue(in.compareTo(key1) >= 0 && in.compareTo(key2) <= 0);
 
@@ -54,7 +55,7 @@ public class PGridKeyTest {
 
     @Test(expected = NullPointerException.class)
     public void WhenComparingNullKey_ExpectNullPointerException() {
-        PGridKey key1 = new PGridKey("");
+        Key key1 = new PGridKey("");
         key1.compareTo(null);
     }
 

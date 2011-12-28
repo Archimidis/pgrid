@@ -20,6 +20,8 @@
 package entity;
 
 
+import entity.internal.PGridKey;
+
 /**
  * This class stores information about the path of a PGridHost. It assumes a
  * binary path representation as described in the original paper of P-Grid.

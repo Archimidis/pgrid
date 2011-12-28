@@ -19,7 +19,7 @@
 
 package entity.routingtable;
 
-import entity.PGridHost;
+import entity.internal.PGridHost;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class represents the routing table of the peer and stores pairs
- * containing a {@link entity.PGridHost} associated with a level. The levels
+ * containing a {@link entity.internal.PGridHost} associated with a level. The levels
  * of the routing table will always be equal to the total path length of the
  * host that this table belongs to. That is [0, ..., path.length).Independent
  * of path schematics, the path can be found by considering the level number
@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class RoutingTable {
-    // FIXME: On path reduce of local peer the exceeding levels should be removed.
+
     private PGridHost localhost_;
 
     private final List<Set<PGridHost>> references_ =
@@ -69,8 +69,22 @@ public class RoutingTable {
         return localhost_;
     }
 
-    public void update(int level, RoutingTable routingTable) {
-        // TODO: Implement update and Unit Test
+    public synchronized void update(RoutingTable routingTable, int commonLength, int refMax) {
+        // [0, level) -> union & randomSelect per level
+        if (commonLength > 0) {
+            for (int i = 0; i < commonLength; i++) {
+                Collection<PGridHost> commonRefs =
+                        union(getLevel(i), routingTable.getLevel(i));
+                updateLevel(i, randomSelect(refMax, commonRefs));
+            }
+        }
+
+        int lLen = getLocalhost().getHostPath().length();
+        int rLen = routingTable.getLocalhost().getHostPath().length();
+        if ((lLen > commonLength) && (rLen > commonLength)) {
+            addReference(commonLength, routingTable.getLocalhost());
+        }
+        // TODO: Check the path of the localhost and all the hosts stored. Add/remove levels accordingly.
     }
 
     /**
@@ -82,7 +96,7 @@ public class RoutingTable {
      * @param level where the host will be added.
      * @param host  to be added.
      */
-    public void addReference(int level, PGridHost host) {
+    public synchronized void addReference(int level, PGridHost host) {
         if (host == null) {
             throw new NullPointerException();
         }
@@ -111,7 +125,7 @@ public class RoutingTable {
      * @param level where the hosts will be added.
      * @param hosts to be added.
      */
-    public void addReference(int level, Collection<PGridHost> hosts) {
+    public synchronized void addReference(int level, Collection<PGridHost> hosts) {
         if (hosts == null) {
             throw new NullPointerException();
         }
@@ -144,7 +158,7 @@ public class RoutingTable {
      * @param level where the old hosts will be replaced.
      * @param hosts to replace the old hosts.
      */
-    public void updateLevel(int level, Collection<PGridHost> hosts) {
+    public synchronized void updateLevel(int level, Collection<PGridHost> hosts) {
         if (hosts == null) {
             return;
         }
@@ -175,7 +189,7 @@ public class RoutingTable {
      *
      * @param host the host to update.
      */
-    public void updateReference(PGridHost host) {
+    public synchronized void updateReference(PGridHost host) {
         if (host == null) {
             throw new NullPointerException();
         }
@@ -199,7 +213,7 @@ public class RoutingTable {
      * them. In that case nothing happens.
      *
      * @param level        where the union will happen.
-     * @param routingTable to be unioned with this.
+     * @param routingTable to be united with this routing table.
      */
     public void unionLevel(int level, RoutingTable routingTable) {
         if (routingTable == null) {
@@ -281,7 +295,7 @@ public class RoutingTable {
      *
      * @param host to be removed.
      */
-    public void removeReference(PGridHost host) {
+    public synchronized void removeReference(PGridHost host) {
         if (host == null) {
             throw new NullPointerException();
         }
@@ -328,7 +342,7 @@ public class RoutingTable {
     /**
      * Clears the routing table.
      */
-    public void clear() {
+    public synchronized void clear() {
         references_.clear();
         uuidRefs_.clear();
     }
@@ -393,8 +407,8 @@ public class RoutingTable {
      * @param level initialization of all the intermediate levels till that
      *              level.
      */
-    private void createMissingLevels(int level) {
-        // level should be valid cause it should be checked from the public method
+    private synchronized void createMissingLevels(int level) {
+        // level should be valid cause it is checked from the public method that called this.
         if (level >= references_.size() && level < localhost_.getHostPath().length()) {
             int end = Math.max(level, references_.size());
             int start = Math.min(level, references_.size());
