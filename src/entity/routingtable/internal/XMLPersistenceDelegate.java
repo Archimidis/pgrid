@@ -19,6 +19,7 @@
 
 package entity.routingtable.internal;
 
+import entity.Host;
 import entity.internal.PGridHost;
 import entity.routingtable.PersistenceDelegate;
 import entity.routingtable.PersistencyException;
@@ -94,7 +95,7 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
         InputStream inStream = null;
 
         try {
-            Map<Integer, List<PGridHost>> map = new HashMap<Integer, List<PGridHost>>();
+            Map<Integer, List<Host>> map = new HashMap<Integer, List<Host>>();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             inStream = new FileInputStream(file);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(inStream);
@@ -149,7 +150,7 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
                     EndElement endElement = event.asEndElement();
                     if (endElement.getName().getLocalPart().equals(HOST)
                             || endElement.getName().getLocalPart().equals(LOCALPEER)) {
-                        PGridHost host = new PGridHost(address, port);
+                        Host host = new PGridHost(address, port);
                         host.setHostPath(path);
                         host.setUUID(UUID.fromString(uuid));
                         if (ts > 0) {
@@ -159,7 +160,7 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
                         }
                         if (endElement.getName().getLocalPart().equals(HOST)) {
                             if (!map.containsKey(level)) {
-                                map.put(level, new ArrayList<PGridHost>(1));
+                                map.put(level, new ArrayList<Host>(1));
                             }
                             map.get(level).add(host);
                         } else if (endElement.getName().getLocalPart().equals(LOCALPEER)) {
@@ -175,7 +176,7 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
                 }
             }
 
-            for (Map.Entry<Integer, List<PGridHost>> entry : map.entrySet()) {
+            for (Map.Entry<Integer, List<Host>> entry : map.entrySet()) {
                 routingTable.addReference(entry.getKey(), entry.getValue());
             }
         } catch (UnknownHostException e) {
@@ -215,7 +216,7 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
 
             int levelIndex = 0;
 
-            PGridHost localpeer = routingTable.getLocalhost();
+            Host localpeer = routingTable.getLocalhost();
             StartElement localPeerStartElement = eventFactory.createStartElement("", "", LOCALPEER);
             eventWriter.add(tab);
             eventWriter.add(localPeerStartElement);
@@ -232,8 +233,8 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
             eventWriter.add(end);
             eventWriter.add(end);
 
-            for (Collection<PGridHost> levels : routingTable.getAllHostsByLevels()) {
-                for (PGridHost host : levels) {
+            for (Collection<Host> levels : routingTable.getAllHostsByLevels()) {
+                for (Host host : levels) {
                     StartElement hostStartElement = eventFactory.createStartElement("", "", HOST);
                     Attribute attribute = eventFactory.createAttribute(LEVEL, Integer.toString(levelIndex));
                     eventWriter.add(tab);

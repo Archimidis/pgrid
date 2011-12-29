@@ -19,7 +19,7 @@
 
 package entity.routingtable;
 
-import entity.internal.PGridHost;
+import entity.Host;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,11 +45,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RoutingTable {
 
-    private PGridHost localhost_;
+    private Host localhost_;
 
-    private final List<Set<PGridHost>> references_ =
-            new Vector<Set<PGridHost>>();
-    private final Map<UUID, PGridHost> uuidRefs_ = new ConcurrentHashMap<UUID, PGridHost>();
+    private final List<Set<Host>> references_ =
+            new Vector<Set<Host>>();
+    private final Map<UUID, Host> uuidRefs_ = new ConcurrentHashMap<UUID, Host>();
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ public class RoutingTable {
     public RoutingTable() {
     }
 
-    public void setLocalhost(PGridHost localhost) {
+    public void setLocalhost(Host localhost) {
         if (localhost == null) {
             throw new NullPointerException();
         }
@@ -65,7 +65,7 @@ public class RoutingTable {
         createMissingLevels(localhost_.getHostPath().length() - 1);
     }
 
-    public PGridHost getLocalhost() {
+    public Host getLocalhost() {
         return localhost_;
     }
 
@@ -73,7 +73,7 @@ public class RoutingTable {
         // [0, level) -> union & randomSelect per level
         if (commonLength > 0) {
             for (int i = 0; i < commonLength; i++) {
-                Collection<PGridHost> commonRefs =
+                Collection<Host> commonRefs =
                         union(getLevel(i), routingTable.getLevel(i));
                 updateLevel(i, randomSelect(refMax, commonRefs));
             }
@@ -96,7 +96,7 @@ public class RoutingTable {
      * @param level where the host will be added.
      * @param host  to be added.
      */
-    public synchronized void addReference(int level, PGridHost host) {
+    public synchronized void addReference(int level, Host host) {
         if (host == null) {
             throw new NullPointerException();
         }
@@ -125,7 +125,7 @@ public class RoutingTable {
      * @param level where the hosts will be added.
      * @param hosts to be added.
      */
-    public synchronized void addReference(int level, Collection<PGridHost> hosts) {
+    public synchronized void addReference(int level, Collection<Host> hosts) {
         if (hosts == null) {
             throw new NullPointerException();
         }
@@ -137,13 +137,13 @@ public class RoutingTable {
         }
 
         createMissingLevels(level);
-        for (PGridHost host : hosts) {
+        for (Host host : hosts) {
             removeReference(host);
         }
 
         references_.get(level).addAll(union(references_.get(level), hosts));
 
-        for (PGridHost host : hosts) {
+        for (Host host : hosts) {
             uuidRefs_.put(host.getUUID(), host);
         }
     }
@@ -158,7 +158,7 @@ public class RoutingTable {
      * @param level where the old hosts will be replaced.
      * @param hosts to replace the old hosts.
      */
-    public synchronized void updateLevel(int level, Collection<PGridHost> hosts) {
+    public synchronized void updateLevel(int level, Collection<Host> hosts) {
         if (hosts == null) {
             return;
         }
@@ -170,14 +170,14 @@ public class RoutingTable {
             throw new IllegalArgumentException("Level surpasses localhost path length");
         }
 
-        for (PGridHost host : hosts) {
+        for (Host host : hosts) {
             removeReference(host);
         }
 
-        Collection<PGridHost> result = union(references_.get(level), hosts);
+        Collection<Host> result = union(references_.get(level), hosts);
         references_.get(level).clear();
         references_.get(level).addAll(result);
-        for (PGridHost host : hosts) {
+        for (Host host : hosts) {
             uuidRefs_.put(host.getUUID(), host);
         }
     }
@@ -189,13 +189,13 @@ public class RoutingTable {
      *
      * @param host the host to update.
      */
-    public synchronized void updateReference(PGridHost host) {
+    public synchronized void updateReference(Host host) {
         if (host == null) {
             throw new NullPointerException();
         }
 
         if (uuidRefs_.containsKey(host.getUUID())) {
-            for (Set<PGridHost> treeSet : references_) {
+            for (Set<Host> treeSet : references_) {
                 if (treeSet.contains(host)) {
                     treeSet.remove(host);
                     treeSet.add(host);
@@ -230,7 +230,7 @@ public class RoutingTable {
             return;
         }
 
-        Collection<PGridHost> other = routingTable.getLevel(level);
+        Collection<Host> other = routingTable.getLevel(level);
 
         updateLevel(level, other);
     }
@@ -245,7 +245,7 @@ public class RoutingTable {
      * @param level to get the hosts from.
      * @return a collection with all hosts.
      */
-    public Collection<PGridHost> getLevel(int level) {
+    public Collection<Host> getLevel(int level) {
         if (level < 0) {
             throw new IllegalArgumentException("Negative level given");
         }
@@ -265,15 +265,15 @@ public class RoutingTable {
      * @return a collection within a collection with the hosts ordered by the
      *         level they belong to.
      */
-    public Collection<Collection<PGridHost>> getAllHostsByLevels() {
-        Collection<Collection<PGridHost>> result = new ArrayList<Collection<PGridHost>>();
+    public Collection<Collection<Host>> getAllHostsByLevels() {
+        Collection<Collection<Host>> result = new ArrayList<Collection<Host>>();
 
         if (references_.size() == 0) {
             return result;
         }
 
-        for (Set<PGridHost> treeSet : references_) {
-            result.add(new ArrayList<PGridHost>(treeSet));
+        for (Set<Host> treeSet : references_) {
+            result.add(new ArrayList<Host>(treeSet));
         }
 
         return result;
@@ -284,9 +284,9 @@ public class RoutingTable {
      *
      * @return a collections with the hosts.
      */
-    public Collection<PGridHost> getAllHosts() {
-        List<PGridHost> result = new ArrayList<PGridHost>(uuidRefs_.size());
-        Collections.copy(result, (List<PGridHost>) uuidRefs_.values());
+    public Collection<Host> getAllHosts() {
+        List<Host> result = new ArrayList<Host>(uuidRefs_.size());
+        Collections.copy(result, (List<Host>) uuidRefs_.values());
         return result;
     }
 
@@ -295,7 +295,7 @@ public class RoutingTable {
      *
      * @param host to be removed.
      */
-    public synchronized void removeReference(PGridHost host) {
+    public synchronized void removeReference(Host host) {
         if (host == null) {
             throw new NullPointerException();
         }
@@ -304,7 +304,7 @@ public class RoutingTable {
             return;
         }
 
-        for (Set<PGridHost> treeSet : references_) {
+        for (Set<Host> treeSet : references_) {
             treeSet.remove(host);
             uuidRefs_.remove(host.getUUID());
         }
@@ -316,7 +316,7 @@ public class RoutingTable {
      * @param host to be checked for existence.
      * @return true if it exists, false else.
      */
-    public boolean contains(PGridHost host) {
+    public boolean contains(Host host) {
         return uuidRefs_.containsKey(host.getUUID());
     }
 
@@ -354,7 +354,7 @@ public class RoutingTable {
      * @param uuid of the host.
      * @return the host associated with the given UUID.
      */
-    public PGridHost selectUUIDHost(UUID uuid) {
+    public Host selectUUIDHost(UUID uuid) {
         return uuidRefs_.get(uuid);
     }
 
@@ -367,11 +367,11 @@ public class RoutingTable {
      * @param refs2 the second collection.
      * @return the union.
      */
-    public static Collection<PGridHost> union(Collection<PGridHost> refs1, Collection<PGridHost> refs2) {
+    public static Collection<Host> union(Collection<Host> refs1, Collection<Host> refs2) {
         if (refs1 == null || refs2 == null) {
             throw new NullPointerException();
         }
-        Collection<PGridHost> result = new TreeSet<PGridHost>(refs1);
+        Collection<Host> result = new TreeSet<Host>(refs1);
         result.addAll(refs2);
 
         return result;
@@ -385,7 +385,7 @@ public class RoutingTable {
      * @param commonRefs to random select from.
      * @return a collection with all the selected hosts.
      */
-    public static Collection<PGridHost> randomSelect(int refMax, Collection<PGridHost> commonRefs) {
+    public static Collection<Host> randomSelect(int refMax, Collection<Host> commonRefs) {
         if (commonRefs == null) {
             throw new NullPointerException();
         }
@@ -395,7 +395,7 @@ public class RoutingTable {
 
         int choose = (refMax <= commonRefs.size()) ? refMax : commonRefs.size();
 
-        List<PGridHost> copy = new Vector<PGridHost>(commonRefs);
+        List<Host> copy = new Vector<Host>(commonRefs);
         Collections.shuffle(copy);
         return copy.subList(0, choose);
     }
@@ -414,7 +414,7 @@ public class RoutingTable {
             int start = Math.min(level, references_.size());
 
             for (int i = start; i <= end; i++) {
-                references_.add(new TreeSet<PGridHost>());
+                references_.add(new TreeSet<Host>());
             }
         }
     }

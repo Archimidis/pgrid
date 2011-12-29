@@ -1,5 +1,5 @@
 /*
- * This file (entity.EnityModule) is part of the libpgrid project.
+ * This file (entity.EntityModule) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *

@@ -19,8 +19,6 @@
 
 package entity;
 
-import entity.internal.PGridHost;
-
 import java.net.InetAddress;
 import java.util.UUID;
 
@@ -30,7 +28,7 @@ import java.util.UUID;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public interface Host extends Comparable<PGridHost> {
+public interface Host extends Comparable<Host> {
 
     /**
      * Updates the path of this host.

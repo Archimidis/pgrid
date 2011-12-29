@@ -1,0 +1,55 @@
+module net {
+    module pgrid {
+        module communication {
+            module corba {
+
+                struct PeerReference {
+                    string address;
+                    long port;
+                    string path;
+                    long long timestamp;
+                    string uuid;
+                  };
+
+                typedef sequence<PeerReference> RoutingTable;
+                typedef sequence<octet> ByteStream;
+
+                struct BasicMessage {
+                    long type;
+                    ByteStream payload;
+                };
+
+                struct RoutedMessage {
+                    string uuid;
+                    PeerReference source;
+                    string keyDestination;
+                    long hops;
+                    BasicMessage basicMessage;
+                };
+
+                interface NodeHandle {
+                    readonly attribute PeerReference peer;
+                    readonly attribute RoutingTable routingTable;
+                    readonly attribute string maintenanceState;
+
+                    /**************** DATA TRANSFER **************************/
+                    void route(in RoutedMessage msg);
+                    void send(in BasicMessage msg);
+
+                    /**************** LOOKUP *********************************/
+                    PeerReference lookup(in string key, in long long timeout);
+
+                    /**************** MAINTENANCE ****************************/
+                    void updateInfo(in PeerReference peer);
+                    void exchange(in PeerReference peer, in RoutingTable peerRT);
+                    void fixNode(in PeerReference failed, in string path);
+                    void replace(in PeerReference failed);
+                    PeerReference getFailedPeer();
+                    void addSolutionListener();
+                    void solutionNotify(in PeerReference replacer, in PeerReference conjugate);
+                };
+
+            };
+        };
+    };
+};

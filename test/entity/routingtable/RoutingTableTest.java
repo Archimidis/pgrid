@@ -19,6 +19,7 @@
 
 package entity.routingtable;
 
+import entity.Host;
 import entity.internal.PGridHost;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -34,7 +35,7 @@ import java.util.List;
  */
 public class RoutingTableTest {
 
-    private static PGridHost localhost_;
+    private static Host localhost_;
 
     @BeforeClass
     public static void beforeClass() throws UnknownHostException {
@@ -48,7 +49,7 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host = null;
+        Host host = null;
         table.addReference(0, host);
     }
 
@@ -59,7 +60,7 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host = new PGridHost("127.0.0.1", 3000);
+        Host host = new PGridHost("127.0.0.1", 3000);
         table.addReference(-2, host);
     }
 
@@ -70,7 +71,7 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host = new PGridHost("127.0.0.1", 3000);
+        Host host = new PGridHost("127.0.0.1", 3000);
         table.addReference(100, host);
     }
 
@@ -84,7 +85,7 @@ public class RoutingTableTest {
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
         int level = localhost_.getHostPath().length();
-        PGridHost host = new PGridHost("127.0.0.1", 3000);
+        Host host = new PGridHost("127.0.0.1", 3000);
         table.addReference(level - 1, host);
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.contains(host));
@@ -97,7 +98,7 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        ArrayList<PGridHost> host = null;
+        ArrayList<Host> host = null;
         table.addReference(0, host);
     }
 
@@ -108,9 +109,9 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host0 = new PGridHost("127.0.0.1", 3000);
-        PGridHost host1 = new PGridHost("127.0.0.1", 3001);
-        Collection<PGridHost> list = new ArrayList<PGridHost>(2);
+        Host host0 = new PGridHost("127.0.0.1", 3000);
+        Host host1 = new PGridHost("127.0.0.1", 3001);
+        Collection<Host> list = new ArrayList<Host>(2);
         list.add(host0);
         list.add(host1);
         table.addReference(-1, list);
@@ -123,9 +124,9 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host0 = new PGridHost("127.0.0.1", 3000);
-        PGridHost host1 = new PGridHost("127.0.0.1", 3001);
-        Collection<PGridHost> list = new ArrayList<PGridHost>(2);
+        Host host0 = new PGridHost("127.0.0.1", 3000);
+        Host host1 = new PGridHost("127.0.0.1", 3001);
+        Collection<Host> list = new ArrayList<Host>(2);
         list.add(host0);
         list.add(host1);
         table.addReference(100, list);
@@ -141,9 +142,9 @@ public class RoutingTableTest {
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
-        PGridHost host0 = new PGridHost("127.0.0.1", 3000);
-        PGridHost host1 = new PGridHost("127.0.0.1", 3001);
-        Collection<PGridHost> list = new ArrayList<PGridHost>(2);
+        Host host0 = new PGridHost("127.0.0.1", 3000);
+        Host host1 = new PGridHost("127.0.0.1", 3001);
+        Collection<Host> list = new ArrayList<Host>(2);
         list.add(host0);
         list.add(host1);
 
@@ -162,7 +163,7 @@ public class RoutingTableTest {
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
-        ArrayList<PGridHost> host = null;
+        ArrayList<Host> host = null;
         table.updateLevel(0, host);
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
@@ -176,9 +177,9 @@ public class RoutingTableTest {
         table.setLocalhost(localhost_);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
-        PGridHost host0 = new PGridHost("127.0.0.1", 3000);
-        PGridHost host1 = new PGridHost("127.0.0.1", 3001);
-        Collection<PGridHost> list = new ArrayList<PGridHost>(2);
+        Host host0 = new PGridHost("127.0.0.1", 3000);
+        Host host1 = new PGridHost("127.0.0.1", 3001);
+        Collection<Host> list = new ArrayList<Host>(2);
         list.add(host0);
         list.add(host1);
         table.updateLevel(100, list);
@@ -195,23 +196,23 @@ public class RoutingTableTest {
         Assert.assertTrue(table.levelNumber() == tableLevel);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
-        PGridHost oldHost0 = new PGridHost("127.0.0.1", 1000);
-        PGridHost oldHost1 = new PGridHost("127.0.0.1", 1001);
-        Collection<PGridHost> oldList = new ArrayList<PGridHost>(2);
+        Host oldHost0 = new PGridHost("127.0.0.1", 1000);
+        Host oldHost1 = new PGridHost("127.0.0.1", 1001);
+        Collection<Host> oldList = new ArrayList<Host>(2);
         oldList.add(oldHost0);
         oldList.add(oldHost1);
         table.addReference(0, oldList);
 
-        PGridHost newHost0 = new PGridHost("127.0.0.1", 3000);
-        PGridHost newHost1 = new PGridHost("127.0.0.1", 3001);
-        Collection<PGridHost> newList = new ArrayList<PGridHost>(2);
+        Host newHost0 = new PGridHost("127.0.0.1", 3000);
+        Host newHost1 = new PGridHost("127.0.0.1", 3001);
+        Collection<Host> newList = new ArrayList<Host>(2);
         newList.add(newHost0);
         newList.add(newHost1);
 
         table.updateLevel(0, newList);
 
         Assert.assertTrue(table.levelNumber() == tableLevel);
-        Collection<PGridHost> zeroLevel = table.getLevel(0);
+        Collection<Host> zeroLevel = table.getLevel(0);
         Assert.assertTrue(zeroLevel.contains(oldHost0) &&
                 zeroLevel.contains(oldHost1) &&
                 zeroLevel.contains(newHost0) &&
@@ -228,7 +229,7 @@ public class RoutingTableTest {
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
-        ArrayList<PGridHost> host = null;
+        ArrayList<Host> host = null;
         table.updateLevel(0, host);
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
@@ -244,15 +245,15 @@ public class RoutingTableTest {
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
-        PGridHost host = new PGridHost("127.0.0.1", 3333);
+        Host host = new PGridHost("127.0.0.1", 3333);
         table.addReference(0, host);
         Assert.assertTrue(table.uniqueHostsNumber() == 1);
 
-        PGridHost hostToUpdate = new PGridHost("127.0.0.1", 1111);
+        Host hostToUpdate = new PGridHost("127.0.0.1", 1111);
         hostToUpdate.setUUID(host.getUUID());
 
         table.updateReference(hostToUpdate);
-        Collection<PGridHost> zeroLevel = table.getLevel(0);
+        Collection<Host> zeroLevel = table.getLevel(0);
         Assert.assertTrue(zeroLevel.contains(hostToUpdate));
 
         Assert.assertTrue(table.selectUUIDHost(host.getUUID()).getPort() == hostToUpdate.getPort());
@@ -271,11 +272,11 @@ public class RoutingTableTest {
         table.setLocalhost(localhost_);
         Assert.assertTrue(table.uniqueHostsNumber() == 0);
 
-        PGridHost host = new PGridHost("127.0.0.1", 3333);
+        Host host = new PGridHost("127.0.0.1", 3333);
         table.addReference(0, host);
         Assert.assertTrue(table.uniqueHostsNumber() == 1);
 
-        PGridHost hostToUpdate = new PGridHost("127.0.0.1", 1111);
+        Host hostToUpdate = new PGridHost("127.0.0.1", 1111);
         table.updateReference(hostToUpdate);
 
         Assert.assertTrue(table.levelNumber() == level);
@@ -311,19 +312,19 @@ public class RoutingTableTest {
         int level = localhost_.getHostPath().length();
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
-        PGridHost host = new PGridHost("127.0.0.1", 3333);
+        Host host = new PGridHost("127.0.0.1", 3333);
 
         table.addReference(0, host);
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 1);
 
         RoutingTable other = new RoutingTable();
-        PGridHost otherHost = new PGridHost("127.0.0.1", 1234);
+        Host otherHost = new PGridHost("127.0.0.1", 1234);
         otherHost.setHostPath("0000");
         other.setLocalhost(otherHost);
         int otherLevel = otherHost.getHostPath().length();
 
-        PGridHost host1 = new PGridHost("127.0.0.1", 1111);
+        Host host1 = new PGridHost("127.0.0.1", 1111);
         other.addReference(0, host1);
         Assert.assertTrue(other.levelNumber() == otherLevel);
         Assert.assertTrue(other.uniqueHostsNumber() == 1);
@@ -342,20 +343,20 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host0 = new PGridHost("127.0.0.1", 3333);
-        PGridHost host1 = new PGridHost("127.0.0.1", 3333);
+        Host host0 = new PGridHost("127.0.0.1", 3333);
+        Host host1 = new PGridHost("127.0.0.1", 3333);
         table.addReference(0, host0);
         table.addReference(1, host1);
         Assert.assertTrue(table.levelNumber() == level);
         Assert.assertTrue(table.uniqueHostsNumber() == 2);
 
         RoutingTable other = new RoutingTable();
-        PGridHost otherHost = new PGridHost("127.0.0.1", 1234);
+        Host otherHost = new PGridHost("127.0.0.1", 1234);
         otherHost.setHostPath("0");
         other.setLocalhost(otherHost);
         int otherLevel = otherHost.getHostPath().length();
 
-        PGridHost host3 = new PGridHost("127.0.0.1", 1111);
+        Host host3 = new PGridHost("127.0.0.1", 1111);
         other.addReference(0, host3);
         Assert.assertTrue(other.levelNumber() == otherLevel);
         Assert.assertTrue(other.uniqueHostsNumber() == 1);
@@ -375,7 +376,7 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host = new PGridHost("127.0.0.1", 3333);
+        Host host = new PGridHost("127.0.0.1", 3333);
         table.addReference(0, host);
         table.getLevel(1000);
     }
@@ -387,8 +388,8 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host = new PGridHost("127.0.0.1", 3000);
-        PGridHost toRemove = null;
+        Host host = new PGridHost("127.0.0.1", 3000);
+        Host toRemove = null;
         table.addReference(0, host);
         table.removeReference(toRemove);
     }
@@ -401,7 +402,7 @@ public class RoutingTableTest {
         RoutingTable table = new RoutingTable();
         table.setLocalhost(localhost_);
 
-        PGridHost host = new PGridHost("127.0.0.1", 3000);
+        Host host = new PGridHost("127.0.0.1", 3000);
         for (int i = 0; i < level - 1; i++) {
             table.addReference(i, host);
         }
@@ -417,23 +418,23 @@ public class RoutingTableTest {
     // static Collection<PGridHost> union(Collection<PGridHost> refs1, Collection<PGridHost> refs2)
     @Test(expected = NullPointerException.class)
     public void WhenStaticUnionNullCollections_ExpectException() {
-        ArrayList<PGridHost> list1 = null;
-        ArrayList<PGridHost> list2 = null;
+        ArrayList<Host> list1 = null;
+        ArrayList<Host> list2 = null;
         RoutingTable.union(list1, list2);
     }
 
     @Test
     public void WhenStaticUnionCollections_ExpectResultUnion()
             throws UnknownHostException {
-        ArrayList<PGridHost> list0 = new ArrayList<PGridHost>(1);
-        PGridHost host0 = new PGridHost("127.0.0.1", 3333);
+        ArrayList<Host> list0 = new ArrayList<Host>(1);
+        Host host0 = new PGridHost("127.0.0.1", 3333);
         list0.add(host0);
 
-        ArrayList<PGridHost> list1 = new ArrayList<PGridHost>(1);
-        PGridHost host1 = new PGridHost("127.0.0.1", 1111);
+        ArrayList<Host> list1 = new ArrayList<Host>(1);
+        Host host1 = new PGridHost("127.0.0.1", 1111);
         list1.add(host1);
 
-        Collection<PGridHost> result = RoutingTable.union(list0, list1);
+        Collection<Host> result = RoutingTable.union(list0, list1);
         Assert.assertTrue(result.size() == 2);
         Assert.assertTrue(result.contains(host0) && result.contains(host1));
     }
@@ -441,14 +442,14 @@ public class RoutingTableTest {
     // static Collection<PGridHost> randomSelect(int refMax, Collection<PGridHost> commonRefs)
     @Test(expected = NullPointerException.class)
     public void WhenStaticRandomSelectFromNullCollection_ExpectException() {
-        ArrayList<PGridHost> list = null;
+        ArrayList<Host> list = null;
         RoutingTable.randomSelect(0, list);
     }
 
     // static Collection<PGridHost> randomSelect(int refMax, Collection<PGridHost> commonRefs)
     @Test(expected = IllegalArgumentException.class)
     public void WhenStaticRandomSelectNegativeRefMax_ExpectException() {
-        ArrayList<PGridHost> list = new ArrayList<PGridHost>();
+        ArrayList<Host> list = new ArrayList<Host>();
         RoutingTable.randomSelect(-11, list);
     }
 
@@ -456,14 +457,14 @@ public class RoutingTableTest {
     @Test
     public void WhenStaticRandomSelect_ExpectRefMaxHostsInResult()
             throws UnknownHostException {
-        ArrayList<PGridHost> list = new ArrayList<PGridHost>(1);
-        PGridHost host0 = new PGridHost("127.0.0.1", 3333);
-        PGridHost host1 = new PGridHost("127.0.0.1", 1111);
+        ArrayList<Host> list = new ArrayList<Host>(1);
+        Host host0 = new PGridHost("127.0.0.1", 3333);
+        Host host1 = new PGridHost("127.0.0.1", 1111);
         list.add(host0);
         list.add(host1);
 
         int refMax = 100;
-        Collection<PGridHost> result = RoutingTable.randomSelect(refMax, list);
+        Collection<Host> result = RoutingTable.randomSelect(refMax, list);
         Assert.assertTrue(result.size() <= refMax);
         Assert.assertTrue(result.size() == 2);
         Assert.assertTrue(result.contains(host0) && result.contains(host1));
@@ -485,32 +486,32 @@ public class RoutingTableTest {
         localRT.setLocalhost(localhost_);
 
         RoutingTable remoteRT = new RoutingTable();
-        PGridHost remoteHost = new PGridHost("127.0.0.1", 12345);
+        Host remoteHost = new PGridHost("127.0.0.1", 12345);
         remoteHost.setHostPath("00001");
         remoteRT.setLocalhost(remoteHost);
 
         int commonLength = localhost_.getHostPath().commonPrefix(remoteHost.getHostPath()).length();
         int refMax = 2;
 
-        List<List<PGridHost>> expected = new ArrayList<List<PGridHost>>();
+        List<List<Host>> expected = new ArrayList<List<Host>>();
 
         for (int i = 0; i < 4; i++) {
-            PGridHost forLocal = new PGridHost("127.0.0.1", (111 + i));
+            Host forLocal = new PGridHost("127.0.0.1", (111 + i));
             localRT.addReference(i, forLocal);
-            PGridHost forRemote = new PGridHost("127.0.0.1", (222 + i));
+            Host forRemote = new PGridHost("127.0.0.1", (222 + i));
             remoteRT.addReference(i, forRemote);
-            List<PGridHost> list = new ArrayList<PGridHost>(2);
+            List<Host> list = new ArrayList<Host>(2);
             list.add(forLocal);
             list.add(forRemote);
             expected.add(list);
         }
         // add the remote host and then empty levels according to local routing table path.
-        List<PGridHost> addedLevel = new ArrayList<PGridHost>(1);
+        List<Host> addedLevel = new ArrayList<Host>(1);
         addedLevel.add(remoteHost);
         expected.add(addedLevel);
         int excessLevels = localRT.levelNumber() - commonLength - 1;
         for (int i = 0; i < excessLevels; i++) {
-            expected.add(new ArrayList<PGridHost>());
+            expected.add(new ArrayList<Host>());
         }
 
         localRT.update(remoteRT, commonLength, refMax);
@@ -518,10 +519,10 @@ public class RoutingTableTest {
         Assert.assertTrue(expected.size() == localRT.levelNumber());
 
         int levelCount = 0;
-        for (Collection<PGridHost> level : localRT.getAllHostsByLevels()) {
-            List<PGridHost> expectedLevel = expected.get(levelCount);
+        for (Collection<Host> level : localRT.getAllHostsByLevels()) {
+            List<Host> expectedLevel = expected.get(levelCount);
             Assert.assertTrue(expectedLevel.size() == level.size());
-            for (PGridHost host : level) {
+            for (Host host : level) {
                 //System.out.println("["+levelCount+"]"+host.getAddress()+":"+host.getPort());
                 Assert.assertTrue(expectedLevel.contains(host));
             }

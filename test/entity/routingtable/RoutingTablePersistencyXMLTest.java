@@ -19,6 +19,7 @@
 
 package entity.routingtable;
 
+import entity.Host;
 import entity.internal.PGridHost;
 import entity.routingtable.internal.XMLPersistenceDelegate;
 import org.junit.AfterClass;
@@ -38,8 +39,8 @@ public class RoutingTablePersistencyXMLTest {
     private static final String INVALID_PORT_FILE = "test/entity/routingtable/portIvalidRoutingTable.xml";
     private static final String INVALID_UUID_FILE = "test/entity/routingtable/uuidInvalidRoutingTable.xml";
 
-    private static Map<Integer, List<PGridHost>> hostList_;
-    private static PGridHost localpeer_;
+    private static Map<Integer, List<Host>> hostList_;
+    private static Host localpeer_;
     private static PersistenceDelegate persistenceDelegate_;
 
     @BeforeClass
@@ -56,12 +57,12 @@ public class RoutingTablePersistencyXMLTest {
         routingTable.setLocalhost(localpeer_);
 
         hostList_ = new HashMap<>(3);
-        List<PGridHost> levelList = new ArrayList<PGridHost>();
+        List<Host> levelList = new ArrayList<Host>();
         int level;
 
         //******* Level 0 *******//
         level = 0;
-        PGridHost host = new PGridHost("localhost", 3000);
+        Host host = new PGridHost("localhost", 3000);
         host.setHostPath("1");
         host.setTimestamp(0);
         host.setUUID(UUID.fromString("10d82159-3713-4b78-884e-4104720ae2d8"));
@@ -77,7 +78,7 @@ public class RoutingTablePersistencyXMLTest {
         routingTable.addReference(level, levelList);
 
         //******* Level 1 *******//
-        levelList = new ArrayList<PGridHost>();
+        levelList = new ArrayList<Host>();
         level = 1;
 
         host = new PGridHost("localhost", 3001);
@@ -102,7 +103,7 @@ public class RoutingTablePersistencyXMLTest {
         routingTable.addReference(level, levelList);
 
         //******* Level 2 *******//
-        levelList = new ArrayList<PGridHost>();
+        levelList = new ArrayList<Host>();
         level = 2;
 
         host = new PGridHost("localhost", 3002);
@@ -207,16 +208,16 @@ public class RoutingTablePersistencyXMLTest {
         } catch (PersistencyException e) {
         }
 
-        PGridHost localpeer = routingTable.getLocalhost();
+        Host localpeer = routingTable.getLocalhost();
 
         Assert.assertTrue(localpeer_.compareTo(localpeer) == 0);
         Assert.assertTrue(hostList_.size() == routingTable.levelNumber());
 
         for (int levelIndex = 0; levelIndex < hostList_.size(); levelIndex++) {
-            Collection<PGridHost> actual = routingTable.getLevel(levelIndex);
-            Collection<PGridHost> expected = hostList_.get(levelIndex);
+            Collection<Host> actual = routingTable.getLevel(levelIndex);
+            Collection<Host> expected = hostList_.get(levelIndex);
             Assert.assertTrue(expected.size() == actual.size());
-            for (PGridHost actualHost : actual) {
+            for (Host actualHost : actual) {
                 Assert.assertTrue(expected.contains(actualHost));
             }
         }

@@ -184,7 +184,7 @@ public class PGridHost implements Host {
      * The comparison is done based on the UUIDs of the hosts.
      */
     @Override
-    public int compareTo(PGridHost host) {
+    public int compareTo(Host host) {
         return getUUID().compareTo(host.getUUID());
     }
 
@@ -196,7 +196,7 @@ public class PGridHost implements Host {
         if (!o.getClass().equals(this.getClass()))
             return false;
 
-        return getUUID().equals(((PGridHost) o).getUUID());
+        return getUUID().equals(((Host) o).getUUID());
     }
 
     @Override
