@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.exchange.spi.ExchangeProvider) is part of the libpgrid project.
+ * This file (pgrid.service.exchange.spi.ExchangeHandleProvider) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *
@@ -20,20 +20,22 @@
 package pgrid.service.exchange.spi;
 
 import pgrid.service.LocalPeerContext;
-import pgrid.service.exchange.ExchangeService;
-import pgrid.service.exchange.internal.DefaultExchangeService;
+import pgrid.service.exchange.internal.DefaultExchangeHandle;
+import pgrid.service.spi.corba.ExchangeHandlePOA;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
- * The provider for the ExchangeService.
+ * The provider for the ExchangeHandlePOA used by the CORBA facility. It
+ * returns the same object. Probably the provider will be asked for an object
+ * only one time and that is during the initialization of CORBA layer, so it
+ * can register the service.
  *
  * @author Vourlakis Nikolas
  */
-public class ExchangeProvider implements Provider<ExchangeService> {
-    private final LocalPeerContext context_;
-    private ExchangeAlgorithm algorithm_;
+public class ExchangeHandleProvider implements Provider<ExchangeHandlePOA> {
+    private ExchangeHandlePOA poa_;
 
     /**
      * Constructor.
@@ -42,22 +44,18 @@ public class ExchangeProvider implements Provider<ExchangeService> {
      * @param algo    an implementation of the exchange algorithm.
      */
     @Inject
-    public ExchangeProvider(LocalPeerContext context, ExchangeAlgorithm algo) {
-        context_ = context;
-        algorithm_ = algo;
+    public ExchangeHandleProvider(LocalPeerContext context, ExchangeAlgorithm algo) {
+        LocalPeerContext context_ = context;
+        poa_ = new DefaultExchangeHandle(context_.getLocalRT(), algo);
     }
 
     /**
-     * Constructs and returns a new ExchangeService object fully initialized.
+     * Returns the same instance.
      *
-     * @return an ExchangeService object.
+     * @return the created instance of ExchangeHandlePOA type.
      */
     @Override
-    public ExchangeService get() {
-        return new DefaultExchangeService(
-                context_.getCorba(),
-                context_.getLocalRT(),
-                algorithm_
-        );
+    public ExchangeHandlePOA get() {
+        return poa_;
     }
 }

@@ -22,8 +22,8 @@ package pgrid.service;
 import com.google.inject.AbstractModule;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.exchange.internal.DefaultExchangeAlgorithm;
-import pgrid.service.exchange.internal.DefaultExchangeHandle;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
+import pgrid.service.exchange.spi.ExchangeHandleProvider;
 import pgrid.service.exchange.spi.ExchangeProvider;
 import pgrid.service.spi.corba.ExchangeHandlePOA;
 
@@ -37,12 +37,12 @@ public class ServiceModule extends AbstractModule {
     protected void configure() {
         System.out.println("Setting up service module");
 
-        bind(ExchangeAlgorithm.class).to(DefaultExchangeAlgorithm.class);
-        bind(ExchangeHandlePOA.class).to(DefaultExchangeHandle.class);
-        bind(ExchangeService.class).toProvider(ExchangeProvider.class);
-
         bind(LocalPeerContext.class).in(Singleton.class);
 
+        bind(ExchangeAlgorithm.class).to(DefaultExchangeAlgorithm.class);
+        // constructs a new service every time
         bind(ExchangeService.class).toProvider(ExchangeProvider.class);
+        // returns the same handle every time
+        bind(ExchangeHandlePOA.class).toProvider(ExchangeHandleProvider.class);
     }
 }

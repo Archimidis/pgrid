@@ -20,6 +20,7 @@
 package pgrid.service.exchange.internal;
 
 import org.omg.CORBA.ORB;
+import org.omg.CORBA.SystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
@@ -49,15 +50,27 @@ public class DefaultExchangeService implements ExchangeService {
 
     @Override
     public void execute(Host host) {
+        if (host.compareTo(routingTable_.getLocalhost()) == 0) {
+            logger_.info("Exchange service stopped because the given host was the local host.");
+            return;
+        }
         logger_.info("Executing exchange service.");
 
         String[] exchangeHandleID = ExchangeHandleHelper.id().split(":");
         String corbaloc = "corbaloc:iiop:[" +
-                host.getAddress() + "]:" + host.getPort()
+                host.getAddress().getHostAddress() + "]:" + host.getPort()
                 + "/" + exchangeHandleID[1];
         logger_.debug("CORBALOC: {}", corbaloc);
         org.omg.CORBA.Object object = orb_.string_to_object(corbaloc);
-        ExchangeHandle handle = ExchangeHandleHelper.narrow(object);
+
+        ExchangeHandle handle;
+        try {
+            handle = ExchangeHandleHelper.narrow(object);
+        } catch (SystemException e) {
+            logger_.warn("Didn't find the host that was asked to exchange with,");
+            logger_.warn(e.getCause().getMessage());
+            return;
+        }
 
         // send local routing table
         handle.exchange(Serializer.serializeRoutingTable(routingTable_));

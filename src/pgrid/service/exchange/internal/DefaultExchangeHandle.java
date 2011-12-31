@@ -19,23 +19,48 @@
 
 package pgrid.service.exchange.internal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.exchange.spi.ExchangeAlgorithm;
+import pgrid.service.exchange.spi.ExchangeContext;
 import pgrid.service.spi.corba.CorbaRoutingTable;
 import pgrid.service.spi.corba.ExchangeHandlePOA;
+import pgrid.service.utilities.Deserializer;
+import pgrid.service.utilities.Serializer;
 
 /**
  * @author Vourlakis Nikolas
  */
 public class DefaultExchangeHandle extends ExchangeHandlePOA {
 
+    private static final Logger logger_ = LoggerFactory.getLogger(DefaultExchangeHandle.class);
+
+    private final RoutingTable localRoutingTable_;
+    private ExchangeAlgorithm algo_;
+
+    public DefaultExchangeHandle(RoutingTable localRoutingTable, ExchangeAlgorithm algo) {
+        localRoutingTable_ = localRoutingTable;
+        algo_ = algo;
+    }
+
     @Override
     public CorbaRoutingTable routingTable() {
-        // a remote peer wants the local to sends its routing table
-        return null; // TODO: implement routingTable
+        // a remote peer wants the local to send its routing table
+        return Serializer.serializeRoutingTable(localRoutingTable_);
     }
 
     @Override
     public void exchange(CorbaRoutingTable routingTable) {
+        if (routingTable == null) {
+            logger_.warn("Received an exchange request but was provided with a null CorbaRoutingTable object.");
+            return;
+        }
         // a remote peer wants the local to execute the exchange algorithm
-        // TODO: implement exchange
+        RoutingTable remoteRT = Deserializer.deserializeRoutingTable(routingTable);
+        ExchangeContext context = new ExchangeContext(localRoutingTable_, true);
+        context.setRemoteInfo(remoteRT);
+        algo_.execute(context);
+        // TODO: recursion
     }
 }
