@@ -1,0 +1,29 @@
+module pgrid {
+    module service {
+        module spi {
+            module corba {
+                struct PeerReference {
+                    string address;
+                    long port;
+                    string path;
+                    long long timestamp;
+                    string uuid;
+                };
+
+                typedef sequence<PeerReference> Level;
+                typedef sequence<Level> References;
+
+                struct RoutingTable {
+                    References refs;
+                    PeerReference peer;
+                };
+
+                interface ExchangeHandle {
+                    readonly attribute RoutingTable routingTable;
+
+                    void exchange(in RoutingTable routingTable);
+                };
+            };
+        };
+    };
+};

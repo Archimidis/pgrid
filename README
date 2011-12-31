@@ -1,0 +1,4 @@
+Libraries needed:
+Google guice 3.0
+logback 1.0
+slf4j 1.6.4
