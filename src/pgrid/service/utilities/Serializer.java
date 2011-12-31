@@ -21,6 +21,7 @@ package pgrid.service.utilities;
 
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.spi.corba.CorbaRoutingTable;
 import pgrid.service.spi.corba.PeerReference;
 
 import java.util.Collection;
@@ -56,7 +57,7 @@ public class Serializer {
      * @param routingTable the routing table to be serialized.
      * @return the serialized result.
      */
-    public static pgrid.service.spi.corba.RoutingTable serializeRoutingTable(RoutingTable routingTable) {
+    public static CorbaRoutingTable serializeRoutingTable(RoutingTable routingTable) {
         if (routingTable == null) {
             throw new NullPointerException("Cannot transform a null value to a CORBA object");
         }
@@ -64,7 +65,7 @@ public class Serializer {
             throw new IllegalStateException("RoutingTable is not in a legal state. Its host owner reference is null.");
         }
         if (routingTable.levelNumber() == 0) {
-            return new pgrid.service.spi.corba.RoutingTable(
+            return new CorbaRoutingTable(
                     new PeerReference[0][0],
                     serializeHost(routingTable.getLocalhost()));
         }
@@ -85,6 +86,6 @@ public class Serializer {
         }
 
         PeerReference localhost = serializeHost(routingTable.getLocalhost());
-        return new pgrid.service.spi.corba.RoutingTable(peerRefs, localhost);
+        return new CorbaRoutingTable(peerRefs, localhost);
     }
 }

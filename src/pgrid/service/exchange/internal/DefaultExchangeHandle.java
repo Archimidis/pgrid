@@ -19,8 +19,8 @@
 
 package pgrid.service.exchange.internal;
 
+import pgrid.service.spi.corba.CorbaRoutingTable;
 import pgrid.service.spi.corba.ExchangeHandlePOA;
-import pgrid.service.spi.corba.RoutingTable;
 
 /**
  * @author Vourlakis Nikolas
@@ -28,12 +28,14 @@ import pgrid.service.spi.corba.RoutingTable;
 public class DefaultExchangeHandle extends ExchangeHandlePOA {
 
     @Override
-    public RoutingTable routingTable() {
+    public CorbaRoutingTable routingTable() {
+        // a remote peer wants the local to sends its routing table
         return null; // TODO: implement routingTable
     }
 
     @Override
-    public void exchange(RoutingTable routingTable) {
+    public void exchange(CorbaRoutingTable routingTable) {
+        // a remote peer wants the local to execute the exchange algorithm
         // TODO: implement exchange
     }
 }

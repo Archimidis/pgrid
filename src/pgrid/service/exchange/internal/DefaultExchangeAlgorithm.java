@@ -37,7 +37,7 @@ import pgrid.service.exchange.spi.ExchangeContext;
  * @author Vourlakis Nikolas
  */
 public class DefaultExchangeAlgorithm implements ExchangeAlgorithm {
-    
+
     private static final Logger logger_ = LoggerFactory.getLogger(DefaultExchangeAlgorithm.class);
     private static final int REF_MAX = 1;
 

@@ -1,5 +1,5 @@
 /*
- * This file (PGridKeyRange) is part of the libpgrid project.
+ * This file (pgrid.entity.internal.PGridKeyRange) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *

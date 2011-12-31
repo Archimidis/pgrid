@@ -1,5 +1,5 @@
 /*
- * This file (EntityFactory) is part of the libpgrid project.
+ * This file (pgrid.entity.EntityFactory) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *
@@ -30,14 +30,14 @@ import java.net.UnknownHostException;
  * @author Vourlakis Nikolas
  */
 public interface EntityFactory {
-    
+
     /**
      * Creates and returns a new {@link Host} object.
      *
-     * @param ip the IP address of the host.
+     * @param ip   the IP address of the host.
      * @param port the port of the host.
      * @return a fully constructed Host implementation object.
-     * @throws UnknownHostException if the supplied ip cannot be resolved.
+     * @throws UnknownHostException     if the supplied ip cannot be resolved.
      * @throws IllegalArgumentException in case of an invalid port.
      */
     public Host newHost(String ip, int port) throws UnknownHostException, IllegalArgumentException;
@@ -45,7 +45,7 @@ public interface EntityFactory {
     /**
      * Creates and returns a new {@link Host} object.
      *
-     * @param ip the IP address of the host.
+     * @param ip   the IP address of the host.
      * @param port the port of the host.
      * @return a fully constructed Host implementation object.
      * @throws IllegalArgumentException in case of an invalid port.

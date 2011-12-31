@@ -22,6 +22,7 @@ package pgrid.service.utilities;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.spi.corba.CorbaRoutingTable;
 import pgrid.service.spi.corba.PeerReference;
 
 import java.net.UnknownHostException;
@@ -63,7 +64,7 @@ public class Deserializer {
      * @param corbaRoutingTable the corba routing table object to be deserialized.
      * @return the {@link RoutingTable} object.
      */
-    public static RoutingTable deserializeRoutingTable(pgrid.service.spi.corba.RoutingTable corbaRoutingTable) {
+    public static RoutingTable deserializeRoutingTable(CorbaRoutingTable corbaRoutingTable) {
         if (corbaRoutingTable == null) {
             throw new NullPointerException("Cannot transform a null value to a Host object");
         }

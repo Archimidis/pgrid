@@ -24,6 +24,7 @@ import org.junit.Test;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.spi.corba.CorbaRoutingTable;
 import pgrid.service.spi.corba.PeerReference;
 
 import java.net.UnknownHostException;
@@ -111,8 +112,7 @@ public class DeserializerTest {
         }
         PeerReference localRef = new PeerReference(
                 expectedLocalIP, expectedLocalPort, expectedLocalPath, expectedLocalTS, expectedLocalUUID);
-        pgrid.service.spi.corba.RoutingTable corbaRT =
-                new pgrid.service.spi.corba.RoutingTable(levelReferences, localRef);
+        CorbaRoutingTable corbaRT = new CorbaRoutingTable(levelReferences, localRef);
 
         RoutingTable actualRT = Deserializer.deserializeRoutingTable(corbaRT);
 

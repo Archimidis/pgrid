@@ -9,6 +9,6 @@ package pgrid.service.spi.corba;
 
 public interface ExchangeHandleOperations 
 {
-  pgrid.service.spi.corba.RoutingTable routingTable ();
-  void exchange (pgrid.service.spi.corba.RoutingTable routingTable);
+  pgrid.service.spi.corba.CorbaRoutingTable routingTable ();
+  void exchange (pgrid.service.spi.corba.CorbaRoutingTable routingTable);
 } // interface ExchangeHandleOperations

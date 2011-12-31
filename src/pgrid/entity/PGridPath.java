@@ -1,5 +1,5 @@
 /*
- * This file (PGridPath) is part of the libpgrid project.
+ * This file (pgrid.entity.PGridPath) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *
@@ -29,7 +29,6 @@ import pgrid.entity.internal.PGridKey;
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class PGridPath {
-    // TODO: implement Comparable
     private String path_ = INITIAL_PATH;
 
     private final static String INITIAL_PATH = "";

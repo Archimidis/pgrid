@@ -24,7 +24,7 @@ package pgrid.service.exchange.spi;
  * algorithm.
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
-18
+ *         18
  */
 public interface ExchangeAlgorithm {
 

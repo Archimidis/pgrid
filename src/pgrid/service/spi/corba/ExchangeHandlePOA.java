@@ -33,16 +33,16 @@ public abstract class ExchangeHandlePOA extends org.omg.PortableServer.Servant
     {
        case 0:  // pgrid/service/spi/corba/ExchangeHandle/_get_routingTable
        {
-         pgrid.service.spi.corba.RoutingTable $result = null;
+         pgrid.service.spi.corba.CorbaRoutingTable $result = null;
          $result = this.routingTable ();
          out = $rh.createReply();
-         pgrid.service.spi.corba.RoutingTableHelper.write (out, $result);
+         pgrid.service.spi.corba.CorbaRoutingTableHelper.write (out, $result);
          break;
        }
 
        case 1:  // pgrid/service/spi/corba/ExchangeHandle/exchange
        {
-         pgrid.service.spi.corba.RoutingTable routingTable = pgrid.service.spi.corba.RoutingTableHelper.read (in);
+         pgrid.service.spi.corba.CorbaRoutingTable routingTable = pgrid.service.spi.corba.CorbaRoutingTableHelper.read (in);
          this.exchange (routingTable);
          out = $rh.createReply();
          break;

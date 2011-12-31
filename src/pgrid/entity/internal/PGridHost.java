@@ -1,5 +1,5 @@
 /*
- * This file (PGridHost) is part of the libpgrid project.
+ * This file (pgrid.entity.internal.PGridHost) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *
@@ -24,8 +24,8 @@ import com.google.inject.assistedinject.AssistedInject;
 import pgrid.entity.Host;
 import pgrid.entity.Key;
 import pgrid.entity.KeyRange;
-import pgrid.entity.clock.LamportClock;
 import pgrid.entity.PGridPath;
+import pgrid.entity.clock.LamportClock;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -99,7 +99,6 @@ public class PGridHost implements Host {
         return address_.getHostName();//address_.getHostAddress() + ":" + port_;
     }
 
-    // FIXME: setHostPath(String path) is redundant
     @Override
     public void setHostPath(String path) {
         path_.setPath(path);
@@ -108,7 +107,6 @@ public class PGridHost implements Host {
     /**
      * @return the path of this host.
      */
-    // FIXME: getHostPath() is redundant
     @Override
     public PGridPath getHostPath() {
         return path_;

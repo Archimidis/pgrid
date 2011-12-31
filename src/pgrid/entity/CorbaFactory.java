@@ -27,7 +27,7 @@ import java.util.Properties;
  * @author Vourlakis Nikolas
  */
 public class CorbaFactory {
-    public static ORB orb_;
+    private static ORB orb_;
 
     public synchronized ORB getInstance(String initialHost, int initialPort) {
         if (orb_ == null) {

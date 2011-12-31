@@ -1,5 +1,5 @@
 /*
- * This file (EntityModule) is part of the libpgrid project.
+ * This file (pgrid.entity.EntityModule) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *
@@ -48,7 +48,7 @@ public class EntityModule extends AbstractModule {
                 .build(EntityFactory.class));
 
         bind(PGridPath.class);
-        
+
         bind(PeerClock.class).to(LamportClock.class);
 
         bind(RoutingTable.class);

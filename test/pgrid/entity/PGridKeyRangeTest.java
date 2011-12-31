@@ -1,5 +1,5 @@
 /*
- * This file (PGridKeyRangeTest) is part of the PGrid project.
+ * This file (pgrid.entity.PGridKeyRangeTest) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *

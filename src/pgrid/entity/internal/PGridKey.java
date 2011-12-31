@@ -1,5 +1,5 @@
 /*
- * This file (PGridKey) is part of the libpgrid project.
+ * This file (pgrid.entity.internal.PGridKey) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *
@@ -73,5 +73,23 @@ public class PGridKey implements Key {
         int length = Math.min(key_.length(), otherKey.length());
         return Integer.valueOf(key_.substring(0, length), 2).compareTo(
                 Integer.valueOf(otherKey.substring(0, length), 2));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Key)) {
+            return false;
+        }
+
+        return this.compareTo((Key) obj) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        assert false : "hashCode not implemented yet";
+        return 42;
     }
 }

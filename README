@@ -1,4 +1,17 @@
-Libraries needed:
-Google guice 3.0
-logback 1.0
-slf4j 1.6.4
+P-Grid is a self-organizing structured peer-to-peer system, which can
+accommodate arbitrary key distributions, still providing storage load-balancing
+and efficient search by using randomized routing. This project is an
+implementation of the peer-to-peer infrastructure of P-Grid. The main goal is
+to add a fault-tolerant protocol. The implementation is based on SOA
+principles.
+This project is part of my dissertation.
+
+Libraries that this projects uses.
+1) Google guice 3.0
+2) logback 1.0
+3) slf4j 1.6.4
+
+Run the following commands to produce all the needed corba interfaces and
+classes before compilation.
+1) cd libpgrid
+2) idlj -fall -td src/ resources/pgrid_corba.idl

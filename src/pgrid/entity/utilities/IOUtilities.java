@@ -1,5 +1,5 @@
 /*
- * This file (IOUtilities) is part of the libpgrid project.
+ * This file (pgrid.entity.utilities.IOUtilities) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *

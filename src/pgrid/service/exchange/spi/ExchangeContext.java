@@ -42,8 +42,8 @@ public class ExchangeContext {
     /**
      * Constructor.
      *
-     * @param localRT   a reference to the routing table of the local peer.
-     * @param invited   a flag that shows if the local peer was invited or not.
+     * @param localRT a reference to the routing table of the local peer.
+     * @param invited a flag that shows if the local peer was invited or not.
      */
     public ExchangeContext(RoutingTable localRT, boolean invited) {
         if (localRT == null) {
@@ -79,7 +79,7 @@ public class ExchangeContext {
     /**
      * It sets information about the remote peer to be exchanged with.
      *
-     * @param remoteRT   the routing table of the remote peer.
+     * @param remoteRT the routing table of the remote peer.
      */
     public void setRemoteInfo(RoutingTable remoteRT) {
         if (remoteRT == null) {

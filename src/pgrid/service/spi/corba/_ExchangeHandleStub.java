@@ -10,13 +10,13 @@ package pgrid.service.spi.corba;
 public class _ExchangeHandleStub extends org.omg.CORBA.portable.ObjectImpl implements pgrid.service.spi.corba.ExchangeHandle
 {
 
-  public pgrid.service.spi.corba.RoutingTable routingTable ()
+  public pgrid.service.spi.corba.CorbaRoutingTable routingTable ()
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
                 org.omg.CORBA.portable.OutputStream $out = _request ("_get_routingTable", true);
                 $in = _invoke ($out);
-                pgrid.service.spi.corba.RoutingTable $result = pgrid.service.spi.corba.RoutingTableHelper.read ($in);
+                pgrid.service.spi.corba.CorbaRoutingTable $result = pgrid.service.spi.corba.CorbaRoutingTableHelper.read ($in);
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
@@ -29,12 +29,12 @@ public class _ExchangeHandleStub extends org.omg.CORBA.portable.ObjectImpl imple
             }
   } // routingTable
 
-  public void exchange (pgrid.service.spi.corba.RoutingTable routingTable)
+  public void exchange (pgrid.service.spi.corba.CorbaRoutingTable routingTable)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
                 org.omg.CORBA.portable.OutputStream $out = _request ("exchange", true);
-                pgrid.service.spi.corba.RoutingTableHelper.write ($out, routingTable);
+                pgrid.service.spi.corba.CorbaRoutingTableHelper.write ($out, routingTable);
                 $in = _invoke ($out);
                 return;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {

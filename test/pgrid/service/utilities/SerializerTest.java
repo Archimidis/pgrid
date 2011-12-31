@@ -24,6 +24,7 @@ import org.junit.Test;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.spi.corba.CorbaRoutingTable;
 import pgrid.service.spi.corba.PeerReference;
 
 import java.net.UnknownHostException;
@@ -119,7 +120,7 @@ public class SerializerTest {
             expectedRefs.add(levelList);
         }
 
-        pgrid.service.spi.corba.RoutingTable corbaRoutingTable =
+        CorbaRoutingTable corbaRoutingTable =
                 Serializer.serializeRoutingTable(routingTable);
 
         PeerReference localRef = corbaRoutingTable.peer;

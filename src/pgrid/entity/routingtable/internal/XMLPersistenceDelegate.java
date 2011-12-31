@@ -1,5 +1,5 @@
 /*
- * This file (entity.routingtable.PersistentRoutingTableXMLImpl) is part of the libpgrid project.
+ * This file (pgrid.entity.routingtable.internal.XMLPersistenceDelegate) is part of the libpgrid project.
  *
  * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
  *
@@ -19,14 +19,14 @@
 
 package pgrid.entity.routingtable.internal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.PersistenceDelegate;
+import pgrid.entity.routingtable.PersistencyException;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.entity.utilities.IOUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pgrid.entity.routingtable.PersistencyException;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.*;

@@ -53,7 +53,7 @@ public class DefaultExchangeService implements ExchangeService {
 
         String[] exchangeHandleID = ExchangeHandleHelper.id().split(":");
         String corbaloc = "corbaloc:iiop:[" +
-                host.getAddress() + "]:" +host.getPort()
+                host.getAddress() + "]:" + host.getPort()
                 + "/" + exchangeHandleID[1];
         logger_.debug("CORBALOC: {}", corbaloc);
         org.omg.CORBA.Object object = orb_.string_to_object(corbaloc);
