@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.entity.internal.PGridHost) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@ public class PGridHost implements Host {
         address_ = ip;
         init(port);
     }
+
 
     private void init(int port) {
         port_ = port;

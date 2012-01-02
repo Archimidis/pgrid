@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.entity.routingtable.RoutingTable) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import pgrid.entity.Host;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 /**
  * This class represents the routing table of the peer and stores pairs
@@ -70,7 +69,12 @@ public class RoutingTable {
     }
 
     public synchronized void update(RoutingTable routingTable, int commonLength, int refMax) {
-        // [0, level) -> union & randomSelect per level
+        // [Sanity check] In case the localhost has changed its path in the meantime.
+        if (commonLength > localhost_.getHostPath().length()) {
+            commonLength = localhost_.getHostPath().length();
+        }
+
+        // [0, commonLength) -> union & randomSelect per level
         if (commonLength > 0) {
             for (int i = 0; i < commonLength; i++) {
                 Collection<Host> commonRefs =
@@ -84,7 +88,30 @@ public class RoutingTable {
         if ((lLen > commonLength) && (rLen > commonLength)) {
             addReference(commonLength, routingTable.getLocalhost());
         }
-        // TODO: Check the path of the localhost and all the hosts stored. Add/remove levels accordingly.
+        // TODO: [ToComplete] Check the path of the localhost and all the hosts stored. Add/remove levels accordingly.
+        int len = localhost_.getHostPath().length() - levelNumber();
+        System.out.println("Changed path: " + len);
+        if (len > 0) {
+            createMissingLevels(localhost_.getHostPath().length() - 1);
+        } else if (len < 0) {
+            Collection<Host> hosts = new ArrayList<Host>();
+            int start = levelNumber() + len;
+            int end = levelNumber();
+            System.out.println("[" + start + ", " + end + ")");
+            for (int i = end - 1; i >= start; i--) {
+                Set<Host> level = references_.get(i);
+                hosts.addAll(level);
+//                for (Host host : level) {
+//                    removeReference(host);
+//                }
+                references_.remove(i);
+            }
+            System.out.println("levels: " + levelNumber());
+            System.out.println(uuidRefs_.size());
+            for (Host host : hosts) {
+                System.out.println(host.getAddress().getHostAddress() + ":" + host.getPort());
+            }
+        }
     }
 
     /**
@@ -349,6 +376,21 @@ public class RoutingTable {
             treeSet.remove(host);
             uuidRefs_.remove(host.getUUID());
         }
+    }
+
+    /**
+     * Removes a level.
+     *
+     * @param level the level index.
+     */
+    public synchronized void removeLevel(int level) {
+        if (level < 0) {
+            throw new IllegalArgumentException("Negative level given");
+        }
+        if (level >= localhost_.getHostPath().length()) {
+            throw new IllegalArgumentException("Level surpasses localhost path length");
+        }
+        references_.remove(level);
     }
 
     /**

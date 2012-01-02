@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.internal.DefaultExchangeService) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.CommunicationException;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeContext;
@@ -32,6 +33,8 @@ import pgrid.service.spi.corba.ExchangeHandle;
 import pgrid.service.spi.corba.ExchangeHandleHelper;
 import pgrid.service.utilities.Deserializer;
 import pgrid.service.utilities.Serializer;
+
+import java.util.Collection;
 
 /**
  * @author Vourlakis Nikolas
@@ -41,21 +44,54 @@ public class DefaultExchangeService implements ExchangeService {
     private final RoutingTable routingTable_;
     private final ORB orb_;
     private ExchangeAlgorithm algorithm_;
+    private int recursions_;
 
-    public DefaultExchangeService(ORB orb, RoutingTable routingTable, ExchangeAlgorithm algorithm) {
+    private final int MAX_RECURSIONS;
+    private final int MAX_REF;
+
+    public DefaultExchangeService(ORB orb, RoutingTable routingTable, ExchangeAlgorithm algorithm, int maxRef, int maxRecur) {
         orb_ = orb;
         routingTable_ = routingTable;
         algorithm_ = algorithm;
+        recursions_ = 0;
+        MAX_RECURSIONS = maxRecur;
+        MAX_REF = maxRef;
     }
 
     @Override
-    public void execute(Host host) {
+    public void execute(Host host) throws CommunicationException {
         if (host.compareTo(routingTable_.getLocalhost()) == 0) {
             logger_.info("Exchange service stopped because the given host was the local host.");
             return;
         }
         logger_.info("Executing exchange service.");
 
+        ExchangeHandle handle = getRemoteHandle(host);
+        // send local routing table
+        handle.exchange(Serializer.serializeRoutingTable(routingTable_));
+        // receive remote routing table
+        RoutingTable remoteRT = Deserializer.deserializeRoutingTable(handle.routingTable());
+
+        ExchangeContext context = new ExchangeContext(routingTable_, false, MAX_REF);
+        context.setRemoteInfo(remoteRT);
+
+        logger_.debug("Local peer has all the information needed to execute the exchange algorithm.");
+        algorithm_.execute(context);
+
+        if (context.isRecursive() && recursions_ < MAX_RECURSIONS) {
+            logger_.debug("Executing recursion: {}", recursions_);
+            ++recursions_;
+            Collection<Host> level = context.getRemoteRoutingTable().getLevel(context.getCommonPathLength());
+            if (level == null || level.isEmpty()) {
+                return;
+            }
+            for (Host toExchange : level) {
+                execute(toExchange);
+            }
+        }
+    }
+
+    public ExchangeHandle getRemoteHandle(Host host) throws CommunicationException {
         String[] exchangeHandleID = ExchangeHandleHelper.id().split(":");
         String corbaloc = "corbaloc:iiop:[" +
                 host.getAddress().getHostAddress() + "]:" + host.getPort()
@@ -68,19 +104,9 @@ public class DefaultExchangeService implements ExchangeService {
             handle = ExchangeHandleHelper.narrow(object);
         } catch (SystemException e) {
             logger_.warn("Didn't find the host that was asked to exchange with,");
-            logger_.warn(e.getCause().getMessage());
-            return;
+            logger_.warn("[Exception] {}", e.getCause().getMessage());
+            throw new CommunicationException(e.getCause());
         }
-
-        // send local routing table
-        handle.exchange(Serializer.serializeRoutingTable(routingTable_));
-        // receive remote routing table
-        RoutingTable remoteRT = Deserializer.deserializeRoutingTable(handle.routingTable());
-
-        ExchangeContext context = new ExchangeContext(routingTable_, false);
-        context.setRemoteInfo(remoteRT);
-
-        logger_.debug("Local peer has all the information needed to execute the exchange algorithm.");
-        algorithm_.execute(context);
+        return handle;
     }
 }

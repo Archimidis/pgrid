@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.spi.ExchangeHandleProvider) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 package pgrid.service.exchange.spi;
 
 import pgrid.service.LocalPeerContext;
+import pgrid.service.anotations.constants.MaxRecursions;
+import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.exchange.internal.DefaultExchangeHandle;
 import pgrid.service.spi.corba.ExchangeHandlePOA;
 
@@ -35,7 +37,7 @@ import javax.inject.Provider;
  * @author Vourlakis Nikolas
  */
 public class ExchangeHandleProvider implements Provider<ExchangeHandlePOA> {
-    private ExchangeHandlePOA poa_;
+    private final ExchangeHandlePOA poa_;
 
     /**
      * Constructor.
@@ -44,9 +46,8 @@ public class ExchangeHandleProvider implements Provider<ExchangeHandlePOA> {
      * @param algo    an implementation of the exchange algorithm.
      */
     @Inject
-    public ExchangeHandleProvider(LocalPeerContext context, ExchangeAlgorithm algo) {
-        LocalPeerContext context_ = context;
-        poa_ = new DefaultExchangeHandle(context_.getLocalRT(), algo);
+    public ExchangeHandleProvider(LocalPeerContext context, ExchangeAlgorithm algo, @MaxRef int maxRef, @MaxRecursions int maxRecur) {
+        poa_ = new DefaultExchangeHandle(context.getLocalRT(), algo, maxRef, maxRecur);
     }
 
     /**

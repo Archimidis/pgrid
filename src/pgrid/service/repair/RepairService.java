@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.ServiceModule) is part of the libpgrid project.
+ * This file (pgrid.service.repair.RepairService) is part of the libpgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -17,20 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import pgrid.service.exchange.ExchangeModule;
+package pgrid.service.repair;
 
 /**
  * @author Vourlakis Nikolas
  */
-public class ServiceModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        System.out.println("Setting up service module");
-        bind(LocalPeerContext.class).in(Scopes.SINGLETON);
-        binder().install(new ExchangeModule());
-    }
+public interface RepairService {
+
 }

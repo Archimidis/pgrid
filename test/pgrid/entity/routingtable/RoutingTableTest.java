@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.entity.routingtable.RoutingTableTest) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -479,6 +479,80 @@ public class RoutingTableTest {
         Assert.assertTrue(result.contains(host0) || result.contains(host1));
     }
 
+    // public void updateLevelRandomly(int level, Host host, int refMax)
+    @Test(expected = IllegalArgumentException.class)
+    public void WhenUpdatingLevelGreaterPath_ExpectException() throws UnknownHostException {
+        RoutingTable routingTable = new RoutingTable();
+        routingTable.setLocalhost(localhost_);
+        PGridHost aHost = new PGridHost("127.0.0.1", 3000);
+        routingTable.updateLevelRandomly(routingTable.levelNumber() + 10000, aHost, 2);
+    }
+
+    // public void updateLevelRandomly(int level, Host host, int refMax)
+    @Test(expected = IllegalArgumentException.class)
+    public void WhenUpdatingNegativeLevel_ExpectException() throws UnknownHostException {
+        RoutingTable routingTable = new RoutingTable();
+        routingTable.setLocalhost(localhost_);
+        PGridHost aHost = new PGridHost("127.0.0.1", 3000);
+        routingTable.updateLevelRandomly(-1, aHost, 2);
+    }
+
+    // public void updateLevelRandomly(int level, Host host, int refMax)
+    @Test
+    public void WhenUpdating_ExpectResults() throws UnknownHostException {
+        RoutingTable routingTable = new RoutingTable();
+        localhost_.setHostPath("0");
+        routingTable.setLocalhost(localhost_);
+        PGridHost aHost = new PGridHost("127.0.0.1", 3333);
+        PGridHost anotherHost = new PGridHost("127.0.0.1", 4444);
+        routingTable.addReference(0, aHost);
+        routingTable.updateLevelRandomly(0, anotherHost, 2);
+
+        Assert.assertTrue(routingTable.levelNumber() == 1);
+        Assert.assertTrue(routingTable.getLevel(0).size() == 2);
+        Assert.assertTrue(routingTable.getLevel(0).contains(aHost));
+        Assert.assertTrue(routingTable.getLevel(0).contains(anotherHost));
+    }
+
+    // public void updateLevelRandomly(int level, Host host, int refMax)
+    @Test
+    public void WhenUpdatingWithNullHostAndRefmaxLesserThanLevelSize_ExpectReducedLevelSize() throws UnknownHostException {
+        RoutingTable routingTable = new RoutingTable();
+        localhost_.setHostPath("0");
+        routingTable.setLocalhost(localhost_);
+        PGridHost aHost = new PGridHost("127.0.0.1", 3333);
+        PGridHost anotherHost = new PGridHost("127.0.0.1", 4444);
+        routingTable.addReference(0, aHost);
+        routingTable.addReference(0, anotherHost);
+        int refMax = routingTable.getLevel(0).size() - 1;
+        routingTable.updateLevelRandomly(0, null, refMax);
+
+        Assert.assertTrue(routingTable.levelNumber() == 1);
+        Assert.assertTrue(routingTable.getLevel(0).size() == refMax);
+        Assert.assertTrue(routingTable.getLevel(0).contains(aHost) || routingTable.getLevel(0).contains(anotherHost));
+        Assert.assertFalse(routingTable.getLevel(0).contains(aHost) && routingTable.getLevel(0).contains(anotherHost));
+    }
+
+    // public void updateLevelRandomly(int level, Host host, int refMax)
+    @Test
+    public void WhenUpdatingWithNullHostAndRefmaxEqualToLevelSize_ExpectNoChange() throws UnknownHostException {
+        RoutingTable routingTable = new RoutingTable();
+        localhost_.setHostPath("0");
+        routingTable.setLocalhost(localhost_);
+        PGridHost aHost = new PGridHost("127.0.0.1", 3333);
+        PGridHost anotherHost = new PGridHost("127.0.0.1", 4444);
+        routingTable.addReference(0, aHost);
+        routingTable.addReference(0, anotherHost);
+        int previousLevelSize = routingTable.getLevel(0).size();
+
+        routingTable.updateLevelRandomly(0, null, 2);
+
+        Assert.assertTrue(routingTable.levelNumber() == 1);
+        Assert.assertTrue(routingTable.getLevel(0).size() == previousLevelSize);
+        Assert.assertTrue(routingTable.getLevel(0).contains(aHost) && routingTable.getLevel(0).contains(anotherHost));
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
     // public void update(RoutingTable routingTable, int level)
     @Test
     public void WhenUpdatingWithValidArguments_ExpectUpdate() throws UnknownHostException {
@@ -531,73 +605,69 @@ public class RoutingTableTest {
         }
     }
 
-    // public void updateLevelRandomly(int level, Host host, int refMax)
-    @Test(expected = IllegalArgumentException.class)
-    public void WhenUpdatingLevelGreaterPath_ExpectException() throws UnknownHostException {
-        RoutingTable routingTable = new RoutingTable();
-        routingTable.setLocalhost(localhost_);
-        PGridHost aHost = new PGridHost("127.0.0.1", 3000);
-        routingTable.updateLevelRandomly(routingTable.levelNumber() + 10000, aHost, 2);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void WhenUpdatingNegativeLevel_ExpectException() throws UnknownHostException {
-        RoutingTable routingTable = new RoutingTable();
-        routingTable.setLocalhost(localhost_);
-        PGridHost aHost = new PGridHost("127.0.0.1", 3000);
-        routingTable.updateLevelRandomly(-1, aHost, 2);
-    }
-
+    // public void update(RoutingTable routingTable, int level)
     @Test
-    public void WhenUpdating_ExpectResults() throws UnknownHostException {
-        RoutingTable routingTable = new RoutingTable();
-        localhost_.setHostPath("0");
-        routingTable.setLocalhost(localhost_);
-        PGridHost aHost = new PGridHost("127.0.0.1", 3333);
-        PGridHost anotherHost = new PGridHost("127.0.0.1", 4444);
-        routingTable.addReference(0, aHost);
-        routingTable.updateLevelRandomly(0, anotherHost, 2);
+    public void WhenUpdatingAndLocalhostIncreasedHisPath_ExpectLevelsAdded() throws UnknownHostException {
+        RoutingTable localRT = new RoutingTable();
+        localhost_ = new PGridHost("127.0.0.1", 3000);
+        localhost_.setHostPath("00");
+        int pathLen = localhost_.getHostPath().length();
+        localRT.setLocalhost(localhost_);
+        localRT.addReference(pathLen - 1, new PGridHost("127.0.0.1", 1111));
+        localRT.addReference(pathLen - 1, new PGridHost("127.0.0.1", 2222));
+        localRT.addReference(pathLen - 1, new PGridHost("127.0.0.1", 3333));
 
-        Assert.assertTrue(routingTable.levelNumber() == 1);
-        Assert.assertTrue(routingTable.getLevel(0).size() == 2);
-        Assert.assertTrue(routingTable.getLevel(0).contains(aHost));
-        Assert.assertTrue(routingTable.getLevel(0).contains(anotherHost));
+        RoutingTable remoteRT = new RoutingTable();
+        Host remote = new PGridHost("127.0.0.1", 4000);
+        remote.setHostPath("00");
+        remoteRT.setLocalhost(remote);
+
+        Assert.assertTrue(localRT.levelNumber() == pathLen);
+        localhost_.setHostPath("0");
+        pathLen = localhost_.getHostPath().length();
+
+        localRT.update(remoteRT, 1, 2);
+        System.out.println(localRT.levelNumber());
+        Assert.assertTrue(localRT.levelNumber() == pathLen);
     }
 
+    // public void update(RoutingTable routingTable, int level)
     @Test
-    public void WhenUpdatingWithNullHostAndRefmaxLesserThanLevelSize_ExpectReducedLevelSize() throws UnknownHostException {
-        RoutingTable routingTable = new RoutingTable();
-        localhost_.setHostPath("0");
-        routingTable.setLocalhost(localhost_);
-        PGridHost aHost = new PGridHost("127.0.0.1", 3333);
-        PGridHost anotherHost = new PGridHost("127.0.0.1", 4444);
-        routingTable.addReference(0, aHost);
-        routingTable.addReference(0, anotherHost);
-        int refMax = routingTable.getLevel(0).size() - 1;
-        routingTable.updateLevelRandomly(0, null, refMax);
+    public void WhenUpdatingAndLocalhostDecreasedHisPath_ExpectLevelsAdded() throws UnknownHostException {
+        RoutingTable localRT = new RoutingTable();
+        localhost_ = new PGridHost("127.0.0.1", 3000);
+        localhost_.setHostPath("00");
+        int pathLen = localhost_.getHostPath().length();
+        localRT.setLocalhost(localhost_);
 
-        Assert.assertTrue(routingTable.levelNumber() == 1);
-        Assert.assertTrue(routingTable.getLevel(0).size() == refMax);
-        Assert.assertTrue(routingTable.getLevel(0).contains(aHost) || routingTable.getLevel(0).contains(anotherHost));
-        Assert.assertFalse(routingTable.getLevel(0).contains(aHost) && routingTable.getLevel(0).contains(anotherHost));
+        RoutingTable remoteRT = new RoutingTable();
+        Host remote = new PGridHost("127.0.0.1", 4000);
+        remote.setHostPath("00");
+        remoteRT.setLocalhost(remote);
+
+        Assert.assertTrue(localRT.levelNumber() == pathLen);
+        localhost_.setHostPath("000");
+        pathLen = localhost_.getHostPath().length();
+
+        localRT.update(remoteRT, 2, 2);
+        Assert.assertTrue(localRT.levelNumber() == pathLen);
     }
 
+    // public void update(RoutingTable routingTable, int level)
     @Test
-    public void WhenUpdatingWithNullHostAndRefmaxEqualToLevelSize_ExpectNoChange() throws UnknownHostException {
-        RoutingTable routingTable = new RoutingTable();
-        localhost_.setHostPath("0");
-        routingTable.setLocalhost(localhost_);
-        PGridHost aHost = new PGridHost("127.0.0.1", 3333);
-        PGridHost anotherHost = new PGridHost("127.0.0.1", 4444);
-        routingTable.addReference(0, aHost);
-        routingTable.addReference(0, anotherHost);
-        int previousLevelSize = routingTable.getLevel(0).size();
+    public void WhenUpdatingAndLocalhostUnchanged_ExpectLevelsAdded() throws UnknownHostException {
+        RoutingTable localRT = new RoutingTable();
+        localhost_ = new PGridHost("127.0.0.1", 3000);
+        localhost_.setHostPath("00");
+        int pathLen = localhost_.getHostPath().length();
+        localRT.setLocalhost(localhost_);
 
-        routingTable.updateLevelRandomly(0, null, 2);
+        RoutingTable remoteRT = new RoutingTable();
+        Host remote = new PGridHost("127.0.0.1", 4000);
+        remote.setHostPath("00");
+        remoteRT.setLocalhost(remote);
 
-        Assert.assertTrue(routingTable.levelNumber() == 1);
-        Assert.assertTrue(routingTable.getLevel(0).size() == previousLevelSize);
-        Assert.assertTrue(routingTable.getLevel(0).contains(aHost) && routingTable.getLevel(0).contains(anotherHost));
+        localRT.update(remoteRT, 2, 2);
+        Assert.assertTrue(localRT.levelNumber() == pathLen);
     }
-    //////////////////////////////////////////////////////////////////////////////
 }

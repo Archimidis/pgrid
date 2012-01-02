@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.internal.DefaultExchangeHandle) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,14 @@ public class DefaultExchangeHandle extends ExchangeHandlePOA {
     private final RoutingTable localRoutingTable_;
     private ExchangeAlgorithm algo_;
 
-    public DefaultExchangeHandle(RoutingTable localRoutingTable, ExchangeAlgorithm algo) {
+    private final int REF_MAX;
+    private final int MAX_RECURSIONS;
+
+    public DefaultExchangeHandle(RoutingTable localRoutingTable, ExchangeAlgorithm algo, int maxRef, int maxRecur) {
         localRoutingTable_ = localRoutingTable;
         algo_ = algo;
+        REF_MAX = maxRef;
+        MAX_RECURSIONS = maxRecur;
     }
 
     @Override
@@ -58,9 +63,10 @@ public class DefaultExchangeHandle extends ExchangeHandlePOA {
         }
         // a remote peer wants the local to execute the exchange algorithm
         RoutingTable remoteRT = Deserializer.deserializeRoutingTable(routingTable);
-        ExchangeContext context = new ExchangeContext(localRoutingTable_, true);
+        ExchangeContext context = new ExchangeContext(localRoutingTable_, true, REF_MAX);
         context.setRemoteInfo(remoteRT);
         algo_.execute(context);
-        // TODO: recursion
+        // TODO: Implement the reaction to the recursion case of the exchange algorithm.
+        // XXX: There will be a single instance of this class, do I need synchronization?
     }
 }

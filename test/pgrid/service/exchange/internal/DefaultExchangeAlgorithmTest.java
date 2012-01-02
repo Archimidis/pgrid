@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.internal.DefaultExchangeAlgorithmTest) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ import java.net.UnknownHostException;
 public class DefaultExchangeAlgorithmTest {
     private final ExchangeAlgorithm localExchange_ = new DefaultExchangeAlgorithm();
     private final ExchangeAlgorithm remoteExchange_ = new DefaultExchangeAlgorithm();
+    private static int REF_MAX = 1;
 
     private void executeExchange(ExchangeContext local, ExchangeContext remote) {
         localExchange_.execute(local);
@@ -62,7 +63,7 @@ public class DefaultExchangeAlgorithmTest {
     public void WhenExecutingWithInvalidLocalValidRemoteInfo_ExpectException() throws UnknownHostException {
         RoutingTable localRT = new RoutingTable();
         // localhost is not initialized
-        ExchangeContext context = new ExchangeContext(localRT, false);
+        ExchangeContext context = new ExchangeContext(localRT, false, REF_MAX);
         RoutingTable remoteRT = new RoutingTable();
         remoteRT.setLocalhost(new PGridHost("127.0.0.1", 3000));
         context.setRemoteInfo(remoteRT);
@@ -75,7 +76,7 @@ public class DefaultExchangeAlgorithmTest {
     public void WhenExecutingWithValidLocalInvalidRemoteInfo_ExpectException() throws UnknownHostException {
         RoutingTable localRT = new RoutingTable();
         localRT.setLocalhost(new PGridHost("127.0.0.1", 3000));
-        ExchangeContext context = new ExchangeContext(localRT, false);
+        ExchangeContext context = new ExchangeContext(localRT, false, REF_MAX);
         // no remote routing table was set
         localExchange_.execute(context);
     }
@@ -85,7 +86,7 @@ public class DefaultExchangeAlgorithmTest {
     public void WhenExecutingWithValidLocalSemiInvalidRemoteInfo_ExpectException() throws UnknownHostException {
         RoutingTable localRT = new RoutingTable();
         localRT.setLocalhost(new PGridHost("127.0.0.1", 3000));
-        ExchangeContext context = new ExchangeContext(localRT, false);
+        ExchangeContext context = new ExchangeContext(localRT, false, REF_MAX);
         context.setRemoteInfo(new RoutingTable());
         // no localhost set to the remote routing table
         localExchange_.execute(context);

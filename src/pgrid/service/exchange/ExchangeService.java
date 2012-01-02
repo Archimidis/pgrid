@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.ExchangeService) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,29 @@
 package pgrid.service.exchange;
 
 import pgrid.entity.Host;
+import pgrid.service.CommunicationException;
 
 /**
- * TODO: Write documentation.
+ * This interface defines an exchange service. It gives the capability to the
+ * local peer to communicate with a remote peer and both start and execute
+ * successfully the exchange algorithm.
  *
  * @author Vourlakis Nikolas
  */
 public interface ExchangeService {
-    public void execute(Host host);
+
+    /**
+     * Given a remote host, the local peer will try to communicate with him.
+     * If the remote host is alive, they will both execute the exchange
+     * algorithm. In case of a problem during the communication a
+     * {@link CommunicationException} will be thrown. This may mean that the
+     * given host cannot be reached. Note that there isn't a way to
+     * distinguish a host that exists but has come offline to a valid host but
+     * nonexistent whatsoever in the network.
+     *
+     * @param host to execute the exchange algorithm with.
+     * @throws CommunicationException in case of a communication error coming
+     *                                from the underlying network facility.
+     */
+    public void execute(Host host) throws CommunicationException;
 }

@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.internal.DefaultExchangeAlgorithm) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ import pgrid.service.exchange.spi.ExchangeContext;
 public class DefaultExchangeAlgorithm implements ExchangeAlgorithm {
 
     private static final Logger logger_ = LoggerFactory.getLogger(DefaultExchangeAlgorithm.class);
-    private static final int REF_MAX = 1;
 
     public void execute(ExchangeContext context) {
         if (context == null) {
@@ -74,7 +73,7 @@ public class DefaultExchangeAlgorithm implements ExchangeAlgorithm {
 
         // Exchanging references at the level where the paths agree.
         // Does not executes for the peers that are bootstrapping.
-        localRoutingTable.update(context.getRemoteRoutingTable(), commonLength, REF_MAX);
+        localRoutingTable.update(context.getRemoteRoutingTable(), commonLength, context.getRefMax());
 
         PGridPath localPath = localHost.getHostPath();
         PGridPath remotePath = remoteHost.getHostPath();
@@ -98,7 +97,7 @@ public class DefaultExchangeAlgorithm implements ExchangeAlgorithm {
             // Case 3: if one remaining path is empty split the shorter path.
             // When one of the peers is in this case, the other is in CASE *2*.
             logger_.info("Case 3: (l1 > 0 && l2 == 0)");
-            localRoutingTable.updateLevelRandomly(commonLength + 1, remoteHost, REF_MAX);
+            localRoutingTable.updateLevelRandomly(commonLength + 1, remoteHost, context.getRefMax());
         } else if (l1 > 0 && l2 > 0) {
             // Case 4: recursively perform exchange with referenced peers.
             logger_.info("Case 4: (l1 > 0 && l2 > 0)");

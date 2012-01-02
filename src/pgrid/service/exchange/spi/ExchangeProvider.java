@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.spi.ExchangeProvider) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 package pgrid.service.exchange.spi;
 
 import pgrid.service.LocalPeerContext;
+import pgrid.service.anotations.constants.MaxRecursions;
+import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.exchange.internal.DefaultExchangeService;
 
@@ -33,18 +35,25 @@ import javax.inject.Provider;
  */
 public class ExchangeProvider implements Provider<ExchangeService> {
     private final LocalPeerContext context_;
-    private ExchangeAlgorithm algorithm_;
+    private final ExchangeAlgorithm algorithm_;
+
+    private final int MAX_RECURSIONS;
+    private final int MAX_REF;
 
     /**
      * Constructor.
      *
-     * @param context contains all the information about the local peer.
-     * @param algo    an implementation of the exchange algorithm.
+     * @param context  contains all the information about the local peer.
+     * @param algo     an implementation of the exchange algorithm.
+     * @param maxRef   maximum references a level in the routing table can hold.
+     * @param maxRecur maximum recursions for case 4 in the exchange algorithm.
      */
     @Inject
-    public ExchangeProvider(LocalPeerContext context, ExchangeAlgorithm algo) {
+    public ExchangeProvider(LocalPeerContext context, ExchangeAlgorithm algo, @MaxRef int maxRef, @MaxRecursions int maxRecur) {
         context_ = context;
         algorithm_ = algo;
+        MAX_RECURSIONS = maxRecur;
+        MAX_REF = maxRef;
     }
 
     /**
@@ -57,7 +66,9 @@ public class ExchangeProvider implements Provider<ExchangeService> {
         return new DefaultExchangeService(
                 context_.getCorba(),
                 context_.getLocalRT(),
-                algorithm_
+                algorithm_,
+                MAX_REF,
+                MAX_RECURSIONS
         );
     }
 }

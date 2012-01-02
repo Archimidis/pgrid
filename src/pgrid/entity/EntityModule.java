@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.entity.EntityModule) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,4 +57,3 @@ public class EntityModule extends AbstractModule {
         bind(CorbaFactory.class).in(Singleton.class);
     }
 }
-

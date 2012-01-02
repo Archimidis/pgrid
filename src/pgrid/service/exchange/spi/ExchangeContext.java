@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.spi.ExchangeContext) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,22 +34,29 @@ public class ExchangeContext {
 
     private boolean invited_;
 
-    private boolean recursive_;
     private int commonPathLength_;
+    private boolean recursive_;
 
     private boolean readyForExchange_;
+
+    private final int maxRef_;
 
     /**
      * Constructor.
      *
      * @param localRT a reference to the routing table of the local peer.
      * @param invited a flag that shows if the local peer was invited or not.
+     * @param maxRef  maximum references a level in the routing table can hold.
      */
-    public ExchangeContext(RoutingTable localRT, boolean invited) {
+    public ExchangeContext(RoutingTable localRT, boolean invited, int maxRef) {
         if (localRT == null) {
             throw new NullPointerException("Null RoutingTable given.");
         }
+        if (maxRef < 0) {
+            throw new IllegalArgumentException("Negative maxRef given");
+        }
 
+        maxRef_ = maxRef;
         localRoutingTable_ = localRT;
         invited_ = invited;
         recursive_ = false;
@@ -153,5 +160,14 @@ public class ExchangeContext {
      */
     public boolean isRecursive() {
         return recursive_;
+    }
+
+    /**
+     * Returns the maximum references the routing table can store in a level.
+     *
+     * @return the refMax constant.
+     */
+    public int getRefMax() {
+        return maxRef_;
     }
 }

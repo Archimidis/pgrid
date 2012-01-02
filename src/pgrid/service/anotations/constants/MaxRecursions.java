@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.ServiceModule) is part of the libpgrid project.
+ * This file (pgrid.service.anotations.constants.MaxRecursions) is part of the libpgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -17,20 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service;
+package pgrid.service.anotations.constants;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import pgrid.service.exchange.ExchangeModule;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * This annotation declares a constant for the pgrid system. The case 4 of the
+ * exchange algorithm causes the peer to start an exchange recursion. This
+ * constants binds to the maximum allowed recursions the peer can do.
+ *
  * @author Vourlakis Nikolas
  */
-public class ServiceModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        System.out.println("Setting up service module");
-        bind(LocalPeerContext.class).in(Scopes.SINGLETON);
-        binder().install(new ExchangeModule());
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@BindingAnnotation
+public @interface MaxRecursions {
 }

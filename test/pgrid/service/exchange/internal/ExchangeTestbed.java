@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.service.exchange.internal.ExchangeTestbed) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,7 @@ class ExchangeTestbed {
     }
 
     private static final Map<Integer, UUID> hostUUID_ = new HashMap<Integer, UUID>();
+    private static int REF_MAX = 1;
 
     static {
         for (int i = 1; i <= 5; i++) {
@@ -162,7 +163,7 @@ class ExchangeTestbed {
             // Silence - Not going to be thrown
         }
 
-        ExchangeContext context = new ExchangeContext(localRT, false);
+        ExchangeContext context = new ExchangeContext(localRT, false, REF_MAX);
         context.setRemoteInfo(remoteRT);
         return context;
     }
@@ -186,7 +187,7 @@ class ExchangeTestbed {
             // Silence - Not going to be thrown
         }
 
-        ExchangeContext context = new ExchangeContext(remoteRT, true);
+        ExchangeContext context = new ExchangeContext(remoteRT, true, REF_MAX);
         context.setRemoteInfo(localRT);
         return context;
     }
