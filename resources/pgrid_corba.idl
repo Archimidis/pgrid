@@ -29,20 +29,50 @@ module pgrid {
                     string uuid;
                 };
 
-                typedef sequence<PeerReference> Level;
-                typedef sequence<Level> References;
+                typedef sequence<PeerReference> PeerArray;
+                typedef sequence<PeerArray> References;
 
                 struct CorbaRoutingTable {
                     References refs;
                     PeerReference peer;
                 };
 
-                interface ExchangeHandle {
-                    readonly attribute CorbaRoutingTable routingTable;
+                module exchange {
+                    interface ExchangeHandle {
+                        readonly attribute CorbaRoutingTable routingTable;
 
-                    void exchange(in CorbaRoutingTable routingTable);
-                };
-            };
-        };
-    };
-};
+                        void exchange(in CorbaRoutingTable routingTable);
+                    };
+                }; // end module exchange
+
+                module repair {
+                    struct RepairIssue {
+                        string repairID;
+                        long long repairTimestamp;
+                        long long timeoutTimestamp;
+                        PeerReference senderPeer;
+                        string failedPeerPath;
+                        PeerReference failedPeer;
+                        string footpath;
+                    };
+
+                    struct RepairSolution {
+                        string repairID;
+                        long long repairTimestamp;
+                        string hotPath;
+                        sequence<PeerReference> failedPeer;
+                        PeerReference replacerPeer;
+                        PeerReference twinPeer;
+                    };
+
+                    interface RepairHandle {
+                        void fixNode(in RepairIssue issue);
+                        void replace(in RepairIssue issue);
+                        void propagate(in RepairSolution solution);
+                    };
+                }; // end module repair
+
+            }; // end module corba
+        }; // end module spi
+    }; // end module service
+}; // end module pgrid

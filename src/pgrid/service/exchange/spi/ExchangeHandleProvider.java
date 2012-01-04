@@ -23,7 +23,7 @@ import pgrid.service.LocalPeerContext;
 import pgrid.service.anotations.constants.MaxRecursions;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.exchange.internal.DefaultExchangeHandle;
-import pgrid.service.spi.corba.ExchangeHandlePOA;
+import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.entity.PGridPath) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,5 +178,19 @@ public class PGridPath {
         index--;
 
         return path_.substring(0, index);
+    }
+
+    /**
+     * Given a path it decides if it's a prefix of this path. For example,
+     * "000" is prefix to "0001" but not the other way around.
+     *
+     * @param path the path to check.
+     * @return true if the given  path is a prefix.
+     */
+    public boolean hasPrefix(PGridPath path) {
+        if (path == null) {
+            throw new NullPointerException();
+        }
+        return commonPrefix(path).length() == path.length();
     }
 }

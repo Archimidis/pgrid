@@ -19,9 +19,14 @@
 
 package pgrid.service.repair;
 
+import pgrid.entity.Host;
+import pgrid.service.CommunicationException;
+
 /**
+ * TODO: Write documentation
+ *
  * @author Vourlakis Nikolas
  */
 public interface RepairService {
-
+    public void fixNode(Host failed, String path) throws CommunicationException;
 }

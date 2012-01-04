@@ -20,29 +20,26 @@
 package pgrid.service.exchange;
 
 import com.google.inject.AbstractModule;
-import pgrid.service.anotations.constants.MaxRecursions;
-import pgrid.service.anotations.constants.MaxRef;
-import pgrid.service.exchange.internal.DefaultExchangeAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pgrid.service.exchange.internal.AbererExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeHandleProvider;
 import pgrid.service.exchange.spi.ExchangeProvider;
-import pgrid.service.spi.corba.ExchangeHandlePOA;
+import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
 
 /**
  * @author Vourlakis Nikolas
  */
 public class ExchangeModule extends AbstractModule {
+
+    private static final Logger logger_ = LoggerFactory.getLogger(ExchangeModule.class);
+
     @Override
     protected void configure() {
-        System.out.println("Setting up exchange service module");
-        bindConstant()
-                .annotatedWith(MaxRef.class)
-                .to(1);
-        bindConstant()
-                .annotatedWith(MaxRecursions.class)
-                .to(2);
+        logger_.debug("Setting up exchange service module");
 
-        bind(ExchangeAlgorithm.class).to(DefaultExchangeAlgorithm.class);
+        bind(ExchangeAlgorithm.class).to(AbererExchangeAlgorithm.class);
         // constructs a new service every time
         bind(ExchangeService.class).toProvider(ExchangeProvider.class);
         // returns the same handle every time

@@ -20,17 +20,36 @@
 package pgrid.service;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pgrid.service.anotations.constants.MaxRecursions;
+import pgrid.service.anotations.constants.MaxRef;
+import pgrid.service.anotations.constants.RepairTimeout;
 import pgrid.service.exchange.ExchangeModule;
+import pgrid.service.repair.RepairModule;
 
 /**
  * @author Vourlakis Nikolas
  */
 public class ServiceModule extends AbstractModule {
+
+    private static final Logger logger_ = LoggerFactory.getLogger(ServiceModule.class);
+
     @Override
     protected void configure() {
-        System.out.println("Setting up service module");
-        bind(LocalPeerContext.class).in(Scopes.SINGLETON);
+        logger_.debug("Setting up service module");
+        bind(LocalPeerContext.class).asEagerSingleton();
         binder().install(new ExchangeModule());
+        binder().install(new RepairModule());
+
+        bindConstant()
+                .annotatedWith(MaxRef.class)
+                .to(1);
+        bindConstant()
+                .annotatedWith(MaxRecursions.class)
+                .to(2);
+        bindConstant()
+                .annotatedWith(RepairTimeout.class)
+                .to(1000); // milliseconds
     }
 }

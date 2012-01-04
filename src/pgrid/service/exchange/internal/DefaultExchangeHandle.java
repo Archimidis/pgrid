@@ -25,7 +25,7 @@ import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeContext;
 import pgrid.service.spi.corba.CorbaRoutingTable;
-import pgrid.service.spi.corba.ExchangeHandlePOA;
+import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
 import pgrid.service.utilities.Deserializer;
 import pgrid.service.utilities.Serializer;
 

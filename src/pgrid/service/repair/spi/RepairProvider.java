@@ -19,16 +19,37 @@
 
 package pgrid.service.repair.spi;
 
+import pgrid.service.LocalPeerContext;
+import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.RepairService;
+import pgrid.service.repair.internal.DefaultRepairService;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
  * @author Vourlakis Nikolas
  */
 public class RepairProvider implements Provider<RepairService> {
+    private LocalPeerContext context_;
+    private final int MAX_REF;
+    private FixNodeAlgorithm fix_;
+    private ReplaceStrategy replace_;
+
+    @Inject
+    public RepairProvider(LocalPeerContext context, FixNodeAlgorithm fix, ReplaceStrategy replace, @MaxRef int maxRef) {
+        context_ = context;
+        fix_ = fix;
+        replace_ = replace;
+        MAX_REF = maxRef;
+    }
+    
     @Override
     public RepairService get() {
-        return null; // TODO: implement get
+        DefaultRepairService service = new DefaultRepairService(context_.getCorba(), context_.getLocalRT());
+        service.setFixNodeAlgorithm(fix_);
+        service.setReplaceAlgorithm(replace_);
+        service.setMaxRef(MAX_REF);
+        return service;
     }
 }

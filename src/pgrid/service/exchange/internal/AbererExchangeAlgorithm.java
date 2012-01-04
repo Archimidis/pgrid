@@ -36,9 +36,9 @@ import pgrid.service.exchange.spi.ExchangeContext;
  *
  * @author Vourlakis Nikolas
  */
-public class DefaultExchangeAlgorithm implements ExchangeAlgorithm {
+public class AbererExchangeAlgorithm implements ExchangeAlgorithm {
 
-    private static final Logger logger_ = LoggerFactory.getLogger(DefaultExchangeAlgorithm.class);
+    private static final Logger logger_ = LoggerFactory.getLogger(AbererExchangeAlgorithm.class);
 
     public void execute(ExchangeContext context) {
         if (context == null) {

@@ -21,6 +21,8 @@ package pgrid.entity;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pgrid.entity.clock.LamportClock;
 import pgrid.entity.clock.PeerClock;
 import pgrid.entity.internal.PGridHost;
@@ -37,9 +39,11 @@ import javax.inject.Singleton;
  */
 public class EntityModule extends AbstractModule {
 
+    private static final Logger logger_ = LoggerFactory.getLogger(EntityModule.class);
+
     @Override
     protected void configure() {
-        System.out.println("Setting up entity module");
+        logger_.debug("Setting up entity module");
         // XXX: does not force checked exceptions thrown by PGridHost at construction time.
         install(new FactoryModuleBuilder()
                 .implement(Host.class, PGridHost.class)

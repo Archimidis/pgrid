@@ -32,9 +32,9 @@ import java.net.UnknownHostException;
 /**
  * @author Vourlakis Nikolas
  */
-public class DefaultExchangeAlgorithmTest {
-    private final ExchangeAlgorithm localExchange_ = new DefaultExchangeAlgorithm();
-    private final ExchangeAlgorithm remoteExchange_ = new DefaultExchangeAlgorithm();
+public class AbererExchangeAlgorithmTest {
+    private final ExchangeAlgorithm localExchange_ = new AbererExchangeAlgorithm();
+    private final ExchangeAlgorithm remoteExchange_ = new AbererExchangeAlgorithm();
     private static int REF_MAX = 1;
 
     private void executeExchange(ExchangeContext local, ExchangeContext remote) {

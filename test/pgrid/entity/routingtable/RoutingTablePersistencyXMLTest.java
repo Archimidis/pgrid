@@ -1,7 +1,7 @@
 /*
  * This file (pgrid.entity.routingtable.RoutingTablePersistencyXMLTest) is part of the libpgrid project.
  *
- * Copyright (c) 2011. Vourlakis Nikolas. All rights reserved.
+ * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ import java.util.*;
 public class RoutingTablePersistencyXMLTest {
     private static final String VALID_FILE = "test/pgrid/entity/routingtable/validRoutingTable.xml";
     private static final String INVALID_ADDRESS_FILE = "test/pgrid/entity/routingtable/addrInvalidRoutingTable.xml";
-    private static final String INVALID_PORT_FILE = "test/pgrid/entity/routingtable/portIvalidRoutingTable.xml";
+    private static final String INVALID_PORT_FILE = "test/pgrid/entity/routingtable/portInvalidRoutingTable.xml";
     private static final String INVALID_UUID_FILE = "test/pgrid/entity/routingtable/uuidInvalidRoutingTable.xml";
 
     private static Map<Integer, List<Host>> hostList_;
