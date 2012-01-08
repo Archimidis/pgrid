@@ -34,21 +34,18 @@ public class RepairProvider implements Provider<RepairService> {
     private LocalPeerContext context_;
     private final int MAX_REF;
     private FixNodeAlgorithm fix_;
-    private ReplaceStrategy replace_;
 
     @Inject
-    public RepairProvider(LocalPeerContext context, FixNodeAlgorithm fix, ReplaceStrategy replace, @MaxRef int maxRef) {
+    public RepairProvider(LocalPeerContext context, FixNodeAlgorithm fix, @MaxRef int maxRef) {
         context_ = context;
         fix_ = fix;
-        replace_ = replace;
         MAX_REF = maxRef;
     }
-    
+
     @Override
     public RepairService get() {
         DefaultRepairService service = new DefaultRepairService(context_.getCorba(), context_.getLocalRT());
         service.setFixNodeAlgorithm(fix_);
-        service.setReplaceAlgorithm(replace_);
         service.setMaxRef(MAX_REF);
         return service;
     }

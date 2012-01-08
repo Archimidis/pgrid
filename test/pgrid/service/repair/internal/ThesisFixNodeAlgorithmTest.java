@@ -19,8 +19,7 @@
 
 package pgrid.service.repair.internal;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
 import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
@@ -34,15 +33,6 @@ import java.net.UnknownHostException;
  * @author Vourlakis Nikolas
  */
 public class ThesisFixNodeAlgorithmTest {
-    @Before
-    public void setUp() {
-
-    }
-
-    @After
-    public void tearDown() {
-
-    }
 
     @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullHost_ExpectException() {
@@ -57,14 +47,172 @@ public class ThesisFixNodeAlgorithmTest {
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(rt);
         algorithm.execute(new PGridHost("127.0.0.1", 3000), null);
     }
-    
+
     @Test
-    public void WhenExecutingAndLocalhostIsSolution_ExpectLocalhost() throws UnknownHostException {
-        RoutingTable rt = new RoutingTable();
+    public void WhenFailedPath01_ExpectHostWithPrefix001() throws UnknownHostException {
+        // localhost: "000"
+        // failed: "00"
+        // resulted prefix: "001"
+        // selected host: "0010"
+        RoutingTable routingTable = new RoutingTable();
         Host localhost = new PGridHost("127.0.0.1", 3000);
-        localhost.setHostPath("010");
-        rt.setLocalhost(localhost);
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(rt);
-        algorithm.execute(new PGridHost("127.0.0.1", 1111), new PGridPath("00")); // problematic case
+        localhost.setHostPath("000");
+        routingTable.setLocalhost(localhost);
+
+        Host host1 = new PGridHost("127.0.0.1", 1111);
+        host1.setHostPath("1");
+        Host host2 = new PGridHost("127.0.0.1", 2222);
+        host2.setHostPath("01");
+        Host host3 = new PGridHost("127.0.0.1", 3333);
+        host3.setHostPath("0010");
+        Host host4 = new PGridHost("127.0.0.1", 4444);
+        host4.setHostPath("0011");
+
+        routingTable.addReference(0, host1);
+        routingTable.addReference(1, host2);
+        routingTable.addReference(2, host3);
+        routingTable.addReference(2, host4);
+
+        Host failed = new PGridHost("127.0.0.1", 9999);
+        failed.setHostPath("01");
+        PGridPath failedHostPath = failed.getHostPath();
+
+        String root = failedHostPath.subPath(0, failedHostPath.length() - 1);
+        char lastChar = failedHostPath.value(failedHostPath.length() - 1);
+        PGridPath initialPath = new PGridPath(root);
+        initialPath.revertAndAppend(lastChar);
+        System.out.println(initialPath);
+
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
+        Host toContinue = algorithm.execute(failed, initialPath);
+        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
+//        System.out.println("Algorithm will continue to " +
+//                "[" + toContinue.getHostPath() + "]" +
+//                toContinue + ":" + toContinue.getPort());
+    }
+
+    @Test
+    public void WhenFailedPath0011_ExpectHostWithPrefix001() throws UnknownHostException {
+        // localhost: "000"
+        // failed: "0011"
+        // resulted prefix: "001"
+        // selected host: "0010"
+        RoutingTable routingTable = new RoutingTable();
+        Host localhost = new PGridHost("127.0.0.1", 3000);
+        localhost.setHostPath("000");
+        routingTable.setLocalhost(localhost);
+
+        Host host1 = new PGridHost("127.0.0.1", 1111);
+        host1.setHostPath("1");
+        Host host2 = new PGridHost("127.0.0.1", 2222);
+        host2.setHostPath("01");
+        Host host3 = new PGridHost("127.0.0.1", 3333);
+        host3.setHostPath("0010");
+        Host host4 = new PGridHost("127.0.0.1", 4444);
+        host4.setHostPath("0011");
+
+        routingTable.addReference(0, host1);
+        routingTable.addReference(1, host2);
+        routingTable.addReference(2, host3);
+        routingTable.addReference(2, host4);
+
+        Host failed = host4;
+        PGridPath failedHostPath = failed.getHostPath();
+
+        String root = failedHostPath.subPath(0, failedHostPath.length() - 1);
+        char lastChar = failedHostPath.value(failedHostPath.length() - 1);
+        PGridPath initialPath = new PGridPath(root);
+        initialPath.revertAndAppend(lastChar);
+        System.out.println(initialPath);
+
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
+        Host toContinue = algorithm.execute(failed, initialPath);
+        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
+//        System.out.println("Algorithm will continue to " +
+//                "[" + toContinue.getHostPath() + "]" +
+//                toContinue + ":" + toContinue.getPort());
+    }
+
+    @Test
+    public void WhenFailedPath1_ExpectHostWithPrefix001() throws UnknownHostException {
+        // localhost: "000"
+        // failed: "1"
+        // resulted prefix: "001"
+        // selected host: "0011"
+        RoutingTable routingTable = new RoutingTable();
+        Host localhost = new PGridHost("127.0.0.1", 3000);
+        localhost.setHostPath("000");
+        routingTable.setLocalhost(localhost);
+
+        Host host1 = new PGridHost("127.0.0.1", 1111);
+        host1.setHostPath("1");
+        Host host2 = new PGridHost("127.0.0.1", 2222);
+        host2.setHostPath("01");
+        Host host3 = new PGridHost("127.0.0.1", 3333);
+        host3.setHostPath("0010");
+        Host host4 = new PGridHost("127.0.0.1", 4444);
+        host4.setHostPath("0011");
+
+        routingTable.addReference(0, host1);
+        routingTable.addReference(1, host2);
+        routingTable.addReference(2, host3);
+        routingTable.addReference(2, host4);
+
+        Host failed = host1;
+        PGridPath failedHostPath = failed.getHostPath();
+
+        String root = failedHostPath.subPath(0, failedHostPath.length() - 1);
+        char lastChar = failedHostPath.value(failedHostPath.length() - 1);
+        PGridPath initialPath = new PGridPath(root);
+        initialPath.revertAndAppend(lastChar);
+        System.out.println(initialPath);
+
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
+        Host toContinue = algorithm.execute(failed, initialPath);
+//        System.out.println("Algorithm will continue to " +
+//                "[" + toContinue.getHostPath() + "]" +
+//                toContinue + ":" + toContinue.getPort());
+        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
+    }
+
+    @Test
+    public void WhenFailedPath000_ExpectHostWithPrefix001() throws UnknownHostException {
+        // localhost: "0010"
+        // failed: "000"
+        // resulted prefix: "001"
+        // selected host: "0010"
+        RoutingTable routingTable = new RoutingTable();
+        Host localhost = new PGridHost("127.0.0.1", 3000);
+        localhost.setHostPath("0010");
+        routingTable.setLocalhost(localhost);
+
+        Host host1 = new PGridHost("127.0.0.1", 1111);
+        host1.setHostPath("1");
+        Host host2 = new PGridHost("127.0.0.1", 2222);
+        host2.setHostPath("01");
+        Host host3 = new PGridHost("127.0.0.1", 3333);
+        host3.setHostPath("000");
+        Host host4 = new PGridHost("127.0.0.1", 4444);
+        host4.setHostPath("0011");
+
+        routingTable.addReference(0, host1);
+        routingTable.addReference(1, host2);
+        routingTable.addReference(2, host3);
+        routingTable.addReference(3, host4);
+
+        Host failed = host3;
+        PGridPath failedHostPath = failed.getHostPath();
+
+        String root = failedHostPath.subPath(0, failedHostPath.length() - 1);
+        char lastChar = failedHostPath.value(failedHostPath.length() - 1);
+        PGridPath initialPath = new PGridPath(root);
+        initialPath.revertAndAppend(lastChar);
+
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
+        Host toContinue = algorithm.execute(failed, initialPath);
+//        System.out.println("Algorithm will continue to " +
+//                "[" + toContinue.getHostPath() + "]" +
+//                toContinue + ":" + toContinue.getPort());
+        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
     }
 }

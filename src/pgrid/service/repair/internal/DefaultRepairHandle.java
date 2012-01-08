@@ -22,7 +22,6 @@ package pgrid.service.repair.internal;
 import org.omg.CORBA.ORB;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
-import pgrid.service.repair.spi.ReplaceStrategy;
 import pgrid.service.spi.corba.repair.RepairHandlePOA;
 import pgrid.service.spi.corba.repair.RepairIssue;
 import pgrid.service.spi.corba.repair.RepairSolution;
@@ -35,7 +34,6 @@ public class DefaultRepairHandle extends RepairHandlePOA {
     private final RoutingTable routingTable_;
     private final ORB orb_;
     private FixNodeAlgorithm fix_;
-    private ReplaceStrategy replace_;
     private int maxRef_;
 
     public DefaultRepairHandle(ORB orb, RoutingTable routingTable) {
@@ -49,10 +47,6 @@ public class DefaultRepairHandle extends RepairHandlePOA {
 
     public void setFixNodeAlgorithm(FixNodeAlgorithm algorithm) {
         fix_ = algorithm;
-    }
-
-    public void setReplaceAlgorithm(ReplaceStrategy algorithm) {
-        replace_ = algorithm;
     }
 
     @Override

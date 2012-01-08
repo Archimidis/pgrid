@@ -23,8 +23,27 @@ import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 
 /**
+ * This interface represents the algorithm that will be executed in case of a
+ * network failure. It's purpose is to select a peer in the pgrid network that
+ * is either capable of fixing the issue himself or knows another peer most
+ * likely to be able to solve the issue.
+ *
  * @author Vourlakis Nikolas
  */
 public interface FixNodeAlgorithm {
-    public void execute(Host failed, PGridPath path); // TODO: review method signature
+
+    /**
+     * Given a failed host, the algorithm must decide which host in the network
+     * is able to fix the problem. The algorithm must follow a certain path to
+     * decide that starting from the conjugate path of the failed host. It will
+     * end at the host that will give the solution. This path trace is
+     * represented by the path argument and is essential information for the
+     * host that will continue executing the algorithm. It shows the direction
+     * that must be followed.
+     *
+     * @param failed host to be fixed.
+     * @param path the current path trace as described above.
+     * @return the host most likely to know how to solve the issue.
+     */
+    public Host execute(Host failed, PGridPath path);
 }

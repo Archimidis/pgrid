@@ -20,6 +20,7 @@
 package pgrid.entity.routingtable;
 
 import pgrid.entity.Host;
+import pgrid.entity.PGridPath;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -439,6 +440,36 @@ public class RoutingTable {
      */
     public Host selectUUIDHost(UUID uuid) {
         return uuidRefs_.get(uuid);
+    }
+
+    /**
+     * This method will return a collection of hosts that are in prefix
+     * relation with the given path or are more likely to know about it.
+     *
+     * @param searchPath to search for hosts with the closest path to that.
+     * @return a collection of hosts.
+     */
+    public Collection<Host> closestHosts(String searchPath) {
+        Collection<Host> closestLevel;
+
+        String prefix = localhost_.getHostPath().commonPrefix(new PGridPath(searchPath));
+        int prefixLen = prefix.length();
+        int searchLen = searchPath.length();
+
+        if (searchPath.isEmpty() || prefixLen == searchLen || prefixLen == localhost_.getHostPath().length()) {
+            closestLevel = new ArrayList<Host>(1);
+            closestLevel.add(getLocalhost());
+        } else if (prefix.isEmpty()) {
+            closestLevel = new ArrayList<Host>(getLevel(0));
+        } else {
+            int level = prefixLen < levelNumber() ? prefixLen : (levelNumber() - 1);
+            closestLevel = new ArrayList<Host>(getLevel(level));
+            if (closestLevel.isEmpty()) {
+                return closestHosts(searchPath.substring(0, searchPath.length() - 1));
+            }
+        }
+
+        return closestLevel;
     }
 
     /**

@@ -34,13 +34,11 @@ public class RepairHandleProvider implements Provider<RepairHandlePOA> {
     private LocalPeerContext context_;
     private final int MAX_REF;
     private FixNodeAlgorithm fix_;
-    private ReplaceStrategy replace_;
 
     @Inject
-    public RepairHandleProvider(LocalPeerContext context, FixNodeAlgorithm fix, ReplaceStrategy replace, @MaxRef int maxRef) {
+    public RepairHandleProvider(LocalPeerContext context, FixNodeAlgorithm fix, @MaxRef int maxRef) {
         context_ = context;
         fix_ = fix;
-        replace_ = replace;
         MAX_REF = maxRef;
     }
 
@@ -48,7 +46,6 @@ public class RepairHandleProvider implements Provider<RepairHandlePOA> {
     public RepairHandlePOA get() {
         DefaultRepairHandle service = new DefaultRepairHandle(context_.getCorba(), context_.getLocalRT());
         service.setFixNodeAlgorithm(fix_);
-        service.setReplaceAlgorithm(replace_);
         service.setMaxRef(MAX_REF);
         return service;
     }

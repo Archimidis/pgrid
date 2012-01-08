@@ -25,7 +25,6 @@ import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.CommunicationException;
 import pgrid.service.repair.RepairService;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
-import pgrid.service.repair.spi.ReplaceStrategy;
 
 /**
  * @author Vourlakis Nikolas
@@ -34,7 +33,6 @@ public class DefaultRepairService implements RepairService {
     private final RoutingTable routingTable_;
     private final ORB orb_;
     private FixNodeAlgorithm fix_;
-    private ReplaceStrategy replace_;
     private int maxRef_;
 
     public DefaultRepairService(ORB orb, RoutingTable routingTable) {
@@ -50,14 +48,14 @@ public class DefaultRepairService implements RepairService {
         fix_ = algorithm;
     }
 
-    public void setReplaceAlgorithm(ReplaceStrategy algorithm) {
-        replace_ = algorithm;
-    }
-
     @Override
     public void fixNode(Host failed, String path) throws CommunicationException {
         // TODO: implement fixNode
         System.out.println("FixNodeAlgorithm object: " + fix_);
-        System.out.println("ReplaceStrategy object: " + replace_);
+    }
+
+    @Override
+    public void replace(Host solution) throws CommunicationException {
+        // TODO: implement replace
     }
 }

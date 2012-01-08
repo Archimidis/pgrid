@@ -121,6 +121,8 @@ public class PGridPath {
      * Appends a given character at the end of the current path.
      *
      * @param c a character representation of '1' or '0'.
+     * @throws IllegalArgumentException in case of a character other than '1'
+     *                                  or '0'.
      */
     public void append(char c) {
         if (c != '0' && c != '1') {
@@ -135,6 +137,8 @@ public class PGridPath {
      *
      * @param c a character representation of '1' or '0'.
      * @return the reverted character.
+     * @throws IllegalArgumentException in case of a character other than '1'
+     *                                  or '0'.
      */
     public char revert(char c) {
         if (c != '0' && c != '1') {
@@ -148,6 +152,8 @@ public class PGridPath {
      * Reverts and appends the given character to the current path.
      *
      * @param c a character representation of '1' or '0'.
+     * @throws IllegalArgumentException in case of a character other than '1'
+     *                                  or '0'.
      */
     public void revertAndAppend(char c) {
         if (c != '0' && c != '1') {
@@ -186,6 +192,7 @@ public class PGridPath {
      *
      * @param path the path to check.
      * @return true if the given  path is a prefix.
+     * @throws NullPointerException in case of a null path argument.
      */
     public boolean hasPrefix(PGridPath path) {
         if (path == null) {
