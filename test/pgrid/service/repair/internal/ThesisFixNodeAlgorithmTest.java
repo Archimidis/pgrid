@@ -81,7 +81,6 @@ public class ThesisFixNodeAlgorithmTest {
         char lastChar = failedHostPath.value(failedHostPath.length() - 1);
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
-        System.out.println(initialPath);
 
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
         Host toContinue = algorithm.execute(failed, initialPath);
@@ -123,7 +122,6 @@ public class ThesisFixNodeAlgorithmTest {
         char lastChar = failedHostPath.value(failedHostPath.length() - 1);
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
-        System.out.println(initialPath);
 
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
         Host toContinue = algorithm.execute(failed, initialPath);
@@ -165,7 +163,6 @@ public class ThesisFixNodeAlgorithmTest {
         char lastChar = failedHostPath.value(failedHostPath.length() - 1);
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
-        System.out.println(initialPath);
 
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
         Host toContinue = algorithm.execute(failed, initialPath);

@@ -103,7 +103,7 @@ public class DefaultExchangeService implements ExchangeService {
         try {
             handle = ExchangeHandleHelper.narrow(object);
         } catch (SystemException e) {
-            logger_.warn("Didn't find the host that was asked to exchange with,");
+            logger_.warn("Cannot reach the host {}:{} that was asked to exchange with.", host, host.getPort());
             logger_.warn("[Exception] {}", e.getCause().getMessage());
             throw new CommunicationException(e.getCause());
         }

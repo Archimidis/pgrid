@@ -31,22 +31,17 @@ import javax.inject.Provider;
  * @author Vourlakis Nikolas
  */
 public class RepairHandleProvider implements Provider<RepairHandlePOA> {
-    private LocalPeerContext context_;
-    private final int MAX_REF;
-    private FixNodeAlgorithm fix_;
+    private final DefaultRepairHandle poa_;
 
     @Inject
     public RepairHandleProvider(LocalPeerContext context, FixNodeAlgorithm fix, @MaxRef int maxRef) {
-        context_ = context;
-        fix_ = fix;
-        MAX_REF = maxRef;
+        poa_ = new DefaultRepairHandle(context.getCorba(), context.getLocalRT());
+        poa_.setFixNodeAlgorithm(fix);
+        poa_.setMaxRef(maxRef);
     }
 
     @Override
     public RepairHandlePOA get() {
-        DefaultRepairHandle service = new DefaultRepairHandle(context_.getCorba(), context_.getLocalRT());
-        service.setFixNodeAlgorithm(fix_);
-        service.setMaxRef(MAX_REF);
-        return service;
+        return poa_;
     }
 }

@@ -113,6 +113,7 @@ public class RoutingTable {
                 System.out.println(host.getAddress().getHostAddress() + ":" + host.getPort());
             }
         }
+        // TODO: Check the path of all hosts stored and rearrange them to levels according if they changed.
     }
 
     /**

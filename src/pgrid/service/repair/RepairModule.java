@@ -42,6 +42,7 @@ public class RepairModule extends AbstractModule {
         bind(FixNodeAlgorithm.class).to(ThesisFixNodeAlgorithm.class);
 
         bind(RepairService.class).toProvider(RepairProvider.class);
+        // returns the same handle every time
         bind(RepairHandlePOA.class).toProvider(RepairHandleProvider.class);
     }
 }

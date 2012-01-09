@@ -28,7 +28,5 @@ import pgrid.service.CommunicationException;
  * @author Vourlakis Nikolas
  */
 public interface RepairService {
-    public void fixNode(Host failed, String path) throws CommunicationException;
-
-    public void replace(Host solution) throws CommunicationException;
+    public void fixNode(Host failed) throws CommunicationException;
 }
