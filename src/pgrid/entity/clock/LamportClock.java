@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.entity.clock.LamportClock) is part of the libpgrid project.
+ * This file is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *

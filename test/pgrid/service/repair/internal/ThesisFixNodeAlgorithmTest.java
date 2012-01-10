@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.internal.ThesisFixNodeAlgorithmTest) is part of the libpgrid project.
+ * This file is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -35,6 +35,12 @@ import java.net.UnknownHostException;
 public class ThesisFixNodeAlgorithmTest {
 
     @Test(expected = NullPointerException.class)
+    public void WhenExecutingWithNullRoutingTable_ExpectException() throws UnknownHostException {
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        algorithm.execute(null, new PGridHost("127.0.0.1", 3000), new PGridPath(""));
+    }
+
+    @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullHost_ExpectException() {
         RoutingTable rt = new RoutingTable();
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
@@ -51,7 +57,7 @@ public class ThesisFixNodeAlgorithmTest {
     @Test
     public void WhenFailedPath01_ExpectHostWithPrefix001() throws UnknownHostException {
         // localhost: "000"
-        // failed: "00"
+        // failed: "01"
         // resulted prefix: "001"
         // selected host: "0010"
         RoutingTable routingTable = new RoutingTable();

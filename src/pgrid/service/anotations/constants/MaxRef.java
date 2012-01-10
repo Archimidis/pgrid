@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.anotations.constants.MaxRef) is part of the libpgrid project.
+ * This file is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *

@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.entity.routingtable.PersistenceDelegate) is part of the libpgrid project.
+ * This file is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -25,7 +25,7 @@ import java.io.FileNotFoundException;
  * This is the interface to be implemented by a routing table to gain persistency
  * functionality.
  * <p/>
- * // TODO: This interface and its implementation can be promoted to services cause they act upon entities.
+ * TODO: This interface and its implementation can be promoted to services cause they act upon entities.
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */

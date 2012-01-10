@@ -48,18 +48,14 @@ module pgrid {
                 module repair {
                     struct RepairIssue {
                         string repairID;
-                        long long repairTimestamp;
-                        long long timeoutTimestamp;
-                        PeerReference senderPeer;
-                        string failedPeerPath;
                         PeerReference failedPeer;
+                        string failedPeerPath;
                         string footpath;
                     };
 
                     struct RepairSolution {
                         string repairID;
-                        long long repairTimestamp;
-                        string hotPath;
+                        string failedPeerPath;
                         sequence<PeerReference> failedPeer;
                         PeerReference replacerPeer;
                         PeerReference twinPeer;

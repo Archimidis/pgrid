@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.internal.DefaultRepairHandle) is part of the pgrid project.
+ * This file is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *

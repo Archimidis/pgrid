@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.entity.routingtable.RoutingTable) is part of the libpgrid project.
+ * This file is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -267,8 +267,8 @@ public class RoutingTable {
         if (uuidRefs_.containsKey(host.getUUID())) {
             for (Set<Host> treeSet : references_) {
                 if (treeSet.contains(host)) {
-                    treeSet.remove(host);
-                    treeSet.add(host);
+                    treeSet.remove(host); // remove the old version object based on UUID
+                    treeSet.add(host); // add the new version object based on UUID
                     uuidRefs_.remove(host.getUUID());
                     uuidRefs_.put(host.getUUID(), host);
                 }
