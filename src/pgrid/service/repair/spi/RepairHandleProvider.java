@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.spi.RepairHandleProvider) is part of the libpgrid project.
+ * This file (pgrid.service.repair.spi.RepairHandleProvider) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -22,6 +22,7 @@ package pgrid.service.repair.spi;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.internal.DefaultRepairHandle;
+import pgrid.service.repair.internal.RepairIssueRegistry;
 import pgrid.service.spi.corba.repair.RepairHandlePOA;
 
 import javax.inject.Inject;
@@ -34,8 +35,8 @@ public class RepairHandleProvider implements Provider<RepairHandlePOA> {
     private final DefaultRepairHandle poa_;
 
     @Inject
-    public RepairHandleProvider(LocalPeerContext context, FixNodeAlgorithm fix, @MaxRef int maxRef) {
-        poa_ = new DefaultRepairHandle(context.getCorba(), context.getLocalRT());
+    public RepairHandleProvider(LocalPeerContext context, RepairIssueRegistry registry, FixNodeAlgorithm fix, @MaxRef int maxRef) {
+        poa_ = new DefaultRepairHandle(context.getCorba(), context.getLocalRT(), registry);
         poa_.setFixNodeAlgorithm(fix);
         poa_.setMaxRef(maxRef);
     }

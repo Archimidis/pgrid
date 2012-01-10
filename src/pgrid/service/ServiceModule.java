@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.ServiceModule) is part of the libpgrid project.
+ * This file (pgrid.service.ServiceModule) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -40,6 +40,7 @@ public class ServiceModule extends AbstractModule {
         logger_.debug("Setting up service module");
         // TODO: LocalPeerContext assisted construction
         bind(LocalPeerContext.class).asEagerSingleton();
+
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());
 

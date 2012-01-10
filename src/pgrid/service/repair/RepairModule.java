@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.RepairModule) is part of the libpgrid project.
+ * This file (pgrid.service.repair.RepairModule) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -22,6 +22,7 @@ package pgrid.service.repair;
 import com.google.inject.AbstractModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pgrid.service.repair.internal.RepairIssueRegistry;
 import pgrid.service.repair.internal.ThesisFixNodeAlgorithm;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
 import pgrid.service.repair.spi.RepairHandleProvider;
@@ -38,6 +39,8 @@ public class RepairModule extends AbstractModule {
     @Override
     protected void configure() {
         logger_.debug("Setting up repair service module");
+
+        bind(RepairIssueRegistry.class).asEagerSingleton();
 
         bind(FixNodeAlgorithm.class).to(ThesisFixNodeAlgorithm.class);
 

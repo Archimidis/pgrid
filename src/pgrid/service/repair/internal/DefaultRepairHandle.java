@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.internal.DefaultRepairHandle) is part of the libpgrid project.
+ * This file (pgrid.service.repair.internal.DefaultRepairHandle) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -31,14 +31,16 @@ import pgrid.service.spi.corba.repair.RepairSolution;
  */
 public class DefaultRepairHandle extends RepairHandlePOA {
 
+    private final RepairIssueRegistry registry_;
     private final RoutingTable routingTable_;
     private final ORB orb_;
     private FixNodeAlgorithm fix_;
     private int maxRef_;
 
-    public DefaultRepairHandle(ORB orb, RoutingTable routingTable) {
+    public DefaultRepairHandle(ORB orb, RoutingTable routingTable, RepairIssueRegistry registry) {
         orb_ = orb;
         routingTable_ = routingTable;
+        registry_ = registry;
     }
 
     public void setMaxRef(int maxRef) {
@@ -52,6 +54,7 @@ public class DefaultRepairHandle extends RepairHandlePOA {
     @Override
     public void fixNode(RepairIssue issue) {
         // TODO: implement fixNode
+        // check registry if it
     }
 
     @Override

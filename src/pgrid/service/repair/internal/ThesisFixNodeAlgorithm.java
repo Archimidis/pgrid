@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.internal.DefaultFixNodeAlgorithm) is part of the libpgrid project.
+ * This file (pgrid.service.repair.internal.ThesisFixNodeAlgorithm) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -62,8 +62,8 @@ public class ThesisFixNodeAlgorithm implements FixNodeAlgorithm {
 
     @Override
     public Host execute(RoutingTable routingTable, Host failed, PGridPath path) {
-        if (failed == null) {
-            throw new NullPointerException("Null host was given.");
+        if (routingTable == null) {
+            throw new NullPointerException("Null routing table was given.");
         }
         if (path == null) {
             throw new NullPointerException("Null path was given");

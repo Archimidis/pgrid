@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.spi.FixNodeAlgorithm) is part of the libpgrid project.
+ * This file (pgrid.service.repair.spi.FixNodeAlgorithm) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -43,9 +43,9 @@ public interface FixNodeAlgorithm {
      * that must be followed.
      *
      * @param routingTable of the local host to be used by the algorithm.
-     * @param failed host to be fixed.
-     * @param path   the current path trace as described above.
+     * @param failed       host to be fixed.
+     * @param path         the current path trace as described above.
      * @return the host most likely to know how to solve the issue.
      */
-    public Host execute(RoutingTable routingTable,Host failed, PGridPath path);
+    public Host execute(RoutingTable routingTable, Host failed, PGridPath path);
 }

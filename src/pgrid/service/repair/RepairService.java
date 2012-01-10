@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.RepairService) is part of the libpgrid project.
+ * This file (pgrid.service.repair.RepairService) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *

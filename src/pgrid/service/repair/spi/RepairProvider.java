@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.spi.RepairProvider) is part of the libpgrid project.
+ * This file (pgrid.service.repair.spi.RepairProvider) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -23,6 +23,7 @@ import pgrid.service.LocalPeerContext;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.RepairService;
 import pgrid.service.repair.internal.DefaultRepairService;
+import pgrid.service.repair.internal.RepairIssueRegistry;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -34,17 +35,19 @@ public class RepairProvider implements Provider<RepairService> {
     private LocalPeerContext context_;
     private final int MAX_REF;
     private FixNodeAlgorithm fix_;
+    private RepairIssueRegistry registry_;
 
     @Inject
-    public RepairProvider(LocalPeerContext context, FixNodeAlgorithm fix, @MaxRef int maxRef) {
+    public RepairProvider(LocalPeerContext context, RepairIssueRegistry registry, FixNodeAlgorithm fix, @MaxRef int maxRef) {
         context_ = context;
+        registry_ = registry;
         fix_ = fix;
         MAX_REF = maxRef;
     }
 
     @Override
     public RepairService get() {
-        DefaultRepairService service = new DefaultRepairService(context_.getCorba(), context_.getLocalRT());
+        DefaultRepairService service = new DefaultRepairService(context_.getCorba(), context_.getLocalRT(), registry_);
         service.setFixNodeAlgorithm(fix_);
         service.setMaxRef(MAX_REF);
         return service;

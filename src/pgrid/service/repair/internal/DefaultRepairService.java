@@ -1,5 +1,5 @@
 /*
- * This file (pgrid.service.repair.internal.DefaultRepairService) is part of the libpgrid project.
+ * This file (pgrid.service.repair.internal.DefaultRepairService) is part of the pgrid project.
  *
  * Copyright (c) 2012. Vourlakis Nikolas. All rights reserved.
  *
@@ -45,16 +45,19 @@ public class DefaultRepairService implements RepairService {
 
     private static final Logger logger_ = LoggerFactory.getLogger(DefaultRepairService.class);
 
+    private final RepairIssueRegistry registry_;
     private final RoutingTable routingTable_;
-    private final Host localhost_;
     private final ORB orb_;
     private FixNodeAlgorithm fix_;
     private int maxRef_;
 
-    public DefaultRepairService(ORB orb, RoutingTable routingTable) {
+    // TODO: @RepairTimeout constant
+    private int REPAIR_TIMEOUT = 1000; // 1 min
+
+    public DefaultRepairService(ORB orb, RoutingTable routingTable, RepairIssueRegistry registry) {
         orb_ = orb;
         routingTable_ = routingTable;
-        localhost_ = routingTable_.getLocalhost();
+        registry_ = registry;
     }
 
     public void setMaxRef(int maxRef) {
@@ -78,23 +81,26 @@ public class DefaultRepairService implements RepairService {
 
         PGridPath initialPath = algorithmPathExecution(failed.getHostPath());
         Host hostToContinue = fix_.execute(routingTable_, failed, initialPath);
-        RepairHandle remoteHandle = getRemoteHandle(hostToContinue);
 
-        if (hostToContinue.compareTo(localhost_) == 0) {
+        Host localhost = routingTable_.getLocalhost();
+        if (hostToContinue.compareTo(localhost) == 0) {
             // the localhost and its conjugate will solve the issue
+            logger_.info("Localhost will give the solution.");
             replace(failed);
+        } else { // the algorithm must continue remotely
+            RepairHandle remoteHandle = getRemoteHandle(hostToContinue);
+
+            RepairIssue repairIssue = new RepairIssue();
+            repairIssue.repairID = UUID.randomUUID().toString();
+            repairIssue.senderPeer = Serializer.serializeHost(localhost);
+            repairIssue.failedPeerPath = failed.getHostPath().toString();
+            repairIssue.failedPeer = Serializer.serializeHost(failed);
+            repairIssue.footpath = hostToContinue.getHostPath().toString();
+            repairIssue.repairTimestamp = System.currentTimeMillis();
+            repairIssue.timeoutTimestamp = System.currentTimeMillis() + REPAIR_TIMEOUT;
+
+            remoteHandle.fixNode(repairIssue);
         }
-
-        RepairIssue repairIssue = new RepairIssue();
-        repairIssue.repairID = UUID.randomUUID().toString();
-        repairIssue.senderPeer = Serializer.serializeHost(localhost_);
-        repairIssue.failedPeerPath = failed.getHostPath().toString();
-        repairIssue.failedPeer = Serializer.serializeHost(failed);
-        repairIssue.footpath = hostToContinue.getHostPath().toString();
-        repairIssue.repairTimestamp = System.currentTimeMillis();
-        repairIssue.timeoutTimestamp = System.currentTimeMillis() + 1000; // + 1 min
-
-        remoteHandle.fixNode(repairIssue);
     }
 
     private PGridPath algorithmPathExecution(PGridPath failedHostPath) {
@@ -132,21 +138,50 @@ public class DefaultRepairService implements RepairService {
             return;
         }
 
-        for (Host conjugate : conjugateLevel) {
-            if (conjugate.getHostPath().toString().compareTo(failed.getHostPath().toString()) != 0) {
-                PGridPath localhostHostPath = localhost_.getHostPath();
-                if (localhostHostPath.value(localhostHostPath.length()) == '1') {
-                    // conjugate reduce path
-                    // localhost path = failed path
-                } else { // == '0'
-                    // localhost reduce path
-                    // conjugate path = failed path
-                }
-            } else { // conjugate is the failed peer
-                // localhost path = failed path
-            }
-            break;
+        Host conjugate = null;
+        for (Host host : conjugateLevel) {
+            conjugate = host;
         }
+
+        Host localhost = routingTable_.getLocalhost();
+        PGridPath localhostPath = localhost.getHostPath();
+        if (conjugate != null) {
+            // conjugate path != failed path
+            if (localhostPath.value(localhostPath.length()) == '1') {
+                logger_.info("Localhost new path: {}.", failed.getHostPath());
+                logger_.info("Conjugate will reduce its path by one.");
+                // conjugate reduce path
+                RepairHandle handle = getRemoteHandle(conjugate);
+                //handle.replace();
+                // localhost path = failed path
+                localhost.setHostPath(failed.getHostPath().toString());
+            } else { // == '0'
+                logger_.info("Conjugate new path: {}.", failed.getHostPath());
+                logger_.info("Localhost will reduce its path by one.");
+                // localhost reduce path
+                int end = localhostPath.length() - 2;
+                String newPath = end < 0 ? "" : localhostPath.subPath(0, end);
+                localhost.setHostPath(newPath);
+                // conjugate path = failed path
+            }
+        } else { // conjugate is the failed peer
+            // conjugate path == failed path
+            logger_.info("Conjugate is the failed peer.");
+            if (routingTable_.levelNumber() <= 1) {
+                logger_.info("Localhost will reduce its path by one.");
+                int end = localhostPath.length() - 2;
+                String newPath = end < 0 ? "" : localhostPath.subPath(0, end);
+                localhost.setHostPath(newPath);
+                // the network was consisted only by the localhost and the failed peer. // TODO: test case
+            } else {
+                logger_.info("Conjugate new path: {}.", failed.getHostPath());
+                // localhost path = failed path
+                localhost.setHostPath(failed.getHostPath().toString());
+            }
+        }
+        logger_.debug("Localhost new path: {}", localhost.getHostPath());
+        // TODO: refresh routing table after path change
+        logger_.info("Propagating solution");
         // propagate change to network
     }
 }
