@@ -39,7 +39,8 @@ public class PersistencyException extends Exception {
         super(cause);
     }
 
-    protected PersistencyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+    // java 7?
+//    protected PersistencyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+//        super(message, cause, enableSuppression, writableStackTrace);
+//    }
 }

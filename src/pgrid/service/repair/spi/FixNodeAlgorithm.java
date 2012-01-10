@@ -42,7 +42,7 @@ public interface FixNodeAlgorithm {
      * that must be followed.
      *
      * @param failed host to be fixed.
-     * @param path the current path trace as described above.
+     * @param path   the current path trace as described above.
      * @return the host most likely to know how to solve the issue.
      */
     public Host execute(Host failed, PGridPath path);

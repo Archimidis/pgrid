@@ -56,7 +56,7 @@ public class RoutingTablePersistencyXMLTest {
 
         routingTable.setLocalhost(localpeer_);
 
-        hostList_ = new HashMap<>(3);
+        hostList_ = new HashMap<Integer, List<Host>>(3);
         List<Host> levelList = new ArrayList<Host>();
         int level;
 

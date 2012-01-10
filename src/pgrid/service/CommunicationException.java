@@ -28,6 +28,7 @@ package pgrid.service;
  * @author Vourlakis Nikolas
  */
 public class CommunicationException extends Exception {
+
     public CommunicationException() {
         super();
     }
@@ -44,7 +45,8 @@ public class CommunicationException extends Exception {
         super(cause);
     }
 
-    protected CommunicationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+    // java 7?
+//    protected CommunicationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+//        super(message, cause, enableSuppression, writableStackTrace);
+//    }
 }

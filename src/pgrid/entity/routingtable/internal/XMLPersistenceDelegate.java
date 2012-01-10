@@ -122,28 +122,58 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
                         }
                     }
 
-                    switch (event.asStartElement().getName().getLocalPart()) { // java 7
-                        case ADDRESS:
-                            event = eventReader.nextEvent();
-                            address = event.asCharacters().getData();
-                            break;
-                        case PORT:
-                            event = eventReader.nextEvent();
-                            port = Integer.parseInt(event.asCharacters().getData());
-                            break;
-                        case PATH:
-                            event = eventReader.nextEvent();
-                            path = event.asCharacters().getData();
-                            break;
-                        case UUID_STR:
-                            event = eventReader.nextEvent();
-                            uuid = event.asCharacters().getData();
-                            break;
-                        case TIMESTAMP:
-                            event = eventReader.nextEvent();
-                            ts = Integer.parseInt(event.asCharacters().getData());
-                            break;
+                    // Keep for Java 6
+                    if (event.asStartElement().getName().getLocalPart().equals(ADDRESS)) {
+                        event = eventReader.nextEvent();
+                        address = event.asCharacters().getData();
+                        continue;
                     }
+                    if (event.asStartElement().getName().getLocalPart().equals(PORT)) {
+                        event = eventReader.nextEvent();
+                        port = Integer.parseInt(event.asCharacters().getData());
+                        continue;
+                    }
+
+                    if (event.asStartElement().getName().getLocalPart().equals(PATH)) {
+                        event = eventReader.nextEvent();
+                        path = event.asCharacters().getData();
+                        continue;
+                    }
+
+                    if (event.asStartElement().getName().getLocalPart().equals(UUID_STR)) {
+                        event = eventReader.nextEvent();
+                        uuid = event.asCharacters().getData();
+                        continue;
+                    }
+
+                    if (event.asStartElement().getName().getLocalPart().equals(TIMESTAMP)) {
+                        event = eventReader.nextEvent();
+                        ts = Integer.parseInt(event.asCharacters().getData());
+                        continue;
+                    }
+
+//                    switch (event.asStartElement().getName().getLocalPart()) { // java 7
+//                        case ADDRESS:
+//                            event = eventReader.nextEvent();
+//                            address = event.asCharacters().getData();
+//                            break;
+//                        case PORT:
+//                            event = eventReader.nextEvent();
+//                            port = Integer.parseInt(event.asCharacters().getData());
+//                            break;
+//                        case PATH:
+//                            event = eventReader.nextEvent();
+//                            path = event.asCharacters().getData();
+//                            break;
+//                        case UUID_STR:
+//                            event = eventReader.nextEvent();
+//                            uuid = event.asCharacters().getData();
+//                            break;
+//                        case TIMESTAMP:
+//                            event = eventReader.nextEvent();
+//                            ts = Integer.parseInt(event.asCharacters().getData());
+//                            break;
+//                    }
                 }
 
                 if (event.isEndElement()) {
@@ -287,32 +317,4 @@ public class XMLPersistenceDelegate implements PersistenceDelegate {
     }
 }
 
-// Keep for Java 6
-//if(event.asStartElement().getName().getLocalPart().equals(ADDRESS)){
-//    event=eventReader.nextEvent();
-//    address=event.asCharacters().getData();
-//    continue;
-//}
-//if(event.asStartElement().getName().getLocalPart().equals(PORT)){
-//    event=eventReader.nextEvent();
-//    port=Integer.parseInt(event.asCharacters().getData());
-//    continue;
-//}
-//
-//if(event.asStartElement().getName().getLocalPart().equals(PATH)){
-//    event=eventReader.nextEvent();
-//    path=event.asCharacters().getData();
-//    continue;
-//}
-//
-//if(event.asStartElement().getName().getLocalPart().equals(UUID_STR)){
-//    event=eventReader.nextEvent();
-//    uuid=event.asCharacters().getData();
-//    continue;
-//}
-//
-//if(event.asStartElement().getName().getLocalPart().equals(TIMESTAMP)){
-//    event=eventReader.nextEvent();
-//    ts=Integer.parseInt(event.asCharacters().getData());
-//    continue;
-//}
+
