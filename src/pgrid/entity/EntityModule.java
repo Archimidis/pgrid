@@ -44,7 +44,6 @@ public class EntityModule extends AbstractModule {
     @Override
     protected void configure() {
         logger_.debug("Setting up entity module");
-        // XXX: does not force checked exceptions thrown by PGridHost at construction time.
         install(new FactoryModuleBuilder()
                 .implement(Host.class, PGridHost.class)
                 .implement(Key.class, PGridKey.class)
@@ -55,6 +54,7 @@ public class EntityModule extends AbstractModule {
 
         bind(PeerClock.class).to(LamportClock.class);
 
+        // TODO: Make RoutingTable construction assisted, the client will provide the localhost Host object
         bind(RoutingTable.class);
         bind(PersistenceDelegate.class).to(XMLPersistenceDelegate.class);
 

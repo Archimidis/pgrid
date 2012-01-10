@@ -60,14 +60,8 @@ public class ThesisFixNodeAlgorithm implements FixNodeAlgorithm {
 
     private static final Logger logger_ = LoggerFactory.getLogger(ThesisFixNodeAlgorithm.class);
 
-    private final RoutingTable localRT_;
-
-    public ThesisFixNodeAlgorithm(RoutingTable localRT) {
-        localRT_ = localRT;
-    }
-
     @Override
-    public Host execute(Host failed, PGridPath path) {
+    public Host execute(RoutingTable routingTable, Host failed, PGridPath path) {
         if (failed == null) {
             throw new NullPointerException("Null host was given.");
         }
@@ -76,12 +70,12 @@ public class ThesisFixNodeAlgorithm implements FixNodeAlgorithm {
         }
 
         logger_.info("Current path trace {}", path);
-        Host localhost = localRT_.getLocalhost();
+        Host localhost = routingTable.getLocalhost();
         PGridPath localhostPath = localhost.getHostPath();
 
         if (localhostPath.commonPrefix(path).length() <= 0) {
             logger_.info("[Pre] Not in prefix relation, return a host closest to the failed path");
-            return closestHost(failed, path);
+            return closestHost(routingTable, failed, path);
         }
 
         if (localhostPath.toString().compareTo(path.toString()) == 0) {
@@ -92,7 +86,7 @@ public class ThesisFixNodeAlgorithm implements FixNodeAlgorithm {
         int nextLevel = path.length(); // routing table starts from index '0'
         if (localhostPath.length() < nextLevel + 1) { // PGridPath starts from index '1'
             logger_.info("[Pre] Smaller routing table, return a host closest to the failed path length");
-            return closestHost(failed, path);
+            return closestHost(routingTable, failed, path);
         }
 
         char last = path.value(path.length() - 1);
@@ -102,42 +96,42 @@ public class ThesisFixNodeAlgorithm implements FixNodeAlgorithm {
         PGridPath case2 = new PGridPath(path.toString());
         case2.append(last);
         logger_.info("Checking {} and {}", case1, case2);
-        int diff = localRT_.levelNumber() - nextLevel;
+        int diff = routingTable.levelNumber() - nextLevel;
 
         if (localhostPath.hasPrefix(case1)) {
             logger_.info("[Case 1] Local host host in prefix relation with {}", case1);
-            if ((localRT_.levelNumber() - case1.length()) <= 1) {
+            if ((routingTable.levelNumber() - case1.length()) <= 1) {
                 if (localhostPath.toString().compareTo(case1.toString()) == 0) {
                     logger_.info("[Case 1] The local host will be part of the solution");
                     return localhost;
                 } else {
                     logger_.info("[Case 1] Proceeding to path {}", case1);
-                    return execute(failed, case1);
+                    return execute(routingTable, failed, case1);
                 }
             } else {
                 logger_.info("[Case 1] Return the host level in prefix relation to path {}", case2);
-                return closestHost(failed, case2);
+                return closestHost(routingTable, failed, case2);
             }
         } else if (localhostPath.hasPrefix(case2)) {
             logger_.info("[Case 2] Local host in prefix relation with {}", case2);
             if (localhostPath.toString().compareTo(case2.toString()) == 0) {
-                if (diff == 1 && localRT_.getLevel(nextLevel).size() <= 1) {
+                if (diff == 1 && routingTable.getLevel(nextLevel).size() <= 1) {
                     logger_.info("[Case 2] The local host will be part of the solution");
                     return localhost;
                 } else {
                     logger_.info("[Case 2] Return the host level in prefix relation to path {}", case1);
-                    return closestHost(failed, case1);
+                    return closestHost(routingTable, failed, case1);
                 }
             } else {
                 logger_.info("[Case 2] Proceeding to path {}", case2);
-                return execute(failed, case2);
+                return execute(routingTable, failed, case2);
             }
         }
-        return closestHost(failed, path); // if everything fails
+        return closestHost(routingTable, failed, path); // if everything fails
     }
 
-    private Host closestHost(Host failed, PGridPath path) {
-        Collection<Host> hosts = localRT_.closestHosts(path.toString());
+    private Host closestHost(RoutingTable routingTable, Host failed, PGridPath path) {
+        Collection<Host> hosts = routingTable.closestHosts(path.toString());
         int maxLen = 0;
         Host result = null;
         for (Host host : hosts) {

@@ -21,6 +21,7 @@ package pgrid.service.repair.spi;
 
 import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
+import pgrid.entity.routingtable.RoutingTable;
 
 /**
  * This interface represents the algorithm that will be executed in case of a
@@ -41,9 +42,10 @@ public interface FixNodeAlgorithm {
      * host that will continue executing the algorithm. It shows the direction
      * that must be followed.
      *
+     * @param routingTable of the local host to be used by the algorithm.
      * @param failed host to be fixed.
      * @param path   the current path trace as described above.
      * @return the host most likely to know how to solve the issue.
      */
-    public Host execute(Host failed, PGridPath path);
+    public Host execute(RoutingTable routingTable,Host failed, PGridPath path);
 }

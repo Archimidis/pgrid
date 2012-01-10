@@ -77,7 +77,7 @@ public class DefaultRepairService implements RepairService {
         }
 
         PGridPath initialPath = algorithmPathExecution(failed.getHostPath());
-        Host hostToContinue = fix_.execute(failed, initialPath);
+        Host hostToContinue = fix_.execute(routingTable_, failed, initialPath);
         RepairHandle remoteHandle = getRemoteHandle(hostToContinue);
 
         if (hostToContinue.compareTo(localhost_) == 0) {

@@ -37,15 +37,15 @@ public class ThesisFixNodeAlgorithmTest {
     @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullHost_ExpectException() {
         RoutingTable rt = new RoutingTable();
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(rt);
-        algorithm.execute(null, new PGridPath(""));
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        algorithm.execute(rt, null, new PGridPath(""));
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullPath_ExpectException() throws UnknownHostException {
         RoutingTable rt = new RoutingTable();
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(rt);
-        algorithm.execute(new PGridHost("127.0.0.1", 3000), null);
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        algorithm.execute(rt, new PGridHost("127.0.0.1", 3000), null);
     }
 
     @Test
@@ -82,8 +82,8 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
-        Host toContinue = algorithm.execute(failed, initialPath);
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
         Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
 //        System.out.println("Algorithm will continue to " +
 //                "[" + toContinue.getHostPath() + "]" +
@@ -123,8 +123,8 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
-        Host toContinue = algorithm.execute(failed, initialPath);
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
         Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
 //        System.out.println("Algorithm will continue to " +
 //                "[" + toContinue.getHostPath() + "]" +
@@ -164,8 +164,8 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
-        Host toContinue = algorithm.execute(failed, initialPath);
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
 //        System.out.println("Algorithm will continue to " +
 //                "[" + toContinue.getHostPath() + "]" +
 //                toContinue + ":" + toContinue.getPort());
@@ -205,8 +205,8 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm(routingTable);
-        Host toContinue = algorithm.execute(failed, initialPath);
+        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
 //        System.out.println("Algorithm will continue to " +
 //                "[" + toContinue.getHostPath() + "]" +
 //                toContinue + ":" + toContinue.getPort());
