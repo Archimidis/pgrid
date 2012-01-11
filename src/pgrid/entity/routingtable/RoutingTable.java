@@ -57,6 +57,11 @@ public class RoutingTable {
     public RoutingTable() {
     }
 
+    /**
+     * Sets the localhost for this routing table.
+     *
+     * @param localhost owner of this routing table.
+     */
     public void setLocalhost(Host localhost) {
         if (localhost == null) {
             throw new NullPointerException();
@@ -65,15 +70,104 @@ public class RoutingTable {
         createMissingLevels(localhost_.getHostPath().length() - 1);
     }
 
+    /**
+     * Returns the localhost that owns this routing table.
+     *
+     * @return the localhost.
+     */
     public Host getLocalhost() {
         return localhost_;
     }
 
+    /**
+     * Refreshes the routing table by performing certain actions. When this
+     * method ends, it guarantees that:
+     * <ol>
+     * <li>path changes of the localhost will be reflected to the routing table
+     * </li>
+     * <li>every level size will be less than or equal to the given refMax</li>
+     * <li>all hosts will be in the correct level according to their path
+     * compared to that of the localhost</li>
+     * <li>hosts with path containing the full path of the localhost as prefix
+     * are considered invalid and will be removed</li>
+     * <li>hosts that belong to a removed level but that level is valid in the
+     * pgrid network, will be placed to smaller levels according to their path.
+     * </li>
+     * </ol>
+     *
+     * @param refMax the maximum number of hosts that a level will contain.
+     */
+    public synchronized void refresh(int refMax) {
+        if (refMax < 0) {
+            throw new IllegalArgumentException("RefMax cannot be negative.");
+        }
+
+        createMissingLevels(localhost_.getHostPath().length() - 1);
+
+        Set<Host> excess = new TreeSet<Host>();
+        PGridPath localhostPath = localhost_.getHostPath();
+
+        // Excess hosts are hosts which their level is no longer viable.
+        // These hosts are kept and placed to level 0 and later are kept based
+        // on refMax.
+        int diff = localhostPath.length() - references_.size();
+        if (diff < 0) {
+            for (int i = 0; i < -diff; i++) {
+                excess.addAll(references_.remove(references_.size() - 1));
+            }
+        }
+        for (Host host : excess) {
+            addReference(0, host);
+        }
+
+        // Move hosts to their corresponding levels.
+        for (int level = 0; level < references_.size(); level++) {
+            Set<Host> levelSet = references_.get(level);
+            Host[] levelArray = levelSet.toArray(new Host[levelSet.size()]);
+            for (Host host : levelArray) {
+                String commonPrefix = host.getHostPath().commonPrefix(localhostPath);
+                int commonLen = commonPrefix.length();
+                if (commonLen != level || host.getHostPath().length() == 0) {
+                    int lLen = localhostPath.length() - commonLen;
+                    int rLen = host.getHostPath().length() - commonLen;
+                    if (lLen > 0 && rLen > 0) {
+                        // swap level
+                        addReference(commonLen, host);
+                    } else { // (lLen == 0 && rLen == 0) is removed too
+                        removeReference(host);
+                    }
+                }
+            }
+        }
+
+        // Make the size of each level equal or less to the given refMax.
+        for (Set<Host> levelSet : references_) {
+            Host[] levelArray = levelSet.toArray(new Host[levelSet.size()]);
+            if (levelArray.length > refMax) {
+                removeReference(levelArray[0]);
+            }
+        }
+    }
+
+    /**
+     * This method is performed between a given routing table and the local
+     * one. Every level beginning from level zero till commonLength
+     * - [0, commonLength) - will contain hosts selected randomly by the union
+     * of the same levels of the two routing tables respectively. At the end
+     * the local routing table will add the host owner of the given routing
+     * table to its own at the correct level.
+     *
+     * @param routingTable to be mixed with this routing table.
+     * @param commonLength of the owner hosts of the two routing tables.
+     * @param refMax the maximum number of hosts that a level will contain.
+     */
     public synchronized void update(RoutingTable routingTable, int commonLength, int refMax) {
         // [Sanity check] In case the localhost has changed its path in the meantime.
         if (commonLength > localhost_.getHostPath().length()) {
             commonLength = localhost_.getHostPath().length();
         }
+
+        //createMissingLevels(localhost_.getHostPath().length() - 1);
 
         // [0, commonLength) -> union & randomSelect per level
         if (commonLength > 0) {
@@ -84,36 +178,9 @@ public class RoutingTable {
             }
         }
 
-        int lLen = getLocalhost().getHostPath().length();
-        int rLen = routingTable.getLocalhost().getHostPath().length();
-        if ((lLen > commonLength) && (rLen > commonLength)) {
-            addReference(commonLength, routingTable.getLocalhost());
-        }
-        // TODO: [ToComplete] Check the path of the localhost and all the hosts stored. Add/remove levels accordingly.
-        int len = localhost_.getHostPath().length() - levelNumber();
-        System.out.println("Changed path: " + len);
-        if (len > 0) {
-            createMissingLevels(localhost_.getHostPath().length() - 1);
-        } else if (len < 0) {
-            Collection<Host> hosts = new ArrayList<Host>();
-            int start = levelNumber() + len;
-            int end = levelNumber();
-            System.out.println("[" + start + ", " + end + ")");
-            for (int i = end - 1; i >= start; i--) {
-                Set<Host> level = references_.get(i);
-                hosts.addAll(level);
-//                for (Host host : level) {
-//                    removeReference(host);
-//                }
-                references_.remove(i);
-            }
-            System.out.println("levels: " + levelNumber());
-            System.out.println(uuidRefs_.size());
-            for (Host host : hosts) {
-                System.out.println(host.getAddress().getHostAddress() + ":" + host.getPort());
-            }
-        }
-        // TODO: Check the path of all hosts stored and rearrange them to levels according if they changed.
+        // if it shouldn't be added it will be fixed by refresh(...)
+        references_.get(commonLength).add(routingTable.getLocalhost());
+        refresh(refMax);
     }
 
     /**
@@ -326,6 +393,23 @@ public class RoutingTable {
     }
 
     /**
+     * TODO: Write documentation and unit test.
+     *
+     * @param level
+     * @return
+     */
+    public Host[] getLevelArray(int level) {
+        if (level < 0) {
+            throw new IllegalArgumentException("Negative level given");
+        }
+        if (level >= localhost_.getHostPath().length()) {
+            throw new IllegalArgumentException("Level surpasses localhost path length");
+        }
+        Set<Host> hosts = references_.get(level);
+        return hosts.toArray(new Host[hosts.size()]);
+    }
+
+    /**
      * Retrieve a collections of hosts that mirrors the locations of the hosts
      * stored in the routing table. The collection will have each level and the
      * level will contain all the hosts according to the routing table. This
@@ -496,7 +580,7 @@ public class RoutingTable {
      * Given a collection with hosts, it returns a random subset containing
      * refMax of these hosts.
      *
-     * @param refMax     the maximum host to choose from the collection.
+     * @param refMax     the maximum host number to choose from the collection.
      * @param commonRefs to random select from.
      * @return a collection with all the selected hosts.
      */

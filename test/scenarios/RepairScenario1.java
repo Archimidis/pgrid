@@ -62,8 +62,8 @@ import java.util.logging.Level;
  *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class Scenario1 {
-    private static final Logger logger_ = LoggerFactory.getLogger(Scenario1.class);
+public class RepairScenario1 {
+    private static final Logger logger_ = LoggerFactory.getLogger(RepairScenario1.class);
     private Thread orbThread_;
 
     private final int localPort_ = 3000;
