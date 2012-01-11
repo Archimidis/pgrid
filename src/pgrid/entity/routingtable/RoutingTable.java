@@ -159,7 +159,7 @@ public class RoutingTable {
      *
      * @param routingTable to be mixed with this routing table.
      * @param commonLength of the owner hosts of the two routing tables.
-     * @param refMax the maximum number of hosts that a level will contain.
+     * @param refMax       the maximum number of hosts that a level will contain.
      */
     public synchronized void update(RoutingTable routingTable, int commonLength, int refMax) {
         // [Sanity check] In case the localhost has changed its path in the meantime.
@@ -380,7 +380,7 @@ public class RoutingTable {
      * references yet.
      *
      * @param level to get the hosts from.
-     * @return a collection with all hosts.
+     * @return a collection with all the hosts contained in the level.
      */
     public Collection<Host> getLevel(int level) {
         if (level < 0) {
@@ -393,10 +393,14 @@ public class RoutingTable {
     }
 
     /**
-     * TODO: Write documentation and unit test.
+     * Returns an array with all the hosts contained in the specified
+     * valid level. The level is invalid if it is negative or if it surpasses
+     * the length of the local host. This method may return an empty level in
+     * case the local host has updated its path but has not received any new
+     * references yet.
      *
-     * @param level
-     * @return
+     * @param level to get the hosts from.
+     * @return a array with all the hosts contained in the level.
      */
     public Host[] getLevelArray(int level) {
         if (level < 0) {
