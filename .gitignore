@@ -9,3 +9,7 @@ out/
 *.ipr
 *.iws
 nbproject/private/
+/build/
+/dist/
+nbproject/private/
+coverage/*

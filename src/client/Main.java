@@ -21,6 +21,8 @@ package client;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.EntityModule;
@@ -35,15 +37,18 @@ import pgrid.service.bootstrap.PersistencyException;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.repair.RepairService;
 
-import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
-
 public class Main {
 
     private static final Logger logger_ = LoggerFactory.getLogger(Main.class);
 
-    // arg[0] -> routingTable.xlm    
+    // arg[0] -> load routingTable.xlm
+    // arg[1] -> store routingTable.xlm
     public static void main(String[] args) {
+        if (args.length != 2) {
+            logger_.error("No file given to load and store routing table.");
+            System.exit(1);
+        }
+
         Injector injector = Guice.createInjector(
                 new EntityModule(),
                 new ServiceModule(),
@@ -56,10 +61,13 @@ public class Main {
             initProcess.serviceRegistration(injector);
         } catch (UnknownHostException e) {
             logger_.error("{}", e);
+            System.exit(2);
         } catch (PersistencyException e) {
             logger_.error("{}", e);
+            System.exit(2);
         } catch (FileNotFoundException e) {
             logger_.error("{}", e);
+            System.exit(2);
         }
 
         try {
@@ -79,7 +87,7 @@ public class Main {
                         failed.getHostPath()});
 
         // exchange with failed peer
-        ExchangeService exchangeService = 
+        ExchangeService exchangeService =
                 injector.getProvider(ExchangeService.class).get();
         try {
             exchangeService.execute(failed);
@@ -96,12 +104,13 @@ public class Main {
         } catch (InterruptedException e) {}
         context.getCorba().shutdown(true);
 
-        FileBootstrapService bootstrapService = 
+        FileBootstrapService bootstrapService =
                 injector.getInstance(FileBootstrapService.class);
         try {
             bootstrapService.store(args[1], context.getLocalRT());
         } catch (FileNotFoundException e) {
             logger_.error("An error occurred while storing the routing table.");
+            System.exit(3);
         }
 
     }

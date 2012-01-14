@@ -27,7 +27,7 @@
             <level>debug</level>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss}, %p, %c, %t, %r, %L, %C{1}, %M %m%n</pattern>
+            <pattern>%%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </layout>
     </appender>
 
