@@ -200,4 +200,26 @@ public class PGridPath {
         }
         return commonPrefix(path).length() == path.length();
     }
+
+    /**
+     * Checks if the given path is conjugate to this path.
+     *
+     * @param path to check.
+     * @return true if it's the conjugate path, else false.
+     */
+    public boolean isConjugateTo(PGridPath path) {
+        if (path == null) {
+            throw new NullPointerException();
+        }
+
+        String common = commonPrefix(path);
+        if (path.length() == path_.length()) {
+            int otherLen = path.length() - common.length();
+            int thisLen = path_.length() - common.length();
+            if (otherLen == 1 && thisLen == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

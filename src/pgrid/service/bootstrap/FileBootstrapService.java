@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.entity.routingtable;
+package pgrid.service.bootstrap;
+
+import pgrid.entity.routingtable.RoutingTable;
 
 import java.io.FileNotFoundException;
 
@@ -29,7 +31,7 @@ import java.io.FileNotFoundException;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public interface PersistenceDelegate {
+public interface FileBootstrapService {
 
     /**
      * It opens the given filename and constructs the routing table based on

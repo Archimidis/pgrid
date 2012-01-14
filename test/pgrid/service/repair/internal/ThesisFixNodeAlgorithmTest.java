@@ -28,6 +28,7 @@ import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * @author Vourlakis Nikolas
@@ -37,21 +38,14 @@ public class ThesisFixNodeAlgorithmTest {
     @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullRoutingTable_ExpectException() throws UnknownHostException {
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
-        algorithm.execute(null, new PGridHost("127.0.0.1", 3000), new PGridPath(""));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void WhenExecutingWithNullHost_ExpectException() {
-        RoutingTable rt = new RoutingTable();
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
-        algorithm.execute(rt, null, new PGridPath(""));
+        algorithm.execute(null, new PGridPath(""));
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullPath_ExpectException() throws UnknownHostException {
         RoutingTable rt = new RoutingTable();
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
-        algorithm.execute(rt, new PGridHost("127.0.0.1", 3000), null);
+        algorithm.execute(rt, null);
     }
 
     @Test
@@ -59,7 +53,6 @@ public class ThesisFixNodeAlgorithmTest {
         // localhost: "000"
         // failed: "01"
         // resulted prefix: "001"
-        // selected host: "0010"
         RoutingTable routingTable = new RoutingTable();
         Host localhost = new PGridHost("127.0.0.1", 3000);
         localhost.setHostPath("000");
@@ -79,9 +72,8 @@ public class ThesisFixNodeAlgorithmTest {
         routingTable.addReference(2, host3);
         routingTable.addReference(2, host4);
 
-        Host failed = new PGridHost("127.0.0.1", 9999);
-        failed.setHostPath("01");
-        PGridPath failedHostPath = failed.getHostPath();
+
+        PGridPath failedHostPath = new PGridPath("01");
 
         String root = failedHostPath.subPath(0, failedHostPath.length() - 1);
         char lastChar = failedHostPath.value(failedHostPath.length() - 1);
@@ -89,11 +81,12 @@ public class ThesisFixNodeAlgorithmTest {
         initialPath.revertAndAppend(lastChar);
 
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
-        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
-        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
-//        System.out.println("Algorithm will continue to " +
-//                "[" + toContinue.getHostPath() + "]" +
-//                toContinue + ":" + toContinue.getPort());
+        List<Host> toContinue = algorithm.execute(routingTable, initialPath);
+
+        Assert.assertTrue(toContinue.size() == 2);
+        for (Host host : toContinue) {
+            Assert.assertTrue(host.getHostPath().hasPrefix(new PGridPath("001")));
+        }
     }
 
     @Test
@@ -101,7 +94,6 @@ public class ThesisFixNodeAlgorithmTest {
         // localhost: "000"
         // failed: "0011"
         // resulted prefix: "001"
-        // selected host: "0010"
         RoutingTable routingTable = new RoutingTable();
         Host localhost = new PGridHost("127.0.0.1", 3000);
         localhost.setHostPath("000");
@@ -130,11 +122,12 @@ public class ThesisFixNodeAlgorithmTest {
         initialPath.revertAndAppend(lastChar);
 
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
-        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
-        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
-//        System.out.println("Algorithm will continue to " +
-//                "[" + toContinue.getHostPath() + "]" +
-//                toContinue + ":" + toContinue.getPort());
+        List<Host> toContinue = algorithm.execute(routingTable, initialPath);
+
+        Assert.assertTrue(toContinue.size() == 2);
+        for (Host host : toContinue) {
+            Assert.assertTrue(host.getHostPath().hasPrefix(new PGridPath("001")));
+        }
     }
 
     @Test
@@ -142,7 +135,6 @@ public class ThesisFixNodeAlgorithmTest {
         // localhost: "000"
         // failed: "1"
         // resulted prefix: "001"
-        // selected host: "0011"
         RoutingTable routingTable = new RoutingTable();
         Host localhost = new PGridHost("127.0.0.1", 3000);
         localhost.setHostPath("000");
@@ -171,11 +163,12 @@ public class ThesisFixNodeAlgorithmTest {
         initialPath.revertAndAppend(lastChar);
 
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
-        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
-//        System.out.println("Algorithm will continue to " +
-//                "[" + toContinue.getHostPath() + "]" +
-//                toContinue + ":" + toContinue.getPort());
-        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
+        List<Host> toContinue = algorithm.execute(routingTable, initialPath);
+
+        Assert.assertTrue(toContinue.size() == 2);
+        for (Host host : toContinue) {
+            Assert.assertTrue(host.getHostPath().hasPrefix(new PGridPath("001")));
+        }
     }
 
     @Test
@@ -183,7 +176,7 @@ public class ThesisFixNodeAlgorithmTest {
         // localhost: "0010"
         // failed: "000"
         // resulted prefix: "001"
-        // selected host: "0010"
+        // selected host: "0010" = the localhost must solve it
         RoutingTable routingTable = new RoutingTable();
         Host localhost = new PGridHost("127.0.0.1", 3000);
         localhost.setHostPath("0010");
@@ -212,10 +205,11 @@ public class ThesisFixNodeAlgorithmTest {
         initialPath.revertAndAppend(lastChar);
 
         FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
-        Host toContinue = algorithm.execute(routingTable, failed, initialPath);
-//        System.out.println("Algorithm will continue to " +
-//                "[" + toContinue.getHostPath() + "]" +
-//                toContinue + ":" + toContinue.getPort());
-        Assert.assertTrue(toContinue.getHostPath().hasPrefix(new PGridPath("001")));
+        List<Host> toContinue = algorithm.execute(routingTable, initialPath);
+
+        Assert.assertTrue(toContinue.size() == 1);
+        for (Host host : toContinue) {
+            Assert.assertTrue(host.getHostPath().hasPrefix(new PGridPath("001")));
+        }
     }
 }

@@ -79,5 +79,29 @@ public class PGridPathTest {
         Assert.assertFalse(child.hasPrefix(parent));
         Assert.assertTrue(parent.hasPrefix(child));
     }
+
+    //public boolean isConjugateTo(PGridPath path)
+    @Test(expected = NullPointerException.class)
+    public void WhenConjugatePathIsNull_ExpectException() {
+        PGridPath thisPath = new PGridPath("0");
+        thisPath.isConjugateTo(null);
+    }
+
+    //public boolean isConjugateTo(PGridPath path)
+    @Test
+    public void WhenPathIsConjugate_ExpectTrueElseFalse() {
+        PGridPath thisPath = new PGridPath("00");
+        PGridPath otherPath = new PGridPath("01");
+        PGridPath anotherPath = new PGridPath("011");
+
+        Assert.assertTrue(thisPath.isConjugateTo(otherPath));
+        Assert.assertFalse(thisPath.isConjugateTo(anotherPath));
+
+        thisPath = new PGridPath("0");
+        otherPath = new PGridPath("1");
+
+        Assert.assertTrue(thisPath.isConjugateTo(otherPath));
+        Assert.assertFalse(thisPath.isConjugateTo(anotherPath));
+    }
 }
 

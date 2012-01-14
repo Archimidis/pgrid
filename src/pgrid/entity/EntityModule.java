@@ -28,11 +28,8 @@ import pgrid.entity.clock.PeerClock;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.internal.PGridKey;
 import pgrid.entity.internal.PGridKeyRange;
-import pgrid.entity.routingtable.PersistenceDelegate;
-import pgrid.entity.routingtable.RoutingTable;
 import pgrid.entity.routingtable.RoutingTableFactory;
 import pgrid.entity.routingtable.internal.DefaultRoutingTableFactory;
-import pgrid.entity.routingtable.internal.XMLPersistenceDelegate;
 
 import javax.inject.Singleton;
 
@@ -57,8 +54,7 @@ public class EntityModule extends AbstractModule {
         bind(PeerClock.class).to(LamportClock.class);
 
         bind(RoutingTableFactory.class).to(DefaultRoutingTableFactory.class);
-        bind(RoutingTable.class);
-        bind(PersistenceDelegate.class).to(XMLPersistenceDelegate.class);
+        //bind(RoutingTable.class); // force the client to use the factory
 
         bind(CorbaFactory.class).in(Singleton.class);
     }

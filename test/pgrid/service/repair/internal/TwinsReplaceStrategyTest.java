@@ -22,6 +22,7 @@ package pgrid.service.repair.internal;
 import org.junit.Assert;
 import org.junit.Test;
 import pgrid.entity.Host;
+import pgrid.entity.PGridPath;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.repair.spi.ReplaceStrategy;
@@ -33,20 +34,22 @@ import java.net.UnknownHostException;
  */
 public class TwinsReplaceStrategyTest {
 
+    private static final int MAX_REF = Integer.MAX_VALUE;
+
     @Test(expected = NullPointerException.class)
-    public void WhenReplacingLocallyNullRoutingTable_ExpectException() throws UnknownHostException {
-        ReplaceStrategy replace = new TwinsReplaceStrategy();
-        replace.execute(null, new PGridHost("127.0.0.1", 1111));
+    public void WhenReplacingNullRoutingTable_ExpectException() throws UnknownHostException {
+        ReplaceStrategy replace = new TwinsReplaceStrategy(MAX_REF);
+        replace.execute(null, new PGridPath("00"));
     }
 
     @Test(expected = NullPointerException.class)
-    public void WhenReplacingLocallyNullFailedHost_ExpectException() throws UnknownHostException {
-        ReplaceStrategy replace = new TwinsReplaceStrategy();
+    public void WhenReplacingNullFailedPath_ExpectException() throws UnknownHostException {
+        ReplaceStrategy replace = new TwinsReplaceStrategy(MAX_REF);
         replace.execute(new RoutingTable(), null);
     }
 
     @Test
-    public void WhenReplacingLocallyWith2HostsInNetwork_ExpectLocalHoldingAllKeyspace() throws UnknownHostException {
+    public void WhenReplacingWith2HostsInNetwork_ExpectLocalHoldingAllKeyspace() throws UnknownHostException {
         String expected = "";
 
         Host localhost = new PGridHost("127.0.0.1", 3000);
@@ -54,17 +57,16 @@ public class TwinsReplaceStrategyTest {
         RoutingTable localRT = new RoutingTable();
         localRT.setLocalhost(localhost);
 
-        Host failed = new PGridHost("127.0.0.1", 1111);
-        failed.setHostPath("1");
+        PGridPath failedPath = new PGridPath("1");
 
-        ReplaceStrategy localReplace = new TwinsReplaceStrategy();
-        localReplace.execute(localRT, failed);
+        ReplaceStrategy localReplace = new TwinsReplaceStrategy(MAX_REF);
+        localReplace.execute(localRT, failedPath);
 
         Assert.assertTrue(localRT.getLocalhost().getHostPath().toString().compareTo(expected) == 0);
     }
 
     @Test
-    public void WhenReplacingLocally_ExpectLocalReducedPath() throws UnknownHostException {
+    public void WhenReplacing_ExpectLocalReducedPath() throws UnknownHostException {
         String expected = "0";
 
         Host localhost = new PGridHost("127.0.0.1", 3000);
@@ -72,35 +74,16 @@ public class TwinsReplaceStrategyTest {
         RoutingTable localRT = new RoutingTable();
         localRT.setLocalhost(localhost);
 
-        Host failed = new PGridHost("127.0.0.1", 1111);
-        failed.setHostPath("01");
+        PGridPath failedPath = new PGridPath("01");
 
-        ReplaceStrategy localReplace = new TwinsReplaceStrategy();
-        localReplace.execute(localRT, failed);
+        ReplaceStrategy localReplace = new TwinsReplaceStrategy(MAX_REF);
+        localReplace.execute(localRT, failedPath);
 
         Assert.assertTrue(localRT.getLocalhost().getHostPath().toString().compareTo(expected) == 0);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void WhenReplacingWithConjugateNullRoutingTable_ExpectException() throws UnknownHostException {
-        ReplaceStrategy replace = new TwinsReplaceStrategy();
-        replace.execute(null, new PGridHost("127.0.0.1", 3000), new PGridHost("127.0.0.1", 1111));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void WhenReplacingWithConjugateNullConjugateHost_ExpectException() throws UnknownHostException {
-        ReplaceStrategy replace = new TwinsReplaceStrategy();
-        replace.execute(new RoutingTable(), null, new PGridHost("127.0.0.1", 1111));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void WhenReplacingWithConjugateNullFailedHost_ExpectException() throws UnknownHostException {
-        ReplaceStrategy replace = new TwinsReplaceStrategy();
-        replace.execute(new RoutingTable(), new PGridHost("127.0.0.1", 3000), null);
-    }
-
     @Test
-    public void WhenReplacingWithConjugate_ExpectResults() throws UnknownHostException {
+    public void WhenReplacingHavingConjugate_ExpectResults() throws UnknownHostException {
         String expectedLocal = "0";
         String expectedRemote = "1";
 
@@ -114,14 +97,13 @@ public class TwinsReplaceStrategyTest {
         RoutingTable remoteRT = new RoutingTable();
         remoteRT.setLocalhost(remoteHost);
 
-        Host failed = new PGridHost("127.0.0.1", 1111);
-        failed.setHostPath("1");
+        PGridPath failedPath = new PGridPath("1");
 
-        ReplaceStrategy localReplace = new TwinsReplaceStrategy();
-        localReplace.execute(localRT, remoteHost, failed);
+        ReplaceStrategy localReplace = new TwinsReplaceStrategy(MAX_REF);
+        localReplace.execute(localRT, failedPath);
 
-        ReplaceStrategy remoteReplace = new TwinsReplaceStrategy();
-        remoteReplace.execute(remoteRT, localhost, failed);
+        ReplaceStrategy remoteReplace = new TwinsReplaceStrategy(MAX_REF);
+        remoteReplace.execute(remoteRT, failedPath);
 
         Assert.assertTrue(localRT.getLocalhost().getHostPath().toString().compareTo(expectedLocal) == 0);
         Assert.assertTrue(remoteRT.getLocalhost().getHostPath().toString().compareTo(expectedRemote) == 0);

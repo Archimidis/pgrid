@@ -17,16 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.entity.routingtable.internal;
+package pgrid.service.bootstrap.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
-import pgrid.entity.routingtable.PersistenceDelegate;
-import pgrid.entity.routingtable.PersistencyException;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.entity.utilities.IOUtilities;
+import pgrid.service.bootstrap.FileBootstrapService;
+import pgrid.service.bootstrap.PersistencyException;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.*;
@@ -38,7 +38,7 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 /**
- * The default implementation of the {@link pgrid.entity.routingtable.PersistenceDelegate} interface.
+ * The default implementation of the {@link pgrid.service.bootstrap.FileBootstrapService} interface.
  * The format that stores into and loads from is xml.
  * There must be first a block with the tag "localpeer" that contains all the
  * information needed for the localhost. After that entry blocks with the tag
@@ -77,9 +77,9 @@ import java.util.*;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public class XMLPersistenceDelegate implements PersistenceDelegate {
+public class XMLBootstrapService implements FileBootstrapService {
 
-    private static final Logger logger_ = LoggerFactory.getLogger(XMLPersistenceDelegate.class);
+    private static final Logger logger_ = LoggerFactory.getLogger(XMLBootstrapService.class);
 
     private static final String ROOT = "RoutingTable";
     private static final String LOCALPEER = "localpeer";

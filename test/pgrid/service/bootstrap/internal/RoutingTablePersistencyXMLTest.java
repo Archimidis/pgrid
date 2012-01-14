@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.entity.routingtable;
+package pgrid.service.bootstrap.internal;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -25,7 +25,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
-import pgrid.entity.routingtable.internal.XMLPersistenceDelegate;
+import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.bootstrap.FileBootstrapService;
+import pgrid.service.bootstrap.PersistencyException;
 
 import java.io.*;
 import java.util.*;
@@ -41,11 +43,11 @@ public class RoutingTablePersistencyXMLTest {
 
     private static Map<Integer, List<Host>> hostList_;
     private static Host localpeer_;
-    private static PersistenceDelegate persistenceDelegate_;
+    private static FileBootstrapService persistenceDelegate_;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
-        persistenceDelegate_ = new XMLPersistenceDelegate();
+        persistenceDelegate_ = new XMLBootstrapService();
 
         RoutingTable routingTable = new RoutingTable();
 
@@ -116,7 +118,7 @@ public class RoutingTablePersistencyXMLTest {
         routingTable.addReference(level, levelList);
 
         // Store
-        PersistenceDelegate p = new XMLPersistenceDelegate();
+        FileBootstrapService p = new XMLBootstrapService();
         try {
             p.store(VALID_FILE, routingTable);
         } catch (FileNotFoundException e) {

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.entity.routingtable;
+package pgrid.service.bootstrap;
 
 /**
  * @author Vourlakis Nikolas
