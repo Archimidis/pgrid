@@ -36,22 +36,22 @@ public class RepairIssueRegistry {
     private static final Map<UUID, RepairIssue> unsolvedIssues_ = new ConcurrentHashMap<UUID, RepairIssue>();
     private static final Map<String, RepairIssue> unsolvedPaths_ = new ConcurrentHashMap<String, RepairIssue>();
 
-    public RepairIssue getIssue(UUID repairID) {
-        return unsolvedIssues_.get(repairID);
+    public RepairIssue getIssue(String path) {
+        return unsolvedPaths_.get(path);
     }
 
     public Set<String> getUnsolvedPaths() {
         return unsolvedPaths_.keySet();
     }
 
-    public RepairIssue removeIssue(UUID repairID) {
-        RepairIssue issue = unsolvedIssues_.remove(repairID);
-        unsolvedPaths_.remove(issue.failedPeerPath);
+    public RepairIssue removeIssue(UUID hostUUID) {
+        RepairIssue issue = unsolvedIssues_.remove(hostUUID);
+        unsolvedPaths_.remove(issue.failedPath);
         return issue;
     }
 
-    public boolean containsID(UUID repairID) {
-        return unsolvedIssues_.containsKey(repairID);
+    public boolean containsHost(UUID hostUUID) {
+        return unsolvedIssues_.containsKey(hostUUID);
     }
 
     public boolean containsPath(String path) {
@@ -59,8 +59,8 @@ public class RepairIssueRegistry {
     }
 
     public void newIssue(RepairIssue repairIssue) {
-        unsolvedIssues_.put(UUID.fromString(repairIssue.repairID), repairIssue);
-        unsolvedPaths_.put(repairIssue.failedPeerPath, repairIssue);
+        unsolvedIssues_.put(UUID.fromString(repairIssue.failedPeer.uuid), repairIssue);
+        unsolvedPaths_.put(repairIssue.failedPath, repairIssue);
     }
 
     public void clear() {

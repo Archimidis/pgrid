@@ -46,25 +46,26 @@ module pgrid {
                 }; // end module exchange
 
                 module repair {
+                    enum IssueType {
+                        SINGLE_NODE,
+                        SUBTREE
+                    };
+
                     struct RepairIssue {
-                        string repairID;
+                        IssueType issueType;
                         PeerReference failedPeer;
-                        string failedPeerPath;
-                        string footpath;
+                        string failedPath;
                     };
 
                     struct RepairSolution {
-                        string repairID;
-                        string failedPeerPath;
-                        sequence<PeerReference> failedPeer;
-                        PeerReference replacerPeer;
-                        PeerReference twinPeer;
+                        PeerArray failedHosts;
+                        PeerArray updatedHosts;
+                        string failedPath;
                     };
 
                     interface RepairHandle {
-                        void fixNode(in RepairIssue issue);
-                        void replace(in RepairIssue issue);
-                        void propagate(in RepairSolution solution);
+                        void fixIssue(in RepairIssue issue, in string footpath);
+                        void broadcastSolution(in RepairSolution solution);
                     };
                 }; // end module repair
 

@@ -17,27 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.repair;
+package pgrid.process;
 
-import pgrid.entity.Host;
+import com.google.inject.AbstractModule;
 
 /**
- * TODO: Write documentation
- *
- * @author Vourlakis Nikolas
+ * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public interface RepairService {
-
-    /**
-     *
-     * @param failedHost host to be repaired.
-     */
-    public void fixNode(Host failedHost);
-
-    /**
-     *
-     * @param subtreePath
-     * @param failedGroup
-     */
-    public void fixSubtree(String subtreePath, Host... failedGroup);
+public class ProcessModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bind(SystemInitializationProcess.class);
+    }
 }

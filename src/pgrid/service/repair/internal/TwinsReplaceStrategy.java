@@ -21,10 +21,12 @@ package pgrid.service.repair.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.spi.ReplaceStrategy;
+
+import javax.inject.Inject;
 
 /**
  * <h1>The implementation of the Thesis replace algorithm.</h1>
@@ -49,59 +51,45 @@ import pgrid.service.repair.spi.ReplaceStrategy;
  */
 public class TwinsReplaceStrategy implements ReplaceStrategy {
 
-    private static final Logger logger_ = LoggerFactory.getLogger(TwinsReplaceStrategy.class);
+    private final int maxRef_;
 
-    @Override
-    public void execute(RoutingTable routingTable, Host failed) {
-        if (routingTable == null) {
-            throw new NullPointerException("A null routing table was given.");
-        }
-        if (failed == null) {
-            throw new NullPointerException("A null failed peer was given");
-        }
-
-        // conjugate is the failed peer
-        Host localhost = routingTable.getLocalhost();
-        PGridPath localhostPath = localhost.getHostPath();
-        // conjugate path == failed path
-        logger_.info("The localhost's conjugate is the failed peer.");
-
-        // the network was consisted only by the localhost and the failed peer. // TODO: test case
-        int end = localhostPath.length() - 1;
-        String newPath = end < 0 ? "" : localhostPath.subPath(0, end);
-        localhost.setHostPath(newPath);
-
-        logger_.debug("Localhost new path: {}", localhost.getHostPath());
-        // TODO: refresh routing table after path change
+    @Inject
+    public TwinsReplaceStrategy(@MaxRef int maxRef) {
+        maxRef_ = maxRef;
     }
 
+    private static final Logger logger_ = LoggerFactory.getLogger(TwinsReplaceStrategy.class);
+
+
     @Override
-    public void execute(RoutingTable routingTable, Host conjugate, Host failed) {
+    public void execute(RoutingTable routingTable, PGridPath failedPath) {
         if (routingTable == null) {
             throw new NullPointerException("A null routing table was given.");
         }
-        if (conjugate == null) {
-            throw new NullPointerException("A null conjugate peer was given");
-        }
-        if (failed == null) {
-            throw new NullPointerException("A null failed peer was given");
+        if (failedPath == null) {
+            throw new NullPointerException("A null failed path was given");
         }
 
-        Host localhost = routingTable.getLocalhost();
-        PGridPath localhostPath = localhost.getHostPath();
-        // conjugate path != failed path
-        if (localhostPath.value(localhostPath.length() - 1) == '1') {
-            logger_.info("[Twin Case 1] Localhost will replace the failed host path: {}.", failed.getHostPath());
-            // localhost path = failed path and conjugate reduce path
-            localhost.setHostPath(failed.getHostPath().toString());
-        } else { // == '0'
-            logger_.info("[Twin Case 2] Localhost will reduce its path by one.");
-            // localhost reduce path and conjugate path = failed path
-            int end = localhostPath.length() - 1;
-            String newPath = end < 0 ? "" : localhostPath.subPath(0, end);
-            localhost.setHostPath(newPath);
+        PGridPath localhostPath = routingTable.getLocalhost().getHostPath();
+
+        if (failedPath.isConjugateTo(localhostPath)) {
+            logger_.info("[Failed = conjugate] Localhost will reduce its path by one.");
+            routingTable.getLocalhost().setHostPath(reducePath(localhostPath));
+        } else {
+            if (localhostPath.value(localhostPath.length() - 1) == '1') {
+                logger_.info("[Ending with '1'] Localhost will take the path of the failed host.");
+                routingTable.getLocalhost().setHostPath(failedPath.toString());
+            } else {
+                logger_.info("[Ending with '0'] Localhost will reduce its path by one.");
+                routingTable.getLocalhost().setHostPath(reducePath(localhostPath));
+            }
         }
-        logger_.debug("Localhost new path: {}", localhost.getHostPath());
-        // TODO: refresh routing table after path change
+        logger_.debug("Localhost new path: {}", routingTable.getLocalhost().getHostPath());
+        routingTable.refresh(maxRef_);
+    }
+
+    private String reducePath(PGridPath localhostPath) {
+        int end = localhostPath.length() - 1;
+        return end < 0 ? "" : localhostPath.subPath(0, end);
     }
 }

@@ -24,9 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.repair.internal.RepairIssueRegistry;
 import pgrid.service.repair.internal.ThesisFixNodeAlgorithm;
+import pgrid.service.repair.internal.TwinsReplaceStrategy;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
 import pgrid.service.repair.spi.RepairHandleProvider;
 import pgrid.service.repair.spi.RepairProvider;
+import pgrid.service.repair.spi.ReplaceStrategy;
 import pgrid.service.spi.corba.repair.RepairHandlePOA;
 
 /**
@@ -43,6 +45,7 @@ public class RepairModule extends AbstractModule {
         bind(RepairIssueRegistry.class).asEagerSingleton();
 
         bind(FixNodeAlgorithm.class).to(ThesisFixNodeAlgorithm.class);
+        bind(ReplaceStrategy.class).to(TwinsReplaceStrategy.class);
 
         bind(RepairService.class).toProvider(RepairProvider.class);
         // returns the same handle every time

@@ -23,6 +23,7 @@ import pgrid.service.LocalPeerContext;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.RepairService;
 import pgrid.service.repair.internal.DefaultRepairService;
+import pgrid.service.repair.internal.RepairDelegate;
 import pgrid.service.repair.internal.RepairIssueRegistry;
 
 import javax.inject.Inject;
@@ -32,24 +33,37 @@ import javax.inject.Provider;
  * @author Vourlakis Nikolas
  */
 public class RepairProvider implements Provider<RepairService> {
-    private LocalPeerContext context_;
+    private final LocalPeerContext context_;
     private final int MAX_REF;
     private FixNodeAlgorithm fix_;
-    private RepairIssueRegistry registry_;
+    private ReplaceStrategy replace_;
+    private final RepairIssueRegistry registry_;
 
     @Inject
-    public RepairProvider(LocalPeerContext context, RepairIssueRegistry registry, FixNodeAlgorithm fix, @MaxRef int maxRef) {
+    public RepairProvider(LocalPeerContext context, RepairIssueRegistry registry, @MaxRef int maxRef) {
         context_ = context;
         registry_ = registry;
-        fix_ = fix;
         MAX_REF = maxRef;
+    }
+
+    @Inject
+    protected void setFixNodeAlgorithm(FixNodeAlgorithm fix) {
+        fix_ = fix;
+    }
+
+    @Inject
+    protected void setReplaceStrategy(ReplaceStrategy replace) {
+        replace_ = replace;
     }
 
     @Override
     public RepairService get() {
-        DefaultRepairService service = new DefaultRepairService(context_.getCorba(), context_.getLocalRT(), registry_);
-        service.setFixNodeAlgorithm(fix_);
-        service.setMaxRef(MAX_REF);
-        return service;
+
+        RepairDelegate delegate = new RepairDelegate(context_.getCorba(), context_.getLocalRT(), registry_);
+        delegate.setFixNodeAlgorithm(fix_);
+        delegate.setReplaceStrategy(replace_);
+        delegate.setMaxRef(MAX_REF);
+
+        return new DefaultRepairService(delegate);
     }
 }

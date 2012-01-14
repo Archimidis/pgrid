@@ -22,6 +22,7 @@ package pgrid.service.repair.spi;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.internal.DefaultRepairHandle;
+import pgrid.service.repair.internal.RepairDelegate;
 import pgrid.service.repair.internal.RepairIssueRegistry;
 import pgrid.service.spi.corba.repair.RepairHandlePOA;
 
@@ -32,17 +33,31 @@ import javax.inject.Provider;
  * @author Vourlakis Nikolas
  */
 public class RepairHandleProvider implements Provider<RepairHandlePOA> {
-    private final DefaultRepairHandle poa_;
+    private DefaultRepairHandle poa_;
+    private final RepairDelegate delegate_;
 
     @Inject
-    public RepairHandleProvider(LocalPeerContext context, RepairIssueRegistry registry, FixNodeAlgorithm fix, @MaxRef int maxRef) {
-        poa_ = new DefaultRepairHandle(context.getCorba(), context.getLocalRT(), registry);
-        poa_.setFixNodeAlgorithm(fix);
-        poa_.setMaxRef(maxRef);
+    public RepairHandleProvider(LocalPeerContext context, RepairIssueRegistry registry, @MaxRef int maxRef) {
+        delegate_ = new RepairDelegate(context.getCorba(), context.getLocalRT(), registry);
+        delegate_.setMaxRef(maxRef);
+        poa_ = null;
+    }
+
+    @Inject
+    protected void setFixNodeAlgorithm(FixNodeAlgorithm fix) {
+        delegate_.setFixNodeAlgorithm(fix);
+    }
+
+    @Inject
+    protected void setReplaceStrategy(ReplaceStrategy replace) {
+        delegate_.setReplaceStrategy(replace);
     }
 
     @Override
     public RepairHandlePOA get() {
+        if (poa_ == null) {
+            poa_ = new DefaultRepairHandle(delegate_);
+        }
         return poa_;
     }
 }

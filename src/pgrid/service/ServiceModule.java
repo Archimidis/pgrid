@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import pgrid.service.anotations.constants.MaxRecursions;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.anotations.constants.RepairTimeout;
+import pgrid.service.bootstrap.BootstrapModule;
 import pgrid.service.exchange.ExchangeModule;
 import pgrid.service.repair.RepairModule;
 
@@ -41,6 +42,7 @@ public class ServiceModule extends AbstractModule {
         // TODO: LocalPeerContext assisted construction
         bind(LocalPeerContext.class).asEagerSingleton();
 
+        binder().install(new BootstrapModule());
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());
 

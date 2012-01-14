@@ -19,103 +19,90 @@
 
 package client;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pgrid.entity.EntityModule;
+import pgrid.entity.Host;
+import pgrid.process.ProcessModule;
+import pgrid.process.SystemInitializationProcess;
+import pgrid.service.CommunicationException;
+import pgrid.service.LocalPeerContext;
+import pgrid.service.ServiceModule;
+import pgrid.service.bootstrap.FileBootstrapService;
+import pgrid.service.bootstrap.PersistencyException;
+import pgrid.service.exchange.ExchangeService;
+import pgrid.service.repair.RepairService;
 
-import javax.inject.Inject;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 
 public class Main {
+
+    private static final Logger logger_ = LoggerFactory.getLogger(Main.class);
+
+    // arg[0] -> routingTable.xlm    
     public static void main(String[] args) {
-        Injector injector = Guice.createInjector(new MainModule());
-        PaymentFactory factory = injector.getInstance(PaymentFactory.class);
-        Payment payment = factory.create("Nikolas", 27);
-        System.out.println(payment.pay());
-    }
+        Injector injector = Guice.createInjector(
+                new EntityModule(),
+                new ServiceModule(),
+                new ProcessModule());
 
-    static class MainModule extends AbstractModule {
-        @Override
-        protected void configure() {
-            bind(A.class).to(AImpl.class);
-            bind(B.class).to(BImpl.class);
-            //bindInterceptor(Matchers.any(), Matchers.annotatedWith(Intercept.class), new Interceptor());
-            install(new FactoryModuleBuilder()
-                    .implement(Payment.class, RealPayment.class)
-                    .build(PaymentFactory.class));
+        SystemInitializationProcess initProcess =
+                injector.getInstance(SystemInitializationProcess.class);
+        try {
+            initProcess.load(args[0]);
+            initProcess.serviceRegistration(injector);
+        } catch (UnknownHostException e) {
+            logger_.error("{}", e);
+        } catch (PersistencyException e) {
+            logger_.error("{}", e);
+        } catch (FileNotFoundException e) {
+            logger_.error("{}", e);
         }
-    }
-}
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@interface Intercept {
-}
+        try {
+            // wait 2 secs to make sure the other peers are initialized already
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
 
-class Interceptor implements MethodInterceptor {
+        initProcess.start();
 
-    @Override
-    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
-        System.out.println("Method intercepted");
-        return methodInvocation.proceed();
-    }
-}
+        LocalPeerContext context = injector.getInstance(LocalPeerContext.class);
+        Host failed = context.getLocalRT().getLevelArray(0)[0];
 
-interface PaymentFactory {
-    public Payment create(String name, int age);
-}
+        logger_.info("I will communicate with peer {}:{} [path: {}]",
+                new Object[]{
+                        failed.getAddress(),
+                        failed.getPort(),
+                        failed.getHostPath()});
 
-interface Payment {
-    public String pay();
-}
+        // exchange with failed peer
+        ExchangeService exchangeService = 
+                injector.getProvider(ExchangeService.class).get();
+        try {
+            exchangeService.execute(failed);
+        } catch (CommunicationException e) {
+            // repair failed peer
+            logger_.warn("{}", e.getMessage());
+            RepairService repairService = injector.getProvider(RepairService.class).get();
+            repairService.fixNode(failed);
+        }
 
-class RealPayment implements Payment {
-    private A a_;
-    private B b_;
-    private String name_;
-    private int age_;
+        try {
+            // wait just in case ...
+            Thread.sleep(500);
+        } catch (InterruptedException e) {}
+        context.getCorba().shutdown(true);
 
-    @Inject
-    public RealPayment(A a, B b, @Assisted String name, @Assisted int age) {
-        a_ = a;
-        b_ = b;
-        name_ = name;
-        age_ = age;
-    }
+        FileBootstrapService bootstrapService = 
+                injector.getInstance(FileBootstrapService.class);
+        try {
+            bootstrapService.store(args[1], context.getLocalRT());
+        } catch (FileNotFoundException e) {
+            logger_.error("An error occurred while storing the routing table.");
+        }
 
-    @Override
-    public String pay() {
-        return a_.test() + ", " + b_.test() + ", " + name_ + ", " + age_;
-    }
-}
-
-interface A {
-    public String test();
-}
-
-class AImpl implements A {
-    @Intercept
-    @Override
-    public String test() {
-        return "AImpl";
-    }
-}
-
-interface B {
-    public String test();
-}
-
-class BImpl implements B {
-    @Intercept
-    @Override
-    public String test() {
-        return "BImpl";
     }
 }

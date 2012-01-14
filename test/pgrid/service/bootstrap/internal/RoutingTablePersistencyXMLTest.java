@@ -36,7 +36,8 @@ import java.util.*;
  * @author Vourlakis Nikolas
  */
 public class RoutingTablePersistencyXMLTest {
-    private static final String VALID_FILE = "test/pgrid/entity/routingtable/validRoutingTable.xml";
+
+    private static final String VALID_FILE = "test/pgrid/service/bootstrap/internal/validRoutingTable.xml";
     private static final String INVALID_ADDRESS_FILE = "test/pgrid/entity/routingtable/addrInvalidRoutingTable.xml";
     private static final String INVALID_PORT_FILE = "test/pgrid/entity/routingtable/portInvalidRoutingTable.xml";
     private static final String INVALID_UUID_FILE = "test/pgrid/entity/routingtable/uuidInvalidRoutingTable.xml";

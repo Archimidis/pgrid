@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
  * This is the interface to be implemented by a routing table to gain persistency
  * functionality.
  * <p/>
- * TODO: This interface and its implementation can be promoted to services cause they act upon entities.
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */

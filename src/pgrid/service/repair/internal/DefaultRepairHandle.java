@@ -19,51 +19,45 @@
 
 package pgrid.service.repair.internal;
 
-import org.omg.CORBA.ORB;
-import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.repair.spi.FixNodeAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pgrid.entity.Host;
+import pgrid.service.spi.corba.repair.IssueType;
 import pgrid.service.spi.corba.repair.RepairHandlePOA;
 import pgrid.service.spi.corba.repair.RepairIssue;
 import pgrid.service.spi.corba.repair.RepairSolution;
+import pgrid.service.utilities.Deserializer;
 
 /**
  * @author Vourlakis Nikolas
  */
 public class DefaultRepairHandle extends RepairHandlePOA {
 
-    private final RepairIssueRegistry registry_;
-    private final RoutingTable routingTable_;
-    private final ORB orb_;
-    private FixNodeAlgorithm fix_;
-    private int maxRef_;
+    private static final Logger logger_ = LoggerFactory.getLogger(DefaultRepairHandle.class);
 
-    public DefaultRepairHandle(ORB orb, RoutingTable routingTable, RepairIssueRegistry registry) {
-        orb_ = orb;
-        routingTable_ = routingTable;
-        registry_ = registry;
-    }
+    RepairDelegate delegate_;
 
-    public void setMaxRef(int maxRef) {
-        maxRef_ = maxRef;
-    }
-
-    public void setFixNodeAlgorithm(FixNodeAlgorithm algorithm) {
-        fix_ = algorithm;
+    public DefaultRepairHandle(RepairDelegate delegate) {
+        delegate_ = delegate;
     }
 
     @Override
-    public void fixNode(RepairIssue issue) {
-        // TODO: implement fixNode
-        // check registry if it
+    public void fixIssue(RepairIssue issue, String footpath) {
+        Host failedHost = Deserializer.deserializeHost(issue.failedPeer);
+
+        if (issue.issueType == IssueType.SINGLE_NODE) {
+            delegate_.fixNode(footpath, failedHost);
+        } else if (issue.issueType == IssueType.SUBTREE) {
+            //delegate_.fixSubtree(footpath, /* ??? */ );
+        }
+    }
+
+    public void fixSubtree(RepairIssue[] issue, String footpath) {
+
     }
 
     @Override
-    public void replace(RepairIssue issue) {
-        // TODO: implement replace
-    }
-
-    @Override
-    public void propagate(RepairSolution solution) {
-        // TODO: implement propagate
+    public void broadcastSolution(RepairSolution solution) {
+        // TODO: Implement broadcastSolution
     }
 }

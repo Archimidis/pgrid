@@ -23,29 +23,27 @@ import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.entity.routingtable.RoutingTable;
 
+import java.util.List;
+
 /**
  * This interface represents the algorithm that will be executed in case of a
- * network failure. It's purpose is to select a peer in the pgrid network that
- * is either capable of fixing the issue himself or knows another peer most
- * likely to be able to solve the issue.
+ * network failure. It's purpose is to select a set of peers belonging to a
+ * path that are either capable of fixing the issue or
+ * knows other peer most likely to be able to solve the issue.
  *
  * @author Vourlakis Nikolas
  */
 public interface FixNodeAlgorithm {
 
     /**
-     * Given a failed host, the algorithm must decide which host in the network
-     * is able to fix the problem. The algorithm must follow a certain path to
-     * decide that starting from the conjugate path of the failed host. It will
-     * end at the host that will give the solution. This path trace is
-     * represented by the path argument and is essential information for the
-     * host that will continue executing the algorithm. It shows the direction
-     * that must be followed.
+     * Given a path trace followed till now by the algorithm in the network, it
+     * must be decided which must be the direction to go to next. The algorithm
+     * will start from the conjugate path of the failed host. It must end at a
+     * path close to a host that is capable to solve the issue.
      *
      * @param routingTable of the local host to be used by the algorithm.
-     * @param failed       host to be fixed.
-     * @param path         the current path trace as described above.
-     * @return the host most likely to know how to solve the issue.
+     * @param pathTrace    the current path trace as described above.
+     * @return a list of hosts able to solve the issue.
      */
-    public Host execute(RoutingTable routingTable, Host failed, PGridPath path);
+    public List<Host> execute(RoutingTable routingTable, PGridPath pathTrace);
 }

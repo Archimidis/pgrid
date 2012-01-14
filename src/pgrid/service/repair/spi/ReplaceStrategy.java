@@ -19,16 +19,14 @@
 
 package pgrid.service.repair.spi;
 
-import pgrid.entity.Host;
+import pgrid.entity.PGridPath;
 import pgrid.entity.routingtable.RoutingTable;
 
 /**
  * This interface represents the strategy that will be followed when the
  * {@link FixNodeAlgorithm} will reach the appropriate hosts. These hosts are
- * responsible for replacing the failed host. There are two methods based on
- * the identity of the failed host. Different path must be taken by the
- * localhost if the failed host is its conjugate.
- * These methods will only affect the path of the hosts involved in the
+ * responsible for replacing the failed host.
+ * This algorithm will only affect the path of the hosts involved in the
  * repairing.
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -36,26 +34,12 @@ import pgrid.entity.routingtable.RoutingTable;
 public interface ReplaceStrategy {
 
     /**
-     * The failed host is the conjugate of the localhost. This method will run
-     * that portion of the replace algorithm that makes that assumption and
-     * affects only the path of the localhost.
+     * The localhost must change his path in such a way that the failed path
+     * will be replaced. A group of hosts can run this method and decide who
+     * will replace the path and how the others will act.
      *
      * @param routingTable of the localhost.
-     * @param failed       to be replaced by the caller host.
+     * @param failedPath   to be replaced.
      */
-    public void execute(RoutingTable routingTable, Host failed);
-
-    /**
-     * The failed host is not the conjugate of the localhost. This method is
-     * meant to be run both from the localhost and its conjugate at the same
-     * time. They must work together in order to replace the failed host. By
-     * passing a null Host object in the place of the conjugate argument
-     * {@link ReplaceStrategy#execute(pgrid.entity.routingtable.RoutingTable, pgrid.entity.Host)}
-     * must not run. Instead a {@link NullPointerException} must be thrown.     *
-     *
-     * @param routingTable of the localhost.
-     * @param conjugate    of the localhost.
-     * @param failed       to be replaced by the localhost and its conjugate.
-     */
-    public void execute(RoutingTable routingTable, Host conjugate, Host failed);
+    public void execute(RoutingTable routingTable, PGridPath failedPath);
 }
