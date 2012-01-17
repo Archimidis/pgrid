@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.bootstrap.internal;
+package pgrid.service.simulation.internal;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -26,8 +26,8 @@ import org.junit.Test;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.bootstrap.FileBootstrapService;
-import pgrid.service.bootstrap.PersistencyException;
+import pgrid.service.simulation.PersistencyException;
+import pgrid.service.simulation.spi.PersistencyDelegate;
 
 import java.io.*;
 import java.util.*;
@@ -37,18 +37,18 @@ import java.util.*;
  */
 public class RoutingTablePersistencyXMLTest {
 
-    private static final String VALID_FILE = "test/pgrid/service/bootstrap/internal/validRoutingTable.xml";
+    private static final String VALID_FILE = "test/pgrid/service/simulation/internal/validRoutingTable.xml";
     private static final String INVALID_ADDRESS_FILE = "test/pgrid/entity/routingtable/addrInvalidRoutingTable.xml";
     private static final String INVALID_PORT_FILE = "test/pgrid/entity/routingtable/portInvalidRoutingTable.xml";
     private static final String INVALID_UUID_FILE = "test/pgrid/entity/routingtable/uuidInvalidRoutingTable.xml";
 
     private static Map<Integer, List<Host>> hostList_;
     private static Host localpeer_;
-    private static FileBootstrapService persistenceDelegate_;
+    private static PersistencyDelegate persistenceDelegate_;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
-        persistenceDelegate_ = new XMLBootstrapService();
+        persistenceDelegate_ = new XMLPersistencyService();
 
         RoutingTable routingTable = new RoutingTable();
 
@@ -119,7 +119,7 @@ public class RoutingTablePersistencyXMLTest {
         routingTable.addReference(level, levelList);
 
         // Store
-        FileBootstrapService p = new XMLBootstrapService();
+        PersistencyDelegate p = new XMLPersistencyService();
         try {
             p.store(VALID_FILE, routingTable);
         } catch (FileNotFoundException e) {

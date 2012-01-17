@@ -22,7 +22,9 @@ package pgrid.service.repair;
 import com.google.inject.AbstractModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pgrid.service.ServiceRegistration;
 import pgrid.service.repair.internal.RepairIssueRegistry;
+import pgrid.service.repair.internal.RepairRegistration;
 import pgrid.service.repair.internal.ThesisFixNodeAlgorithm;
 import pgrid.service.repair.internal.TwinsReplaceStrategy;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
@@ -50,5 +52,7 @@ public class RepairModule extends AbstractModule {
         bind(RepairService.class).toProvider(RepairProvider.class);
         // returns the same handle every time
         bind(RepairHandlePOA.class).toProvider(RepairHandleProvider.class);
+
+        bind(ServiceRegistration.class).annotatedWith(Repair.class).to(RepairRegistration.class);
     }
 }

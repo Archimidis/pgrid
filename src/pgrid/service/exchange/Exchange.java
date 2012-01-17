@@ -17,23 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.bootstrap;
+package pgrid.service.exchange;
 
-import com.google.inject.AbstractModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pgrid.service.ServiceModule;
-import pgrid.service.bootstrap.internal.XMLBootstrapService;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author Vourlakis Nikolas <nvourlakis@gmail.com>
+ * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class BootstrapModule extends AbstractModule {
-    private static final Logger logger_ = LoggerFactory.getLogger(ServiceModule.class);
-
-    @Override
-    protected void configure() {
-        logger_.debug("Setting up bootstrap service module");
-        bind(FileBootstrapService.class).to(XMLBootstrapService.class);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@BindingAnnotation
+public @interface Exchange {
 }

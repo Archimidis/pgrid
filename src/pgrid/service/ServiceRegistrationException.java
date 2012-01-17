@@ -17,25 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.repair;
-
-import pgrid.entity.Host;
+package pgrid.service;
 
 /**
- * TODO: Write documentation
- *
- * @author Vourlakis Nikolas
+ * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public interface RepairService {
+public class ServiceRegistrationException extends Exception {
+    public ServiceRegistrationException() {
+        super();
+    }
 
-    /**
-     * @param failedHost host to be repaired.
-     */
-    public void fixNode(Host failedHost);
+    public ServiceRegistrationException(String message) {
+        super(message);
+    }
 
-    /**
-     * @param subtreePath
-     * @param failedGroup
-     */
-    public void fixSubtree(String subtreePath, Host... failedGroup);
+    public ServiceRegistrationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ServiceRegistrationException(Throwable cause) {
+        super(cause);
+    }
 }

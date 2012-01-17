@@ -19,23 +19,18 @@
 
 package pgrid.service.repair;
 
-import pgrid.entity.Host;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * TODO: Write documentation
- *
- * @author Vourlakis Nikolas
+ * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public interface RepairService {
-
-    /**
-     * @param failedHost host to be repaired.
-     */
-    public void fixNode(Host failedHost);
-
-    /**
-     * @param subtreePath
-     * @param failedGroup
-     */
-    public void fixSubtree(String subtreePath, Host... failedGroup);
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@BindingAnnotation
+public @interface Repair {
 }

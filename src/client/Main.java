@@ -21,29 +21,32 @@ package client;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
+import com.google.inject.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.EntityModule;
 import pgrid.entity.Host;
 import pgrid.process.ProcessModule;
 import pgrid.process.SystemInitializationProcess;
-import pgrid.service.CommunicationException;
-import pgrid.service.LocalPeerContext;
-import pgrid.service.ServiceModule;
-import pgrid.service.bootstrap.FileBootstrapService;
-import pgrid.service.bootstrap.PersistencyException;
+import pgrid.service.*;
+import pgrid.service.exchange.Exchange;
 import pgrid.service.exchange.ExchangeService;
+import pgrid.service.repair.Repair;
 import pgrid.service.repair.RepairService;
+import pgrid.service.simulation.PersistencyException;
+import pgrid.service.simulation.spi.PersistencyDelegate;
 
+import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
+
+// pscp pgrid.jar nvourlakis@ui.grid.tuc.gr:/storage/tuclocal/nvourlakis/pgrid/
 public class Main {
 
     private static final Logger logger_ = LoggerFactory.getLogger(Main.class);
 
     // arg[0] -> load routingTable.xlm
     // arg[1] -> store routingTable.xlm
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         if (args.length != 2) {
             logger_.error("No file given to load and store routing table.");
             System.exit(1);
@@ -56,9 +59,24 @@ public class Main {
 
         SystemInitializationProcess initProcess =
                 injector.getInstance(SystemInitializationProcess.class);
+
+//        RoutingTableFactory routingTableFactory = injector.getInstance(RoutingTableFactory.class);
+//        EntityFactory entityFactory = injector.getInstance(EntityFactory.class);
+//        RoutingTable rt = routingTableFactory.create(entityFactory.newHost("127.0.0.1", 3000));
+//        CorbaFactory corbaFactory = injector.getInstance(CorbaFactory.class);
+//        ORB orb = corbaFactory.getInstance("127.0.0.1", 3000);
+//
+        LocalPeerContext peerContext = injector.getInstance(LocalPeerContext.class);
+//        peerContext.setRoutingTable(rt);
+//        peerContext.setOrb(orb);
+
         try {
             initProcess.load(args[0]);
-            initProcess.serviceRegistration(injector);
+            ServiceRegistration[] registrations = {
+                    injector.getInstance(Key.get(ServiceRegistration.class, Exchange.class)),
+                    injector.getInstance(Key.get(ServiceRegistration.class, Repair.class))
+            };
+            initProcess.serviceRegistration(registrations);
         } catch (UnknownHostException e) {
             logger_.error("{}", e);
             System.exit(2);
@@ -68,16 +86,20 @@ public class Main {
         } catch (FileNotFoundException e) {
             logger_.error("{}", e);
             System.exit(2);
+        } catch (ServiceRegistrationException e) {
+            logger_.error("{}", e);
+            System.exit(2);
         }
 
         try {
             // wait 2 secs to make sure the other peers are initialized already
             Thread.sleep(2000);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException e) {
+        }
 
         initProcess.start();
 
-        LocalPeerContext context = injector.getInstance(LocalPeerContext.class);
+        LocalPeerContext context = peerContext;
         Host failed = context.getLocalRT().getLevelArray(0)[0];
 
         logger_.info("I will communicate with peer {}:{} [path: {}]",
@@ -101,11 +123,12 @@ public class Main {
         try {
             // wait just in case ...
             Thread.sleep(500);
-        } catch (InterruptedException e) {}
-        context.getCorba().shutdown(true);
+        } catch (InterruptedException e) {
+        }
+        context.getCorba().shutdown(false);
 
-        FileBootstrapService bootstrapService =
-                injector.getInstance(FileBootstrapService.class);
+        PersistencyDelegate bootstrapService =
+                injector.getInstance(PersistencyDelegate.class);
         try {
             bootstrapService.store(args[1], context.getLocalRT());
         } catch (FileNotFoundException e) {

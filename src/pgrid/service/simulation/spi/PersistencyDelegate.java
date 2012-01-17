@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.bootstrap;
+package pgrid.service.simulation.spi;
 
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.simulation.PersistencyException;
 
 import java.io.FileNotFoundException;
 
@@ -30,7 +31,7 @@ import java.io.FileNotFoundException;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public interface FileBootstrapService {
+public interface PersistencyDelegate {
 
     /**
      * It opens the given filename and constructs the routing table based on
@@ -40,7 +41,8 @@ public interface FileBootstrapService {
      * @param routingTable that will be initialized from the file.
      * @throws FileNotFoundException when a failed attempt to open the file
      *                               occurs.
-     * @throws PersistencyException  when a failure occurs during the
+     * @throws pgrid.service.simulation.PersistencyException
+     *                               when a failure occurs during the
      *                               initialization of the routing table.
      *                               Examples of such failures are invalid
      *                               file format or failure to construct a

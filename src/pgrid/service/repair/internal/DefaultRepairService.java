@@ -44,7 +44,7 @@ public class DefaultRepairService implements RepairService {
             throw new NullPointerException("Cannot execute repair service with a null failed host.");
         }
 
-        PGridPath initFootpath = algorithmPathExecution(failedHost.getHostPath());
+        PGridPath initFootpath = delegate_.algorithmPathExecution(failedHost.getHostPath());
         delegate_.fixNode(initFootpath.toString(), failedHost);
     }
 
@@ -60,11 +60,4 @@ public class DefaultRepairService implements RepairService {
     }
 
 
-    private PGridPath algorithmPathExecution(PGridPath failedHostPath) {
-        String root = failedHostPath.subPath(0, failedHostPath.length() - 1);
-        char lastChar = failedHostPath.value(failedHostPath.length() - 1);
-        PGridPath initialPath = new PGridPath(root);
-        initialPath.revertAndAppend(lastChar);
-        return initialPath;
-    }
 }

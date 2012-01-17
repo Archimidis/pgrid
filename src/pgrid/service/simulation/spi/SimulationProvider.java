@@ -17,25 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.repair;
+package pgrid.service.simulation.spi;
 
-import pgrid.entity.Host;
+import pgrid.service.LocalPeerContext;
+import pgrid.service.simulation.SimulationService;
+import pgrid.service.simulation.internal.TucGridSimulationService;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
- * TODO: Write documentation
- *
- * @author Vourlakis Nikolas
+ * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public interface RepairService {
+public class SimulationProvider implements Provider<SimulationService> {
 
-    /**
-     * @param failedHost host to be repaired.
-     */
-    public void fixNode(Host failedHost);
+    private final SimulationService service_;
 
-    /**
-     * @param subtreePath
-     * @param failedGroup
-     */
-    public void fixSubtree(String subtreePath, Host... failedGroup);
+    @Inject
+    public SimulationProvider(LocalPeerContext context, PersistencyDelegate delegate) {
+        service_ = new TucGridSimulationService(context, delegate);
+    }
+
+    @Override
+    public SimulationService get() {
+        return service_;
+    }
 }

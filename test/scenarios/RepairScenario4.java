@@ -23,7 +23,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -52,10 +51,10 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 
 /**
- * @author Vourlakis Nikolas <nvourlakis@gmail.com>
+ * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class Scenario2 {
-    private static final Logger logger_ = LoggerFactory.getLogger(Scenario2.class);
+public class RepairScenario4 {
+    private static final Logger logger_ = LoggerFactory.getLogger(RepairScenario4.class);
 
     private Thread orbThread_;
 
@@ -63,10 +62,11 @@ public class Scenario2 {
     private final String localIP_ = "127.0.0.1";
     private final String localInitPath_ = "00";
     private final String expectedFinalPath_ = "";
+    private int expectedLevelNumber_ = 0;
 
-    @Test @Ignore
-    public void test() throws UnknownHostException {
-        logger_.info("[Example] Sequence of a failed exchange followed by repair.");
+    @Test
+    public void executeScenario() throws UnknownHostException {
+        logger_.info("[Repair Scenario 4 Start] Peer on \"1\" repairs subtree on \"0\"");
         Injector injector = Guice.createInjector(new EntityModule(), new ServiceModule());
         localPeerContextInit(injector);
         serviceRegistration(injector);
@@ -74,9 +74,11 @@ public class Scenario2 {
         LocalPeerContext context = injector.getInstance(LocalPeerContext.class);
 
         Host[] zeroLevel = context.getLocalRT().getLevelArray(0);
+        Host[] firstLevel = context.getLocalRT().getLevelArray(1);
         Assert.assertTrue("Something went wrong during test initialization. " +
-                "Conjugate subtree is overpopulated.", zeroLevel.length == 1);
-
+                "Conjugate subtree is overpopulated.",
+                (zeroLevel.length == 2) && (firstLevel.length == 1));
+        logger_.info("=====================================================================================");
         //*********
         try {
             Thread.sleep(100);
@@ -86,28 +88,35 @@ public class Scenario2 {
 
         logger_.info("Repairing host {}:{} [path: {}]",
                 new Object[]{
-                        zeroLevel[0].getAddress(),
-                        zeroLevel[0].getPort(),
-                        zeroLevel[0].getHostPath()});
+                        zeroLevel[1].getAddress(),
+                        zeroLevel[1].getPort(),
+                        zeroLevel[1].getHostPath()});
         RepairService repairService = injector.getInstance(RepairService.class);
-        repairService.fixNode(zeroLevel[0]);
+        repairService.fixNode(zeroLevel[1]);
 
-        context.getCorba().shutdown(true);
+        context.getCorba().shutdown(false);
         try {
             orbThread_.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+        }
+
         logger_.info("Localhost instance: {}:{} [path: {}]",
                 new Object[]{
                         context.getLocalRT().getLocalhost().getAddress(),
                         context.getLocalRT().getLocalhost().getPort(),
                         context.getLocalRT().getLocalhost().getHostPath()});
-        logger_.info("[Scenario2] End.");
+        logger_.info("[Repair Scenario 4 End] End.");
 
         Assert.assertTrue(context.getLocalRT().getLocalhost().getAddress().getHostAddress().compareTo(localIP_) == 0);
         Assert.assertTrue(context.getLocalRT().getLocalhost().getPort() == localPort_);
         Assert.assertTrue(context.getLocalRT().getLocalhost().getHostPath().toString().compareTo(expectedFinalPath_) == 0);
+        Assert.assertTrue(context.getLocalRT().levelNumber() == expectedLevelNumber_);
     }
 
     //*******************************************************************************************//
@@ -119,13 +128,16 @@ public class Scenario2 {
         RoutingTable routingTable = injector.getInstance(RoutingTable.class);
         routingTable.setLocalhost(localhost);
 
-        Host other = entityFactory.newHost(localIP_, 1111);
-        other.setHostPath("1");
+        Host other = entityFactory.newHost(localIP_, 1000);
+        other.setHostPath("10");
         routingTable.addReference(0, other);
+        Host otherOther = entityFactory.newHost(localIP_, 1111);
+        otherOther.setHostPath("11");
+        routingTable.addReference(0, otherOther);
 
-        Host conjugate = entityFactory.newHost(localIP_, 2222);
-        conjugate.setHostPath("01");
-        routingTable.addReference(1, conjugate);
+        Host another = entityFactory.newHost(localIP_, 3111);
+        another.setHostPath("01");
+        routingTable.addReference(1, another);
 
         LocalPeerContext context = injector.getInstance(LocalPeerContext.class);
         CorbaFactory corbaFactory = injector.getInstance(CorbaFactory.class);

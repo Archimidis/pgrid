@@ -19,11 +19,13 @@
 
 package pgrid.service.repair.internal;
 
+import pgrid.entity.Host;
+import pgrid.entity.PGridPath;
+import pgrid.service.spi.corba.repair.IssueType;
 import pgrid.service.spi.corba.repair.RepairIssue;
+import pgrid.service.utilities.Deserializer;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -71,4 +73,39 @@ public class RepairIssueRegistry {
     public boolean isEmpty() {
         return unsolvedIssues_.isEmpty();
     }
+
+    public void newSubtreeFailure(String subtreePath) {
+        PGridPath subtree = new PGridPath(subtreePath);
+        for (String storedPath : unsolvedPaths_.keySet()) {
+            PGridPath stored = new PGridPath(storedPath);
+            if (stored.hasPrefix(subtree)) {
+                unsolvedPaths_.get(storedPath).issueType = IssueType.SUBTREE;
+            }
+        }
+    }
+
+    public int commonPrefixedPathNumber(String prefix) {
+        int count = 0;
+        PGridPath prefixPath = new PGridPath(prefix);
+        for (String path : unsolvedPaths_.keySet()) {
+            PGridPath otherPath = new PGridPath(path);
+            if (otherPath.hasPrefix(prefixPath)) {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    public List<Host> commonPrefixIssues(String prefix) {
+        List<Host> list = new ArrayList<Host>();
+        PGridPath prefixPath = new PGridPath(prefix);
+        for (String path : unsolvedPaths_.keySet()) {
+            PGridPath otherPath = new PGridPath(path);
+            if (otherPath.hasPrefix(prefixPath)) {
+                list.add(Deserializer.deserializeHost(unsolvedPaths_.get(path).failedPeer));
+            }
+        }
+        return list;
+    }
+
 }

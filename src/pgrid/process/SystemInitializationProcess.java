@@ -19,29 +19,19 @@
 
 package pgrid.process;
 
-import com.google.inject.Injector;
 import com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.omg.CORBA.ORB;
-import org.omg.CORBA.ORBPackage.InvalidName;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.POAHelper;
-import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
-import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
-import org.omg.PortableServer.POAPackage.ServantNotActive;
-import org.omg.PortableServer.POAPackage.WrongPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.CorbaFactory;
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.LocalPeerContext;
-import pgrid.service.bootstrap.FileBootstrapService;
-import pgrid.service.bootstrap.PersistencyException;
-import pgrid.service.bootstrap.internal.XMLBootstrapService;
-import pgrid.service.spi.corba.exchange.ExchangeHandleHelper;
-import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
-import pgrid.service.spi.corba.repair.RepairHandleHelper;
-import pgrid.service.spi.corba.repair.RepairHandlePOA;
+import pgrid.service.ServiceRegistration;
+import pgrid.service.ServiceRegistrationException;
+import pgrid.service.simulation.PersistencyException;
+import pgrid.service.simulation.internal.XMLPersistencyService;
+import pgrid.service.simulation.spi.PersistencyDelegate;
 
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
@@ -64,68 +54,29 @@ public class SystemInitializationProcess {
 
     public void load(String file) throws UnknownHostException, PersistencyException, FileNotFoundException {
         RoutingTable routingTable = new RoutingTable();
-        FileBootstrapService bootstrapService = new XMLBootstrapService();
+        PersistencyDelegate bootstrapService = new XMLPersistencyService();
         bootstrapService.load(file, routingTable);
-        
+
         context_.setRoutingTable(routingTable);
         Host localhost = routingTable.getLocalhost();
+
+        CorbaFactory corbaFactory = new CorbaFactory();
+        ORB orb = corbaFactory.getInstance(
+                localhost.getAddress().getHostName(), localhost.getPort());
+        // shutdown logging
+        ((com.sun.corba.se.spi.orb.ORB) orb).getLogger(CORBALogDomains.RPC).setLevel(Level.OFF);
+        context_.setOrb(orb);
         logger_.info("[init] Localhost instance: {}:{} [path: {}]",
                 new Object[]{
                         localhost.getAddress(),
                         localhost.getPort(),
                         localhost.getHostPath()});
-
-        CorbaFactory corbaFactory = new CorbaFactory();
-        context_.setOrb(corbaFactory.getInstance(
-                localhost.getAddress().getHostName(), localhost.getPort()));
     }
-    
-    public void serviceRegistration(Injector injector) {
-        // TODO: spi interface for each service for registering
-        ORB orb = context_.getCorba();
 
-        try {
-            POA rootPOA = null;
-            try {
-                rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            } catch (InvalidName invalidName) {
-                invalidName.printStackTrace();
-            }
-            rootPOA.the_POAManager().activate();
-
-            //********* Exchange Service Registration  *********//
-            ExchangeHandlePOA exchangeServant = injector.getProvider(ExchangeHandlePOA.class).get();
-            rootPOA.activate_object(exchangeServant);
-            String[] ID = ExchangeHandleHelper.id().split(":");
-            ((com.sun.corba.se.spi.orb.ORB) orb).register_initial_reference(
-                    ID[1],
-                    rootPOA.servant_to_reference(exchangeServant)
-            );
-            logger_.info("Exchange service registered");
-
-            //********** Repair Service Registration  **********//
-            RepairHandlePOA repairServant = injector.getProvider(RepairHandlePOA.class).get();
-            rootPOA.activate_object(repairServant);
-            ID = RepairHandleHelper.id().split(":");
-            ((com.sun.corba.se.spi.orb.ORB) orb).register_initial_reference(
-                    ID[1],
-                    rootPOA.servant_to_reference(repairServant)
-            );
-            logger_.info("Repair service registered");
-        } catch (ServantNotActive servantNotActive) {
-            servantNotActive.printStackTrace();
-        } catch (WrongPolicy wrongPolicy) {
-            wrongPolicy.printStackTrace();
-        } catch (InvalidName invalidName) {
-            invalidName.printStackTrace();
-        } catch (AdapterInactive adapterInactive) {
-            adapterInactive.printStackTrace();
-        } catch (ServantAlreadyActive servantAlreadyActive) {
-            servantAlreadyActive.printStackTrace();
+    public void serviceRegistration(ServiceRegistration... registrations) throws ServiceRegistrationException {
+        for (ServiceRegistration registration : registrations) {
+            registration.register();
         }
-
-        // shutdown logging
-        ((com.sun.corba.se.spi.orb.ORB) orb).getLogger(CORBALogDomains.RPC).setLevel(Level.OFF);
     }
 
     public void start() {
