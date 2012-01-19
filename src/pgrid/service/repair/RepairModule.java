@@ -55,6 +55,8 @@ public class RepairModule extends AbstractModule {
         bind(RepairHandlePOA.class).toProvider(RepairHandleProvider.class);
         bind(RepairHandleProvider.class).in(Scopes.SINGLETON);
 
-        bind(ServiceRegistration.class).annotatedWith(Repair.class).to(RepairRegistration.class);
+        bind(ServiceRegistration.class)
+                .annotatedWith(Repair.class)
+                .to(RepairRegistration.class);
     }
 }
