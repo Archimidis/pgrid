@@ -77,7 +77,8 @@ module pgrid {
 
                 module simulation {
                     interface SimulationHandle {
-                        void killHost();
+                        oneway void die();
+                        oneway void terminateSimulation();
                     };
                 }; // end module simulation
 
