@@ -20,6 +20,7 @@
 package pgrid.service.repair;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceRegistration;
@@ -52,6 +53,7 @@ public class RepairModule extends AbstractModule {
         bind(RepairService.class).toProvider(RepairProvider.class);
         // returns the same handle every time
         bind(RepairHandlePOA.class).toProvider(RepairHandleProvider.class);
+        bind(RepairHandleProvider.class).in(Scopes.SINGLETON);
 
         bind(ServiceRegistration.class).annotatedWith(Repair.class).to(RepairRegistration.class);
     }

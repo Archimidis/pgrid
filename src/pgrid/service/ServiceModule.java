@@ -39,7 +39,6 @@ public class ServiceModule extends AbstractModule {
     @Override
     protected void configure() {
         logger_.debug("Setting up service module");
-        // TODO: LocalPeerContext assisted construction
         bind(LocalPeerContext.class).asEagerSingleton();
 
         binder().install(new SimulationModule());

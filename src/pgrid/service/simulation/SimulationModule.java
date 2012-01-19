@@ -20,6 +20,7 @@
 package pgrid.service.simulation;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceModule;
@@ -40,5 +41,6 @@ public class SimulationModule extends AbstractModule {
         bind(PersistencyDelegate.class).to(XMLPersistencyService.class);
         // returns the same instance
         bind(SimulationService.class).toProvider(SimulationProvider.class);
+        bind(SimulationProvider.class).in(Scopes.SINGLETON);
     }
 }

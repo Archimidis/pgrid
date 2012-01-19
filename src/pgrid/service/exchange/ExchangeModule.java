@@ -20,6 +20,7 @@
 package pgrid.service.exchange;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceRegistration;
@@ -44,6 +45,8 @@ public class ExchangeModule extends AbstractModule {
         bind(ExchangeAlgorithm.class).to(AbererExchangeAlgorithm.class);
         // constructs a new service every time
         bind(ExchangeService.class).toProvider(ExchangeProvider.class);
+        bind(ExchangeHandleProvider.class).in(Scopes.SINGLETON);
+
         // returns the same handle every time
         bind(ExchangeHandlePOA.class).toProvider(ExchangeHandleProvider.class);
 
