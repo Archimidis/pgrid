@@ -22,7 +22,6 @@ package pgrid.service.repair.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
-import pgrid.service.spi.corba.repair.IssueType;
 import pgrid.service.spi.corba.repair.RepairHandlePOA;
 import pgrid.service.spi.corba.repair.RepairIssue;
 import pgrid.service.spi.corba.repair.RepairSolution;
@@ -42,18 +41,26 @@ public class DefaultRepairHandle extends RepairHandlePOA {
     }
 
     @Override
-    public void fixIssue(RepairIssue issue, String footpath) {
-        Host failedHost = Deserializer.deserializeHost(issue.failedPeer);
-
-        if (issue.issueType == IssueType.SINGLE_NODE) {
-            delegate_.fixNode(footpath, failedHost);
-        } else if (issue.issueType == IssueType.SUBTREE) {
-            //delegate_.fixSubtree(footpath, /* ??? */ );
-        }
+    public void fixNode(String footpath, RepairIssue issue) {
+        delegate_.fixNode(footpath, Deserializer.deserializeHost(issue.failedPeer));
     }
 
-    public void fixSubtree(RepairIssue[] issue, String footpath) {
+    @Override
+    public void fixSubtree(String footpath, String subtreePrefix, RepairIssue[] issues) {
+        Host[] failedHosts = new Host[issues.length];
+        for (int i = 0; i < issues.length; i++) {
+            failedHosts[i] = Deserializer.deserializeHost(issues[i].failedPeer);
+        }
+        delegate_.fixSubtree(footpath, subtreePrefix, failedHosts);
+    }
 
+    @Override
+    public void replace(String failedPath, RepairIssue[] issues) {
+        Host[] failedHosts = new Host[issues.length];
+        for (int i = 0; i < issues.length; i++) {
+            failedHosts[i] = Deserializer.deserializeHost(issues[i].failedPeer);
+        }
+        delegate_.replace(failedPath, failedHosts);
     }
 
     @Override

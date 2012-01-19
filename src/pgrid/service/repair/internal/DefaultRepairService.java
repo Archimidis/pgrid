@@ -44,8 +44,8 @@ public class DefaultRepairService implements RepairService {
             throw new NullPointerException("Cannot execute repair service with a null failed host.");
         }
 
-        PGridPath initFootpath = delegate_.algorithmPathExecution(failedHost.getHostPath());
-        delegate_.fixNode(initFootpath.toString(), failedHost);
+        delegate_.fixNode(delegate_.algorithmPathExecution(failedHost.getHostPath()).toString(),
+                failedHost);
     }
 
     @Override
@@ -56,7 +56,9 @@ public class DefaultRepairService implements RepairService {
         if (subtreePath == null) {
             throw new NullPointerException("Cannot execute repair service with a null failed host.");
         }
-        // TODO: Implement fixSubtree
+        delegate_.fixSubtree(delegate_.algorithmPathExecution(new PGridPath(subtreePath)).toString(),
+                subtreePath,
+                failedGroup);
     }
 
 

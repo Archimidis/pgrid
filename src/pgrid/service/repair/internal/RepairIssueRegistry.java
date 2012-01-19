@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
-import pgrid.service.spi.corba.repair.IssueType;
+import pgrid.service.spi.corba.repair.IssueState;
 import pgrid.service.spi.corba.repair.RepairIssue;
 import pgrid.service.utilities.Deserializer;
 import pgrid.service.utilities.Serializer;
@@ -47,13 +47,20 @@ public class RepairIssueRegistry {
         return unsolvedPaths_.get(path);
     }
 
+    public RepairIssue getIssue(UUID hostUUI) {
+        return unsolvedPaths_.get(hostUUI);
+    }
+
     public Set<String> getUnsolvedPaths() {
         return unsolvedPaths_.keySet();
     }
 
     public RepairIssue removeIssue(UUID hostUUID) {
-        RepairIssue issue = unsolvedIssues_.remove(hostUUID);
-        unsolvedPaths_.remove(issue.failedPath);
+        RepairIssue issue = null;
+        if (unsolvedIssues_.containsKey(hostUUID)) {
+            issue = unsolvedIssues_.remove(hostUUID);
+            unsolvedPaths_.remove(issue.failedPeer.path);
+        }
         return issue;
     }
 
@@ -65,17 +72,11 @@ public class RepairIssueRegistry {
         return unsolvedPaths_.containsKey(path);
     }
 
-    public void newIssue(RepairIssue repairIssue) {
-        unsolvedIssues_.put(UUID.fromString(repairIssue.failedPeer.uuid), repairIssue);
-        unsolvedPaths_.put(repairIssue.failedPath, repairIssue);
-    }
-
     public void newIssue(Host failedHost) {
-        RepairIssue repairIssue = new RepairIssue(IssueType.SINGLE_NODE,
-                Serializer.serializeHost(failedHost),
-                failedHost.getHostPath().toString());
+        RepairIssue repairIssue = new RepairIssue(IssueState.PENDING,
+                Serializer.serializeHost(failedHost));
         unsolvedIssues_.put(UUID.fromString(repairIssue.failedPeer.uuid), repairIssue);
-        unsolvedPaths_.put(repairIssue.failedPath, repairIssue);
+        unsolvedPaths_.put(repairIssue.failedPeer.path, repairIssue);
     }
 
     public void clear() {
@@ -85,16 +86,6 @@ public class RepairIssueRegistry {
 
     public boolean isEmpty() {
         return unsolvedIssues_.isEmpty();
-    }
-
-    public void newSubtreeFailure(String subtreePath) {
-        PGridPath subtree = new PGridPath(subtreePath);
-        for (String storedPath : unsolvedPaths_.keySet()) {
-            PGridPath stored = new PGridPath(storedPath);
-            if (stored.hasPrefix(subtree)) {
-                unsolvedPaths_.get(storedPath).issueType = IssueType.SUBTREE;
-            }
-        }
     }
 
     public int commonPrefixedPathNumber(String prefix) {
