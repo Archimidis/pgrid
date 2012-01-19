@@ -67,6 +67,5 @@ public class DefaultExchangeHandle extends ExchangeHandlePOA {
         context.setRemoteInfo(remoteRT);
         algo_.execute(context);
         // TODO: Implement the reaction to the recursion case of the exchange algorithm.
-        // XXX: There will be a single instance of this class, do I need synchronization?
     }
 }

@@ -46,15 +46,15 @@ module pgrid {
                 }; // end module exchange
 
                 module repair {
-                    enum IssueType {
-                        SINGLE_NODE,
-                        SUBTREE
+                    enum IssueState {
+                        PENDING,
+                        SOLVED,
+                        BROADCASTED
                     };
 
                     struct RepairIssue {
-                        IssueType issueType;
+                        IssueState issueState;
                         PeerReference failedPeer;
-                        string failedPath;
                     };
 
                     struct RepairSolution {
@@ -64,10 +64,22 @@ module pgrid {
                     };
 
                     interface RepairHandle {
-                        void fixIssue(in RepairIssue issue, in string footpath);
+                        typedef sequence<RepairIssue> IssueArray;
+
+                        void fixNode(in string footpath, in RepairIssue issue);
+                        void fixSubtree(in string footpath, in string subtreePrefix, in IssueArray issues);
+
+                        void replace(in string failedPath, in IssueArray issues);
+
                         void broadcastSolution(in RepairSolution solution);
                     };
                 }; // end module repair
+
+                module simulation {
+                    interface SimulationHandle {
+                        void killHost();
+                    };
+                }; // end module simulation
 
             }; // end module corba
         }; // end module spi
