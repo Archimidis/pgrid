@@ -62,7 +62,7 @@ public class RoutingTable {
      *
      * @param localhost owner of this routing table.
      */
-    public void setLocalhost(Host localhost) {
+    public synchronized void setLocalhost(Host localhost) {
         if (localhost == null) {
             throw new NullPointerException();
         }
@@ -75,7 +75,7 @@ public class RoutingTable {
      *
      * @return the localhost.
      */
-    public Host getLocalhost() {
+    public synchronized Host getLocalhost() {
         return localhost_;
     }
 
@@ -293,7 +293,7 @@ public class RoutingTable {
      * @param refMax the maximum number of hosts that will be chosen to update
      *               the level.
      */
-    public void updateLevelRandomly(int level, Host host, int refMax) {
+    public synchronized void updateLevelRandomly(int level, Host host, int refMax) {
         if (level < 0) {
             throw new IllegalArgumentException("Negative level given");
         }
@@ -352,7 +352,7 @@ public class RoutingTable {
      * @param level        where the union will happen.
      * @param routingTable to be united with this routing table.
      */
-    public void unionLevel(int level, RoutingTable routingTable) {
+    public synchronized void unionLevel(int level, RoutingTable routingTable) {
         if (routingTable == null) {
             throw new NullPointerException();
         }
@@ -610,7 +610,7 @@ public class RoutingTable {
      * @param level initialization of all the intermediate levels till that
      *              level.
      */
-    private synchronized void createMissingLevels(int level) {
+    private void createMissingLevels(int level) {
         // level should be valid cause it is checked from the public method that called this.
         if (level >= references_.size() && level < localhost_.getHostPath().length()) {
             int end = Math.max(level, references_.size());
