@@ -21,6 +21,7 @@ package pgrid.service.simulation.spi;
 
 import pgrid.service.LocalPeerContext;
 import pgrid.service.simulation.SimulationService;
+import pgrid.service.simulation.internal.SimulationDelegate;
 import pgrid.service.simulation.internal.TucGridSimulationService;
 
 import javax.inject.Inject;
@@ -30,12 +31,13 @@ import javax.inject.Provider;
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
 public class SimulationProvider implements Provider<SimulationService> {
-
     private final SimulationService service_;
 
     @Inject
-    public SimulationProvider(LocalPeerContext context, PersistencyDelegate delegate) {
-        service_ = new TucGridSimulationService(context, delegate);
+    public SimulationProvider(LocalPeerContext context, PersistencyDelegate persistency) {
+        SimulationDelegate delegate =
+                new SimulationDelegate(context.getCorba(), context.getLocalRT(), persistency);
+        service_ = new TucGridSimulationService(context.getCorba(), delegate);
     }
 
     @Override

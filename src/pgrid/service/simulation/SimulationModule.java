@@ -24,9 +24,13 @@ import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceModule;
+import pgrid.service.ServiceRegistration;
+import pgrid.service.simulation.internal.SimulationRegistration;
 import pgrid.service.simulation.internal.XMLPersistencyService;
 import pgrid.service.simulation.spi.PersistencyDelegate;
+import pgrid.service.simulation.spi.SimulationHandlerProvider;
 import pgrid.service.simulation.spi.SimulationProvider;
+import pgrid.service.spi.corba.simulation.SimulationHandlePOA;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -39,8 +43,17 @@ public class SimulationModule extends AbstractModule {
         logger_.debug("Setting up simulation service module");
 
         bind(PersistencyDelegate.class).to(XMLPersistencyService.class);
+
         // returns the same instance
         bind(SimulationService.class).toProvider(SimulationProvider.class);
         bind(SimulationProvider.class).in(Scopes.SINGLETON);
+
+        // returns the same handle every time
+        bind(SimulationHandlePOA.class).toProvider(SimulationHandlerProvider.class);
+        bind(SimulationHandlerProvider.class).in(Scopes.SINGLETON);
+
+        bind(ServiceRegistration.class)
+                .annotatedWith(Simulation.class)
+                .to(SimulationRegistration.class);
     }
 }

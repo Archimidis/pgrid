@@ -41,9 +41,9 @@ public class ServiceModule extends AbstractModule {
         logger_.debug("Setting up service module");
         bind(LocalPeerContext.class).asEagerSingleton();
 
-        binder().install(new SimulationModule());
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());
+        binder().install(new SimulationModule());
 
         bindConstant()
                 .annotatedWith(MaxRef.class)

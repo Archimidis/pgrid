@@ -47,21 +47,11 @@ public interface SimulationService {
             throws PersistencyException, FileNotFoundException;
 
     /**
-     * The local peer must be fully initialized and all the needed services
-     * must be registered. After this method the local peer will be able to
-     * serve remote requests.
-     */
-    public void startLocalPeer();
-
-    /**
      * Shutdowns the local peer and all its started service in a normal way.
-     * Before it stops, the peer will store its routing table to the given
-     * file.
-     *
-     * @param filename where the peer will save its routing table.
-     * @throws FileNotFoundException if the given filename does not exist.
+     * Before it stops, the peer will store its routing table. The name of the
+     * file is name of the localhost.
      */
-    public void shutdownLocalPeer(String filename) throws FileNotFoundException;
+    public void shutdownLocalPeer();
 
     /**
      * Communicates with a remote host and force him to shutdown. The purpose
@@ -70,4 +60,15 @@ public interface SimulationService {
      * @param host to be killed.
      */
     public void killHost(Host host);
+
+    /**
+     * Terminates the ongoing simulation. All peers in the pgrid network must
+     * close. After this operation, the pgrid peer-to-peer is non existent
+     * and the simulation is over. Time to check the results.
+     *
+     * @param network An array that contains all the hosts of the pgrid
+     *                network. This is obviously needed only for the simulator
+     *                peer.
+     */
+    public void terminateSimulation(Host... network);
 }
