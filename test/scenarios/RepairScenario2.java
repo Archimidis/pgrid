@@ -19,44 +19,26 @@
 
 package scenarios;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.junit.Assert;
 import org.junit.Test;
 import org.omg.CORBA.ORB;
-import org.omg.CORBA.ORBPackage.InvalidName;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.POAHelper;
-import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
-import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
-import org.omg.PortableServer.POAPackage.ServantNotActive;
-import org.omg.PortableServer.POAPackage.WrongPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.CorbaFactory;
 import pgrid.entity.EntityFactory;
-import pgrid.entity.EntityModule;
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.LocalPeerContext;
-import pgrid.service.ServiceModule;
 import pgrid.service.repair.RepairService;
-import pgrid.service.spi.corba.exchange.ExchangeHandleHelper;
-import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
-import pgrid.service.spi.corba.repair.RepairHandleHelper;
-import pgrid.service.spi.corba.repair.RepairHandlePOA;
 
 import java.net.UnknownHostException;
-import java.util.logging.Level;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class RepairScenario2 {
     private static final Logger logger_ = LoggerFactory.getLogger(RepairScenario2.class);
-
-    private Thread orbThread_;
 
     private final int localPort_ = 3000;
     private final String localIP_ = "127.0.0.1";
@@ -67,9 +49,8 @@ public class RepairScenario2 {
     @Test
     public void executeScenario() throws UnknownHostException {
         logger_.info("[Repair Scenario 2 Start] Peer on \"1\" repairs subtree on \"0\"");
-        Injector injector = Guice.createInjector(new EntityModule(), new ServiceModule());
-        localPeerContextInit(injector);
-        serviceRegistration(injector);
+        Injector injector = ScenarioSharedState.getInjector();
+        routingTableInit(injector);
 
         LocalPeerContext context = injector.getInstance(LocalPeerContext.class);
 
@@ -77,12 +58,6 @@ public class RepairScenario2 {
         Assert.assertTrue("Something went wrong during test initialization. " +
                 "Conjugate subtree is overpopulated.", zeroLevel.length == 2);
         logger_.info("=====================================================================================");
-        //*********
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-        }
-        //*********
 
         logger_.info("Repairing host {}:{} [path: {}]",
                 new Object[]{
@@ -92,24 +67,12 @@ public class RepairScenario2 {
         RepairService repairService = injector.getInstance(RepairService.class);
         repairService.fixNode(zeroLevel[0]);
 
-        context.getCorba().shutdown(false);
-        try {
-            orbThread_.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-        }
-
         logger_.info("Localhost instance: {}:{} [path: {}]",
                 new Object[]{
                         context.getLocalRT().getLocalhost().getAddress(),
                         context.getLocalRT().getLocalhost().getPort(),
                         context.getLocalRT().getLocalhost().getHostPath()});
-        logger_.info("[Repair Scenario 2 End] End.");
+        logger_.info("[Repair Scenario 2 End]");
 
         Assert.assertTrue(context.getLocalRT().getLocalhost().getAddress().getHostAddress().compareTo(localIP_) == 0);
         Assert.assertTrue(context.getLocalRT().getLocalhost().getPort() == localPort_);
@@ -118,7 +81,7 @@ public class RepairScenario2 {
     }
 
     //*******************************************************************************************//
-    private void localPeerContextInit(Injector injector) throws UnknownHostException {
+    private void routingTableInit(Injector injector) throws UnknownHostException {
         EntityFactory entityFactory = injector.getInstance(EntityFactory.class);
         Host localhost = entityFactory.newHost(localIP_, localPort_);
         localhost.setHostPath(localInitPath_);
@@ -145,63 +108,5 @@ public class RepairScenario2 {
                         context.getLocalRT().getLocalhost().getAddress(),
                         context.getLocalRT().getLocalhost().getPort(),
                         context.getLocalRT().getLocalhost().getHostPath()});
-    }
-
-    private void serviceRegistration(Injector injector) {
-        final ORB orb = injector.getInstance(LocalPeerContext.class).getCorba();
-
-        try {
-            POA rootPOA = null;
-            try {
-                rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-            } catch (InvalidName invalidName) {
-                invalidName.printStackTrace();
-            }
-            rootPOA.the_POAManager().activate();
-
-            //********* Exchange Service Registration  *********//
-            ExchangeHandlePOA exchangeServant = injector.getProvider(ExchangeHandlePOA.class).get();
-            rootPOA.activate_object(exchangeServant);
-            String[] ID = ExchangeHandleHelper.id().split(":");
-            ((com.sun.corba.se.spi.orb.ORB) orb).register_initial_reference(
-                    ID[1],
-                    rootPOA.servant_to_reference(exchangeServant)
-            );
-            logger_.info("Exchange service registered");
-
-            //********** Repair Service Registration  **********//
-            RepairHandlePOA repairServant = injector.getProvider(RepairHandlePOA.class).get();
-            rootPOA.activate_object(repairServant);
-            ID = RepairHandleHelper.id().split(":");
-            ((com.sun.corba.se.spi.orb.ORB) orb).register_initial_reference(
-                    ID[1],
-                    rootPOA.servant_to_reference(repairServant)
-            );
-            logger_.info("Repair service registered");
-        } catch (ServantNotActive servantNotActive) {
-            servantNotActive.printStackTrace();
-        } catch (WrongPolicy wrongPolicy) {
-            wrongPolicy.printStackTrace();
-        } catch (InvalidName invalidName) {
-            invalidName.printStackTrace();
-        } catch (AdapterInactive adapterInactive) {
-            adapterInactive.printStackTrace();
-        } catch (ServantAlreadyActive servantAlreadyActive) {
-            servantAlreadyActive.printStackTrace();
-        }
-
-        orbThread_ = new Thread(new Runnable() {
-            private final ORB orb_ = orb;
-
-            @Override
-            public void run() {
-                orb_.run();
-            }
-        });
-        orbThread_.start();
-        logger_.info("Initialization finished!");
-
-        // shutdown logging
-        ((com.sun.corba.se.spi.orb.ORB) orb).getLogger(CORBALogDomains.RPC).setLevel(Level.OFF);
     }
 }

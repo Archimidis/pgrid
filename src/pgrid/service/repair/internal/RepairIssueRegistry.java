@@ -19,11 +19,14 @@
 
 package pgrid.service.repair.internal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.service.spi.corba.repair.IssueType;
 import pgrid.service.spi.corba.repair.RepairIssue;
 import pgrid.service.utilities.Deserializer;
+import pgrid.service.utilities.Serializer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class RepairIssueRegistry {
+    private static final Logger logger_ = LoggerFactory.getLogger(RepairIssueRegistry.class);
+
     private static final Map<UUID, RepairIssue> unsolvedIssues_ = new ConcurrentHashMap<UUID, RepairIssue>();
     private static final Map<String, RepairIssue> unsolvedPaths_ = new ConcurrentHashMap<String, RepairIssue>();
 
@@ -61,6 +66,14 @@ public class RepairIssueRegistry {
     }
 
     public void newIssue(RepairIssue repairIssue) {
+        unsolvedIssues_.put(UUID.fromString(repairIssue.failedPeer.uuid), repairIssue);
+        unsolvedPaths_.put(repairIssue.failedPath, repairIssue);
+    }
+
+    public void newIssue(Host failedHost) {
+        RepairIssue repairIssue = new RepairIssue(IssueType.SINGLE_NODE,
+                Serializer.serializeHost(failedHost),
+                failedHost.getHostPath().toString());
         unsolvedIssues_.put(UUID.fromString(repairIssue.failedPeer.uuid), repairIssue);
         unsolvedPaths_.put(repairIssue.failedPath, repairIssue);
     }
@@ -106,6 +119,37 @@ public class RepairIssueRegistry {
             }
         }
         return list;
+    }
+
+    public boolean isCompleteSubtree(PGridPath prefix) {
+        int prefixCount = 0;
+        int conjCount = 0;
+
+        for (String unsolved : unsolvedPaths_.keySet()) {
+            PGridPath unsolvedPath = new PGridPath(unsolved);
+            if (unsolvedPath.hasPrefix(prefix)) {
+                prefixCount++;
+                if (unsolvedPath.length() - prefix.length() == 1) {
+                    conjCount++;
+                }
+            }
+        }
+        if (conjCount == 2) {
+            return true;
+        } else if(prefixCount == 1 && conjCount == 0) {
+            char last = prefix.value(prefix.length() - 1);
+            last = last == '0' ? '1' : '0';
+            PGridPath conjPath = new PGridPath(prefix.subPath(0, prefix.length() - 1) + last);
+            boolean result = isCompleteSubtree(conjPath);
+            return result;
+        } else if (prefixCount != conjCount) {
+            PGridPath zero = new PGridPath(prefix.toString() + '0');
+            PGridPath one = new PGridPath(prefix.toString() + '1');
+            boolean zeroResult = isCompleteSubtree(zero);
+            boolean oneResult = isCompleteSubtree(one);
+            return zeroResult && oneResult;
+        }
+        return false;
     }
 
 }
