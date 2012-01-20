@@ -22,20 +22,40 @@ package pgrid.service.repair;
 import pgrid.entity.Host;
 
 /**
- * TODO: Write documentation
+ * This interface defines the repair service. During the life of a pgrid
+ * network, peer failures will occur. This services gives the capability to the
+ * local peer can to a repair session. In cooperation with part or all the
+ * network, these failures will be fixed. By fixing it is meant the maintenance
+ * of the trie topology that the pgrid network forms. Finally the local peer
+ * may have started the repair session, but may not be the one that will
+ * finally fix the issue by itself.
  *
  * @author Vourlakis Nikolas
  */
 public interface RepairService {
 
     /**
+     * If the local peer came across a single node failure, this is the method
+     * to call. At the end, a set of peers not necessarily containing the local
+     * peer, will fix the issue. After this operation, all peers of the network
+     * are informed of the failed peer and who where part of the solution and
+     * update their routing table accordingly.
+     *
      * @param failedHost host to be repaired.
      */
     public void fixNode(Host failedHost);
 
     /**
-     * @param subtreePath
-     * @param failedGroup
+     * In the case where the local peer knows that a complete subtree of the
+     * pgrid network has failed, this method must be called. At the end, a set
+     * of peers not necessarily containing the local peer, will fix the
+     * subtree. After this operation, all peers of the network are informed
+     * of the failures and who where part of the solution and update their
+     * routing table accordingly.
+     *
+     * @param subtreePath the path of the failed subtree to be repaired.
+     * @param failedGroup the group of failed hosts belonging to same subtree
+     *                    and must be repaired.
      */
     public void fixSubtree(String subtreePath, Host... failedGroup);
 }
