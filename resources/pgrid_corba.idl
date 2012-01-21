@@ -19,70 +19,70 @@
 
 module pgrid {
     module service {
-        module spi {
-            module corba {
-                struct PeerReference {
-                    string address;
-                    long port;
-                    string path;
-                    long long timestamp;
-                    string uuid;
+        module corba {
+            struct PeerReference {
+                string address;
+                long port;
+                string path;
+                long long timestamp;
+                string uuid;
+            };
+
+            typedef sequence<PeerReference> PeerArray;
+            typedef sequence<PeerArray> References;
+            typedef sequence<string> StringArray;
+
+            struct CorbaRoutingTable {
+                References refs;
+                PeerReference peer;
+            };
+
+            module exchange {
+                interface ExchangeHandle {
+                    readonly attribute CorbaRoutingTable routingTable;
+
+                    void exchange(in CorbaRoutingTable routingTable);
+                };
+            }; // end module exchange
+
+            module repair {
+                enum IssueState {
+                    PENDING,
+                    SOLVED,
+                    BROADCASTED
                 };
 
-                typedef sequence<PeerReference> PeerArray;
-                typedef sequence<PeerArray> References;
-
-                struct CorbaRoutingTable {
-                    References refs;
-                    PeerReference peer;
+                struct RepairIssue {
+                    IssueState issueState;
+                    PeerReference failedPeer;
                 };
 
-                module exchange {
-                    interface ExchangeHandle {
-                        readonly attribute CorbaRoutingTable routingTable;
+                struct RepairSolution {
+                    StringArray uuidSent;
+                    long pushCount;
+                    PeerArray failedHosts;
+                    PeerArray updatedHosts;
+                    string failedPath;
+                };
 
-                        void exchange(in CorbaRoutingTable routingTable);
-                    };
-                }; // end module exchange
+                interface RepairHandle {
+                    typedef sequence<RepairIssue> IssueArray;
 
-                module repair {
-                    enum IssueState {
-                        PENDING,
-                        SOLVED,
-                        BROADCASTED
-                    };
+                    void fixNode(in string footpath, in RepairIssue issue);
+                    void fixSubtree(in string footpath, in string subtreePrefix, in IssueArray issues);
 
-                    struct RepairIssue {
-                        IssueState issueState;
-                        PeerReference failedPeer;
-                    };
+                    PeerReference replace(in string failedPath, in IssueArray issues);
 
-                    struct RepairSolution {
-                        PeerArray failedHosts;
-                        PeerArray updatedHosts;
-                        string failedPath;
-                    };
+                    void pushSolution(in RepairSolution solution);
+                };
+            }; // end module repair
 
-                    interface RepairHandle {
-                        typedef sequence<RepairIssue> IssueArray;
-
-                        void fixNode(in string footpath, in RepairIssue issue);
-                        void fixSubtree(in string footpath, in string subtreePrefix, in IssueArray issues);
-
-                        void replace(in string failedPath, in IssueArray issues);
-
-                        void broadcastSolution(in RepairSolution solution);
-                    };
-                }; // end module repair
-
-                module simulation {
-                    interface SimulationHandle {
-                        oneway void die();
-                        oneway void terminateSimulation();
-                    };
-                }; // end module simulation
-
-            }; // end module corba
-        }; // end module spi
+            module simulation {
+                interface SimulationHandle {
+                    oneway void die();
+                    oneway void terminateSimulation();
+                };
+            }; // end module simulation
+        }; // end module corba
     }; // end module service
 }; // end module pgrid
