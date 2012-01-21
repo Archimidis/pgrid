@@ -1,9 +1,9 @@
 package pgrid.service.simulation.spi;
 
 import pgrid.service.LocalPeerContext;
+import pgrid.service.corba.simulation.SimulationHandlePOA;
 import pgrid.service.simulation.internal.DefaultSimulationHandler;
 import pgrid.service.simulation.internal.SimulationDelegate;
-import pgrid.service.spi.corba.simulation.SimulationHandlePOA;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

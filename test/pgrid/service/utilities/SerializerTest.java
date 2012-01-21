@@ -24,8 +24,8 @@ import org.junit.Test;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.spi.corba.CorbaRoutingTable;
-import pgrid.service.spi.corba.PeerReference;
+import pgrid.service.corba.CorbaRoutingTable;
+import pgrid.service.corba.PeerReference;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -66,20 +66,20 @@ public class SerializerTest {
 
     }
 
-    // public static pgrid.service.spi.corba.RoutingTable serializeRoutingTable(RoutingTable routingTable)
+    // public static pgrid.service.corba.corba.RoutingTable serializeRoutingTable(RoutingTable routingTable)
     @Test(expected = NullPointerException.class)
     public void WhenSerializingNullRoutingTable_ExpectException() {
         Serializer.serializeRoutingTable(null);
     }
 
-    // public static pgrid.service.spi.corba.RoutingTable serializeRoutingTable(RoutingTable routingTable)
+    // public static pgrid.service.corba.corba.RoutingTable serializeRoutingTable(RoutingTable routingTable)
     @Test(expected = IllegalStateException.class)
     public void WhenSerializingRoutingTableWithUninitializedLocalhost_ExpectException() {
         RoutingTable routingTable = new RoutingTable();
         Serializer.serializeRoutingTable(routingTable);
     }
 
-    // public static pgrid.service.spi.corba.RoutingTable serializeRoutingTable(RoutingTable routingTable)
+    // public static pgrid.service.corba.corba.RoutingTable serializeRoutingTable(RoutingTable routingTable)
     @Test
     public void WhenSerializingValidRoutingTable_ExpectResults() throws UnknownHostException {
         int levels = 2;

@@ -17,10 +17,10 @@ import pgrid.entity.CorbaFactory;
 import pgrid.entity.EntityModule;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceModule;
-import pgrid.service.spi.corba.exchange.ExchangeHandleHelper;
-import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
-import pgrid.service.spi.corba.repair.RepairHandleHelper;
-import pgrid.service.spi.corba.repair.RepairHandlePOA;
+import pgrid.service.corba.exchange.ExchangeHandleHelper;
+import pgrid.service.corba.exchange.ExchangeHandlePOA;
+import pgrid.service.corba.repair.RepairHandleHelper;
+import pgrid.service.corba.repair.RepairHandlePOA;
 
 import java.net.UnknownHostException;
 import java.util.logging.Level;

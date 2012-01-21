@@ -24,8 +24,8 @@ import org.junit.Test;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.spi.corba.CorbaRoutingTable;
-import pgrid.service.spi.corba.PeerReference;
+import pgrid.service.corba.CorbaRoutingTable;
+import pgrid.service.corba.PeerReference;
 
 import java.net.UnknownHostException;
 import java.util.Collection;
@@ -62,13 +62,13 @@ public class DeserializerTest {
         Assert.assertTrue(host.getTimestamp() == expectedTS);
     }
 
-    // public static RoutingTable deserializeRoutingTable(pgrid.service.spi.corba.RoutingTable corbaRoutingTable)
+    // public static RoutingTable deserializeRoutingTable(pgrid.service.corba.corba.RoutingTable corbaRoutingTable)
     @Test(expected = NullPointerException.class)
     public void WhenDeserializingNullRoutingTable_ExpectException() {
         Deserializer.deserializeRoutingTable(null);
     }
 
-    // public static RoutingTable deserializeRoutingTable(pgrid.service.spi.corba.RoutingTable corbaRoutingTable)
+    // public static RoutingTable deserializeRoutingTable(pgrid.service.corba.corba.RoutingTable corbaRoutingTable)
     @Test
     public void WhenDeserializingValidRoutingTable_ExpectResults() throws UnknownHostException {
         int levels = 2;

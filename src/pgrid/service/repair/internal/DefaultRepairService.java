@@ -32,7 +32,7 @@ public class DefaultRepairService implements RepairService {
 
     private static final Logger logger_ = LoggerFactory.getLogger(DefaultRepairService.class);
 
-    RepairDelegate delegate_;
+    private final RepairDelegate delegate_;
 
     public DefaultRepairService(RepairDelegate delegate) {
         delegate_ = delegate;

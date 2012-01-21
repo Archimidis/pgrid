@@ -1,6 +1,6 @@
 package pgrid.service.simulation.internal;
 
-import pgrid.service.spi.corba.simulation.SimulationHandlePOA;
+import pgrid.service.corba.simulation.SimulationHandlePOA;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>

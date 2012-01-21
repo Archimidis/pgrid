@@ -22,8 +22,8 @@ package pgrid.service.utilities;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.spi.corba.CorbaRoutingTable;
-import pgrid.service.spi.corba.PeerReference;
+import pgrid.service.corba.CorbaRoutingTable;
+import pgrid.service.corba.PeerReference;
 
 import java.net.UnknownHostException;
 import java.util.UUID;

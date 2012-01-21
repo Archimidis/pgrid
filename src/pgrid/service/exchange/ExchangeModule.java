@@ -24,12 +24,12 @@ import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceRegistration;
+import pgrid.service.corba.exchange.ExchangeHandlePOA;
 import pgrid.service.exchange.internal.AbererExchangeAlgorithm;
 import pgrid.service.exchange.internal.ExchangeRegistration;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeHandleProvider;
 import pgrid.service.exchange.spi.ExchangeProvider;
-import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
 
 /**
  * @author Vourlakis Nikolas

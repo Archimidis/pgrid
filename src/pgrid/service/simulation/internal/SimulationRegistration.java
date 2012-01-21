@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
+import pgrid.service.corba.repair.RepairHandleHelper;
+import pgrid.service.corba.simulation.SimulationHandlePOA;
 import pgrid.service.simulation.spi.SimulationHandlerProvider;
-import pgrid.service.spi.corba.repair.RepairHandleHelper;
-import pgrid.service.spi.corba.simulation.SimulationHandlePOA;
 
 import javax.inject.Inject;
 

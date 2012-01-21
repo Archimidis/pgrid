@@ -25,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceModule;
 import pgrid.service.ServiceRegistration;
+import pgrid.service.corba.simulation.SimulationHandlePOA;
 import pgrid.service.simulation.internal.SimulationRegistration;
 import pgrid.service.simulation.internal.XMLPersistencyService;
 import pgrid.service.simulation.spi.PersistencyDelegate;
 import pgrid.service.simulation.spi.SimulationHandlerProvider;
 import pgrid.service.simulation.spi.SimulationProvider;
-import pgrid.service.spi.corba.simulation.SimulationHandlePOA;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>

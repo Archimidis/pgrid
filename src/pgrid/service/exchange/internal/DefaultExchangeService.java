@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.CommunicationException;
+import pgrid.service.corba.exchange.ExchangeHandle;
+import pgrid.service.corba.exchange.ExchangeHandleHelper;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeContext;
-import pgrid.service.spi.corba.exchange.ExchangeHandle;
-import pgrid.service.spi.corba.exchange.ExchangeHandleHelper;
 import pgrid.service.utilities.Deserializer;
 import pgrid.service.utilities.Serializer;
 

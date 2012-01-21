@@ -24,6 +24,7 @@ import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceRegistration;
+import pgrid.service.corba.repair.RepairHandlePOA;
 import pgrid.service.repair.internal.RepairIssueRegistry;
 import pgrid.service.repair.internal.RepairRegistration;
 import pgrid.service.repair.internal.ThesisFixNodeAlgorithm;
@@ -32,7 +33,6 @@ import pgrid.service.repair.spi.FixNodeAlgorithm;
 import pgrid.service.repair.spi.RepairHandleProvider;
 import pgrid.service.repair.spi.RepairProvider;
 import pgrid.service.repair.spi.ReplaceStrategy;
-import pgrid.service.spi.corba.repair.RepairHandlePOA;
 
 /**
  * @author Vourlakis Nikolas

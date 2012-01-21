@@ -22,10 +22,10 @@ package pgrid.service.exchange.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.corba.CorbaRoutingTable;
+import pgrid.service.corba.exchange.ExchangeHandlePOA;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeContext;
-import pgrid.service.spi.corba.CorbaRoutingTable;
-import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
 import pgrid.service.utilities.Deserializer;
 import pgrid.service.utilities.Serializer;
 

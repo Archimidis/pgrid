@@ -21,10 +21,10 @@ package pgrid.service.repair.spi;
 
 import pgrid.service.LocalPeerContext;
 import pgrid.service.anotations.constants.MaxRef;
+import pgrid.service.corba.repair.RepairHandlePOA;
 import pgrid.service.repair.internal.DefaultRepairHandle;
 import pgrid.service.repair.internal.RepairDelegate;
 import pgrid.service.repair.internal.RepairIssueRegistry;
-import pgrid.service.spi.corba.repair.RepairHandlePOA;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

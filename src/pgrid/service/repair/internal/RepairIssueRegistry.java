@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
-import pgrid.service.spi.corba.repair.IssueState;
-import pgrid.service.spi.corba.repair.RepairIssue;
+import pgrid.service.corba.repair.IssueState;
+import pgrid.service.corba.repair.RepairIssue;
 import pgrid.service.utilities.Deserializer;
 import pgrid.service.utilities.Serializer;
 
@@ -48,7 +48,7 @@ public class RepairIssueRegistry {
     }
 
     public RepairIssue getIssue(UUID hostUUI) {
-        return unsolvedPaths_.get(hostUUI);
+        return unsolvedIssues_.get(hostUUI);
     }
 
     public Set<String> getUnsolvedPaths() {
@@ -127,12 +127,11 @@ public class RepairIssueRegistry {
         }
         if (conjCount == 2) {
             return true;
-        } else if(prefixCount == 1 && conjCount == 0) {
+        } else if (prefixCount == 1 && conjCount == 0) {
             char last = prefix.value(prefix.length() - 1);
             last = last == '0' ? '1' : '0';
             PGridPath conjPath = new PGridPath(prefix.subPath(0, prefix.length() - 1) + last);
-            boolean result = isCompleteSubtree(conjPath);
-            return result;
+            return isCompleteSubtree(conjPath);
         } else if (prefixCount != conjCount) {
             PGridPath zero = new PGridPath(prefix.toString() + '0');
             PGridPath one = new PGridPath(prefix.toString() + '1');

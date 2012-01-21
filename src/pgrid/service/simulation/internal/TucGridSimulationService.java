@@ -25,10 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.service.CommunicationException;
+import pgrid.service.corba.simulation.SimulationHandle;
+import pgrid.service.corba.simulation.SimulationHandleHelper;
 import pgrid.service.simulation.PersistencyException;
 import pgrid.service.simulation.SimulationService;
-import pgrid.service.spi.corba.simulation.SimulationHandle;
-import pgrid.service.spi.corba.simulation.SimulationHandleHelper;
 
 import java.io.FileNotFoundException;
 

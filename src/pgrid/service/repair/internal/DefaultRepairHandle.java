@@ -22,10 +22,12 @@ package pgrid.service.repair.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
-import pgrid.service.spi.corba.repair.RepairHandlePOA;
-import pgrid.service.spi.corba.repair.RepairIssue;
-import pgrid.service.spi.corba.repair.RepairSolution;
+import pgrid.service.corba.PeerReference;
+import pgrid.service.corba.repair.RepairHandlePOA;
+import pgrid.service.corba.repair.RepairIssue;
+import pgrid.service.corba.repair.RepairSolution;
 import pgrid.service.utilities.Deserializer;
+import pgrid.service.utilities.Serializer;
 
 /**
  * @author Vourlakis Nikolas
@@ -34,7 +36,7 @@ public class DefaultRepairHandle extends RepairHandlePOA {
 
     private static final Logger logger_ = LoggerFactory.getLogger(DefaultRepairHandle.class);
 
-    RepairDelegate delegate_;
+    private final RepairDelegate delegate_;
 
     public DefaultRepairHandle(RepairDelegate delegate) {
         delegate_ = delegate;
@@ -55,16 +57,17 @@ public class DefaultRepairHandle extends RepairHandlePOA {
     }
 
     @Override
-    public void replace(String failedPath, RepairIssue[] issues) {
+    public PeerReference replace(String failedPath, RepairIssue[] issues) {
         Host[] failedHosts = new Host[issues.length];
         for (int i = 0; i < issues.length; i++) {
             failedHosts[i] = Deserializer.deserializeHost(issues[i].failedPeer);
         }
-        delegate_.replace(failedPath, failedHosts);
+        Host localhost = delegate_.replace(failedPath, failedHosts);
+        return Serializer.serializeHost(localhost);
     }
 
     @Override
-    public void broadcastSolution(RepairSolution solution) {
-        // TODO: Implement broadcastSolution
+    public void pushSolution(RepairSolution solution) {
+        delegate_.onReceivePushSolution(solution);
     }
 }

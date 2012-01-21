@@ -31,10 +31,10 @@ import org.slf4j.LoggerFactory;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
+import pgrid.service.corba.exchange.ExchangeHandleHelper;
+import pgrid.service.corba.exchange.ExchangeHandlePOA;
 import pgrid.service.exchange.Exchange;
 import pgrid.service.exchange.spi.ExchangeHandleProvider;
-import pgrid.service.spi.corba.exchange.ExchangeHandleHelper;
-import pgrid.service.spi.corba.exchange.ExchangeHandlePOA;
 
 import javax.inject.Inject;
 
