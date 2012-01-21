@@ -443,9 +443,7 @@ public class RoutingTable {
      * @return a collections with the hosts.
      */
     public Collection<Host> getAllHosts() {
-        List<Host> result = new ArrayList<Host>(uuidRefs_.size());
-        Collections.copy(result, (List<Host>) uuidRefs_.values());
-        return result;
+        return uuidRefs_.values();
     }
 
     /**
