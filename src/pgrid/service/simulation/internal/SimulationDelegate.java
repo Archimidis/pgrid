@@ -27,6 +27,7 @@ public class SimulationDelegate {
 
 
     public void initLocal(String filename) throws PersistencyException, FileNotFoundException {
+        routingTable_.clear();
         delegate_.load(filename, routingTable_);
     }
 

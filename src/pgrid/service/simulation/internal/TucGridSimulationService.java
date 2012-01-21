@@ -74,7 +74,7 @@ public class TucGridSimulationService implements SimulationService {
             try {
                 SimulationHandle simulationHandle = getRemoteHandle(host);
                 simulationHandle.terminateSimulation();
-                logger_.warn("{}:{} terminated.", host, host.getPort());
+                logger_.info("{}:{} terminated.", host, host.getPort());
             } catch (CommunicationException e) {
                 logger_.warn("{}:{} is already terminated.", host, host.getPort());
             }
