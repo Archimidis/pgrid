@@ -59,6 +59,12 @@ public class RepairDelegate {
         registry_ = registry;
     }
 
+    /**
+     * Sets the number of maximum references constant that the routing table
+     * can store in a single level.
+     *
+     * @param maxRef
+     */
     public void setMaxRef(int maxRef) {
         if (maxRef < 0) {
             throw new IllegalArgumentException("A negative maxRef was given.");
@@ -66,6 +72,11 @@ public class RepairDelegate {
         maxRef_ = maxRef;
     }
 
+    /**
+     * Sets the repair algorithm to be used.
+     *
+     * @param algorithm a fully initialized object of the repair algorithm.
+     */
     public void setFixNodeAlgorithm(FixNodeAlgorithm algorithm) {
         if (algorithm == null) {
             throw new NullPointerException("A null object was given instead of a valid FixNodeAlgorithm.");
@@ -73,6 +84,11 @@ public class RepairDelegate {
         fix_ = algorithm;
     }
 
+    /**
+     * Sets the replace strategy to be used.
+     *
+     * @param replace a fully initialized object of the replace strategy.
+     */
     public void setReplaceStrategy(ReplaceStrategy replace) {
         if (replace == null) {
             throw new NullPointerException("A null object was given instead of a valid ReplaceStrategy.");
@@ -80,7 +96,12 @@ public class RepairDelegate {
         replace_ = replace;
     }
 
-    // Threadify (?)
+    /**
+     * TODO: Write documentation.
+     *
+     * @param footpath
+     * @param failedHost
+     */
     public void fixNode(String footpath, Host failedHost) {
         logger_.debug("Fixing node {}", failedHost.getHostPath());
         validateService();
@@ -186,6 +207,13 @@ public class RepairDelegate {
     }
 
 
+    /**
+     * TODO: Write documentation.
+     *
+     * @param footpath
+     * @param prefix
+     * @param failedHosts
+     */
     public void fixSubtree(String footpath, String prefix, Host... failedHosts) {
         logger_.debug("Fixing subtree {}", prefix);
 
@@ -300,6 +328,17 @@ public class RepairDelegate {
         }
     }
 
+    /**
+     * A number of hosts known to have failed associated with a certain path,
+     * will be replaced. This method is called in response to an rpc.
+     *
+     * @param failedPath  the failed path of a single host or a complete
+     *                    subtree.
+     * @param failedHosts all the hosts known to have failed.
+     * @return the host needed to sent it back to the remote caller. He needs
+     *         the updated version of the local host to form the Solution
+     *         object and start broadcasting it.
+     */
     public Host replace(String failedPath, Host... failedHosts) {
         for (Host failedHost : failedHosts) {
             if (routingTable_.contains(failedHost)) {
@@ -315,7 +354,26 @@ public class RepairDelegate {
         return routingTable_.getLocalhost();
     }
 
-    // TODO: [Important] Needs evaluation!!!!!!
+    /**
+     * This method will be called only by the host that will execute first the
+     * replace algorithm. That host is the initiator of the broadcast solution
+     * protocol.
+     * In the Solution there is an array that holds all the UUIDs of the hosts
+     * that have already received the solution. Before this host start
+     * broadcasting, it will first add all his neighbours according to its
+     * routing table.
+     * <p/>
+     * In case of a communication exception, the host will do nothing. The
+     * broadcast protocol is already complicated. If a new repair session
+     * starts before the current solution is broadcasted then things get messy.
+     * <p/>
+     * TODO: [Important] Needs evaluation!!!!!!
+     *
+     * @param failedPath   that is now fixed.
+     * @param updatedHosts all the hosts that altered their paths to solve the
+     *                     issue.
+     * @param failedHosts  all the hosts that have failed.
+     */
     public void pushSolution(String failedPath, Host[] updatedHosts, Host... failedHosts) {
         if (routingTable_.uniqueHostsNumber() == 0) {
             return;
@@ -357,14 +415,36 @@ public class RepairDelegate {
                     RepairHandle repairHandle = getRemoteHandle(host);
                     repairHandle.pushSolution(repairSolution);
                 } catch (CommunicationException e) {
+                    // Ignore the failure. The broadcasting becomes really
+                    // complicated if a new repair session will start. What
+                    // will happen with all the host that already got the
+                    // solution?
                     logger_.debug("{}:{} is not reachable.", host, host.getPort());
-                    // FIXME: Do something
                 }
             }
         }
     }
 
-    // TODO: [Important] Needs evaluation!!!!!!
+    /**
+     * This method will be called in response to an rpc from a remote host.
+     * All the hosts that failed must be removed from the routing table and
+     * the issue registry. Then it will update the routing table given the
+     * updated hosts from the solution. Finally, it will continue the solution
+     * broadcasting.
+     * <p/>
+     * In the Solution there is an array that holds all the UUIDs of the hosts
+     * that have already received the solution. Before this host start
+     * broadcasting, it will first add all his neighbours according to its
+     * routing table.
+     * <p/>
+     * In case of a communication exception, the host will do nothing. The
+     * broadcast protocol is already complicated. If a new repair session
+     * starts before the current solution is broadcasted then things get messy.
+     * <p/>
+     * TODO: [Important] Needs evaluation!!!!!!
+     *
+     * @param solution
+     */
     public void onReceivePushSolution(RepairSolution solution) {
         List<String> oldUuidSentList = new ArrayList<String>(solution.uuidSent.length);
         Collections.addAll(oldUuidSentList, solution.uuidSent);
@@ -384,6 +464,10 @@ public class RepairDelegate {
 
         for (int i = 0; i < solution.updatedHosts.length; i++) {
             Host host = Deserializer.deserializeHost(solution.updatedHosts[i]);
+            // At the moment only update only the existing hosts. An
+            // improvement is to add all the updated hosts in the routing table
+            // and then RoutingTable.refresh(...) will take care of everything
+            // else.
             if (routingTable_.contains(host)) {
                 routingTable_.updateReference(host);
             }
@@ -406,13 +490,20 @@ public class RepairDelegate {
                     RepairHandle repairHandle = getRemoteHandle(host);
                     repairHandle.pushSolution(solution);
                 } catch (CommunicationException e) {
+                    // Ignore the failure. The broadcasting becomes really
+                    // complicated if a new repair session will start. What
+                    // will happen with all the host that already got the
+                    // solution?
                     logger_.debug("{}:{} is not reachable.", host, host.getPort());
-                    // FIXME: Do something
                 }
             }
         }
     }
 
+    /**
+     * Checks if the object is correctly initialized with the correct
+     * algorithm objects.
+     */
     private void validateService() {
         if (replace_ == null) {
             throw new NullPointerException("Repair service is not in a valid state. No ReplaceStrategy was found.");
@@ -422,6 +513,14 @@ public class RepairDelegate {
         }
     }
 
+    /**
+     * Given a host, it will return a corba handle of the repair interface stub
+     * so the local host can execute rpc.
+     *
+     * @param host that the local host wants to communicate with.
+     * @return the repair interface stub.
+     * @throws CommunicationException if the remote host cannot be reached.
+     */
     private RepairHandle getRemoteHandle(Host host) throws CommunicationException {
         String[] repairHandleID = RepairHandleHelper.id().split(":");
         String corbaloc = "corbaloc:iiop:[" +
@@ -434,13 +533,20 @@ public class RepairDelegate {
         try {
             handle = RepairHandleHelper.narrow(object);
         } catch (SystemException e) {
-            logger_.warn("Cannot reach the host {}:{} needed for repairing.", host, host.getPort());
-            logger_.warn("[Exception] {}", e.getCause().getMessage());
             throw new CommunicationException(e.getCause());
         }
         return handle;
     }
 
+    /**
+     * Given a failed, this method computes the path to pass to the
+     * {@link FixNodeAlgorithm#execute(pgrid.entity.routingtable.RoutingTable, pgrid.entity.PGridPath)}.
+     * It is essential for the algorithm.
+     *
+     * @param failedHostPath the failed path of a single host or a complete
+     *                       subtree.
+     * @return the path that the algorithm will start searching from.
+     */
     public PGridPath algorithmPathExecution(PGridPath failedHostPath) {
         String root = failedHostPath.subPath(0, failedHostPath.length() - 1);
         char lastChar = failedHostPath.value(failedHostPath.length() - 1);
