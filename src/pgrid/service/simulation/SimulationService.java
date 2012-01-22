@@ -21,30 +21,12 @@ package pgrid.service.simulation;
 
 import pgrid.entity.Host;
 
-import java.io.FileNotFoundException;
-
 /**
  * A simulation service that will be used at the tuc grid experiments.
  *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
 public interface SimulationService {
-
-    /**
-     * Initializes the local peer. The peer will construct his routing table
-     * from the given file. That file contains the routing table in a
-     * serialized form and it is the responsibility of
-     * {@link pgrid.service.simulation.spi.PersistencyDelegate} to read it and
-     * initialize it.
-     *
-     * @param filename from where the peer will load its routing table.
-     * @throws PersistencyException  for every error while reading and
-     *                               initializing the local peer's routing
-     *                               table.
-     * @throws FileNotFoundException if the given filename does not exist.
-     */
-    public void initializeLocalPeer(String filename)
-            throws PersistencyException, FileNotFoundException;
 
     /**
      * Shutdowns the local peer and all its started service in a normal way.

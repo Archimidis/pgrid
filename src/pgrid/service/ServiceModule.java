@@ -35,6 +35,11 @@ import pgrid.service.simulation.SimulationModule;
 public class ServiceModule extends AbstractModule {
 
     private static final Logger logger_ = LoggerFactory.getLogger(ServiceModule.class);
+    private final int maxRef_;
+
+    public ServiceModule(int maxRef) {
+        maxRef_ = maxRef;
+    }
 
     @Override
     protected void configure() {
@@ -47,7 +52,7 @@ public class ServiceModule extends AbstractModule {
 
         bindConstant()
                 .annotatedWith(MaxRef.class)
-                .to(1);
+                .to(maxRef_);
         bindConstant()
                 .annotatedWith(MaxRecursions.class)
                 .to(2);

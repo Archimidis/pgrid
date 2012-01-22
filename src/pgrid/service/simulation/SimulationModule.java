@@ -23,7 +23,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pgrid.service.ServiceModule;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.corba.simulation.SimulationHandlePOA;
 import pgrid.service.simulation.internal.SimulationRegistration;
@@ -36,7 +35,7 @@ import pgrid.service.simulation.spi.SimulationProvider;
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class SimulationModule extends AbstractModule {
-    private static final Logger logger_ = LoggerFactory.getLogger(ServiceModule.class);
+    private static final Logger logger_ = LoggerFactory.getLogger(SimulationModule.class);
 
     @Override
     protected void configure() {

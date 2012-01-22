@@ -27,10 +27,7 @@ import pgrid.entity.Host;
 import pgrid.service.CommunicationException;
 import pgrid.service.corba.simulation.SimulationHandle;
 import pgrid.service.corba.simulation.SimulationHandleHelper;
-import pgrid.service.simulation.PersistencyException;
 import pgrid.service.simulation.SimulationService;
-
-import java.io.FileNotFoundException;
 
 /**
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
@@ -45,12 +42,6 @@ public class TucGridSimulationService implements SimulationService {
     public TucGridSimulationService(ORB orb, SimulationDelegate simulationDelegate) {
         orb_ = orb;
         delegate_ = simulationDelegate;
-    }
-
-    @Override
-    public void initializeLocalPeer(String filename)
-            throws PersistencyException, FileNotFoundException {
-        delegate_.initLocal(filename);
     }
 
     @Override
