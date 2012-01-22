@@ -63,7 +63,7 @@ public class RepairDelegate {
      * Sets the number of maximum references constant that the routing table
      * can store in a single level.
      *
-     * @param maxRef
+     * @param maxRef routing table level maximum references constant.
      */
     public void setMaxRef(int maxRef) {
         if (maxRef < 0) {
@@ -103,7 +103,7 @@ public class RepairDelegate {
      * @param failedHost
      */
     public void fixNode(String footpath, Host failedHost) {
-        logger_.debug("Fixing node {}", failedHost.getHostPath());
+        logger_.info("Fixing node {}", failedHost.getHostPath());
         validateService();
 
         if (registry_.containsHost(failedHost.getUUID())) {
@@ -118,7 +118,7 @@ public class RepairDelegate {
             return;
         }
 
-        logger_.info("It is not solved and the local peer must execute the algorithm");
+        logger_.debug("It is not solved and the local peer must execute the algorithm");
         routingTable_.removeReference(failedHost);
         if (!registry_.containsHost(failedHost.getUUID())) {
             logger_.debug("Localhost is storing the issue in the registry");
@@ -160,11 +160,11 @@ public class RepairDelegate {
                     }
                 }
 
-                logger_.debug("Replacing peer with path {}", failedHostPath);
+                logger_.info("Replacing peer with path {}", failedHostPath);
                 replace_.execute(routingTable_, failedHostPath);
                 registry_.getIssue(failedHostPath.toString()).issueState = IssueState.SOLVED;
                 routingTable_.refresh(maxRef_);
-                // broadcast
+                // broadcast the solution!!!!
                 pushSolution(failedHostPath.toString(), updatedHosts.toArray(new Host[updatedHosts.size()]), failedHost);
             } else {
                 logger_.debug("The localhost must forward a request to {}:{}", host, host.getPort());
@@ -215,7 +215,7 @@ public class RepairDelegate {
      * @param failedHosts
      */
     public void fixSubtree(String footpath, String prefix, Host... failedHosts) {
-        logger_.debug("Fixing subtree {}", prefix);
+        logger_.info("Fixing subtree {}", prefix);
 
 
         for (Host failedHost : failedHosts) {
@@ -258,7 +258,7 @@ public class RepairDelegate {
                     }
                 }
 
-                logger_.debug("Replacing subtree with prefix {}", prefix);
+                logger_.info("Replacing subtree with prefix {}", prefix);
                 replace_.execute(routingTable_, prefixPath);
                 // XXX: transform all affected issues to SOLVED
                 routingTable_.refresh(maxRef_);
@@ -379,6 +379,8 @@ public class RepairDelegate {
             return;
         }
 
+        logger_.info("Broadcasting the solution for path {}.", failedPath);
+
         PeerReference[] updatedHostsRef = new PeerReference[updatedHosts.length];
         for (int i = 0; i < updatedHosts.length; i++) {
             updatedHostsRef[i] = Serializer.serializeHost(updatedHosts[i]);
@@ -443,9 +445,11 @@ public class RepairDelegate {
      * <p/>
      * TODO: [Important] Needs evaluation!!!!!!
      *
-     * @param solution
+     * @param solution for a specific repair issue.
      */
     public void onReceivePushSolution(RepairSolution solution) {
+        logger_.info("Solution for path {} received.", solution.failedPath);
+
         List<String> oldUuidSentList = new ArrayList<String>(solution.uuidSent.length);
         Collections.addAll(oldUuidSentList, solution.uuidSent);
 
