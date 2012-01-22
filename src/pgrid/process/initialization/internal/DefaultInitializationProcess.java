@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.process;
+package pgrid.process.initialization.internal;
 
 import com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.omg.CORBA.ORB;
@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import pgrid.entity.CorbaFactory;
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.process.initialization.SystemInitializationProcess;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
@@ -43,12 +44,12 @@ import java.util.logging.Level;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public class SystemInitializationProcess {
-    private static final Logger logger_ = LoggerFactory.getLogger(SystemInitializationProcess.class);
+public class DefaultInitializationProcess implements SystemInitializationProcess {
+    private static final Logger logger_ = LoggerFactory.getLogger(DefaultInitializationProcess.class);
     private final LocalPeerContext context_;
 
     @Inject
-    public SystemInitializationProcess(LocalPeerContext context) {
+    public DefaultInitializationProcess(LocalPeerContext context) {
         context_ = context;
     }
 
@@ -79,7 +80,7 @@ public class SystemInitializationProcess {
         }
     }
 
-    public void start() {
+    public void startServer() {
         new Thread(new Runnable() {
             @Override
             public void run() {
