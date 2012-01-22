@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.PARAMETER})
 @BindingAnnotation
 public @interface Repair {
 }
