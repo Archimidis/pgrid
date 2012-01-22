@@ -19,28 +19,18 @@
 
 package pgrid;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.junit.Test;
-import pgrid.entity.EntityFactory;
-import pgrid.entity.EntityModule;
-import pgrid.entity.Host;
-import pgrid.entity.routingtable.RoutingTable;
-import pgrid.entity.routingtable.RoutingTableFactory;
-
-import java.net.UnknownHostException;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class Play {
     @Test
-    public void test() throws UnknownHostException {
-        Injector injector = Guice.createInjector(new EntityModule());
-        EntityFactory enFactory = injector.getInstance(EntityFactory.class);
-        RoutingTableFactory rtFactory = injector.getInstance(RoutingTableFactory.class);
-        Host localhost = enFactory.newHost("127.0.0.1", 3000);
-        RoutingTable rt = rtFactory.create(localhost);
-        System.out.println(rt.getLocalhost());
+    public void test() {
+//        for (int i = -200; i < 200; i++) {
+//            if (i >>> i == 1) {
+//                System.out.println(i+ " ");
+//            }
+//        }
     }
 }
