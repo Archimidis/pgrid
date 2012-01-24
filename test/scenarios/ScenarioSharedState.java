@@ -55,7 +55,7 @@ public class ScenarioSharedState {
     private static final int localPort_ = 3000;
 
     static {
-        injector_ = Guice.createInjector(new EntityModule(), new ServiceModule(Integer.MAX_VALUE));
+        injector_ = Guice.createInjector(new EntityModule(), new ServiceModule(localIP_, localPort_, Integer.MAX_VALUE));
         try {
             localPeerContextInit();
             serviceRegistration();
