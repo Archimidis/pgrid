@@ -106,19 +106,14 @@ public class TucGridSimulationService implements SimulationService {
                 host.getAddress().getHostAddress() + "]:" + host.getPort()
                 + "/" + simulationHandleID[1];
         logger_.debug("CORBALOC: {}", corbaloc);
-        org.omg.CORBA.Object object = null;
-        object = orb_.string_to_object(corbaloc);
+        org.omg.CORBA.Object object = orb_.string_to_object(corbaloc);
 
-        System.out.println("pass 1");
-        SimulationHandle handle = null;
+        SimulationHandle handle;
         try {
             handle = SimulationHandleHelper.narrow(object);
-            System.out.println("pass 2");
         } catch (SystemException e) {
-            System.out.println("error");
             throw new CommunicationException(e.getCause());
         }
-        System.out.println("pass 3");
         return handle;
     }
 }

@@ -48,13 +48,10 @@ public class SimulationDelegate {
         orb_ = orb;
         routingTable_ = routingTable;
         delegate_ = delegate;
-        System.out.println("Delegate: " + orb_ + "," + routingTable_ + "," + delegate_);
     }
 
     public void die() {
         logger_.info("Local peer is shutting down");
-        System.out.println(routingTable_);
-        System.out.println(orb_);
         String filename = routingTable_.getLocalhost().toString() + ".xml";
         try {
             delegate_.store(filename, routingTable_);
@@ -62,15 +59,15 @@ public class SimulationDelegate {
         }
         logger_.info("Routing table stored in {}", filename);
         orb_.shutdown(false);
-        orb_.destroy();
+//        orb_.destroy(); // Probably not needed.
         logger_.info("Corba facility terminated");
 
-        logger_.info("Local peer {}:{} is terminating",
+        logger_.info("Local peer {}:{} terminated",
                 routingTable_.getLocalhost(), routingTable_.getLocalhost().getPort());
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException ignored) {
+//        }
         System.exit(0);
     }
 

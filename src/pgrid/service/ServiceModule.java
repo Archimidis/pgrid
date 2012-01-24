@@ -53,12 +53,17 @@ public class ServiceModule extends AbstractModule {
     public ServiceModule(String address, int port, int maxRef) {
         address_ = address;
         port_ = port;
+        try {
+            // hack to get the exception at initialization time
+            Host host = new PGridHost(address_, port_);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException(e.getCause());
+        }
         maxRef_ = maxRef;
     }
 
 
     protected void bindLocalPeerContext() throws UnknownHostException {
-        System.out.println("GETS CALLED!!!!!");
         Host localhost = new PGridHost(address_, port_);
         RoutingTable rt = new RoutingTable();
         rt.setLocalhost(localhost);
@@ -83,7 +88,6 @@ public class ServiceModule extends AbstractModule {
     @Override
     protected void configure() {
         logger_.debug("Setting up service module");
-        //bind(LocalPeerContext.class);
 
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());

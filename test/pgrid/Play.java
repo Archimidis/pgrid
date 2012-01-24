@@ -21,16 +21,23 @@ package pgrid;
 
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class Play {
     @Test
     public void test() {
-//        for (int i = -200; i < 200; i++) {
-//            if (i >>> i == 1) {
-//                System.out.println(i+ " ");
-//            }
-//        }
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("test/pgrid/network"));
+            String strLine;
+            while ((strLine = bufferedReader.readLine()) != null) {
+                System.out.println(strLine);
+            }
+        } catch (IOException e) {
+        }
     }
 }

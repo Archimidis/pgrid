@@ -19,6 +19,7 @@
 
 package pgrid.process.initialization.internal;
 
+import com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.PortableServer.POA;
@@ -40,6 +41,7 @@ import pgrid.service.simulation.spi.PersistencyDelegate;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
 
 /**
  * Sample initialization process for setting up a peer in the tuc grid network.
@@ -88,10 +90,9 @@ public class DefaultInitializationProcess implements SystemInitializationProcess
         } catch (AdapterInactive ignored) {
 
         }
-        System.out.println(orb);
 
         // shutdown logging
-        //((com.sun.corba.se.spi.orb.ORB) orb).getLogger(CORBALogDomains.RPC).setLevel(Level.OFF);
+        ((com.sun.corba.se.spi.orb.ORB) orb).getLogger(CORBALogDomains.RPC).setLevel(Level.OFF);
 //        Thread orbThread = new Thread(new OrbRunnable(orb));
 //        orbThread.start();
         context_.setOrb(orb);
@@ -103,7 +104,6 @@ public class DefaultInitializationProcess implements SystemInitializationProcess
     }
 
     public void serviceRegistration(ServiceRegistration... registrations) throws ServiceRegistrationException {
-        System.out.println("process: " + context_.getCorba());
         for (ServiceRegistration registration : registrations) {
             registration.register();
         }
