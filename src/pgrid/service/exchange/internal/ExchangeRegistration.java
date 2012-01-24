@@ -35,6 +35,7 @@ import pgrid.service.corba.exchange.ExchangeHandleHelper;
 import pgrid.service.corba.exchange.ExchangeHandlePOA;
 import pgrid.service.exchange.Exchange;
 import pgrid.service.exchange.spi.ExchangeHandleProvider;
+import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
 
@@ -51,6 +52,11 @@ public class ExchangeRegistration implements ServiceRegistration {
 
     @Inject
     public ExchangeRegistration(ExchangeHandleProvider provider, LocalPeerContext context) {
+        ArgumentCheck.checkNotNull(context, "Cannot initialize a ExchangeRegistration object with a null LocalPeerContext value.");
+        ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to ExchangeRegistration.");
+        ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to ExchangeRegistration.");
+        ArgumentCheck.checkNotNull(provider, "Cannot initialize a ExchangeRegistration object with a null ExchangeHandleProvider value.");
+
         orb_ = context.getCorba();
         provider_ = provider;
     }

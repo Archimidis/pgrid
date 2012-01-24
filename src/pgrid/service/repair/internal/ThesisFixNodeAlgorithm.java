@@ -25,6 +25,7 @@ import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
+import pgrid.utilities.ArgumentCheck;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,12 +65,8 @@ public class ThesisFixNodeAlgorithm implements FixNodeAlgorithm {
 
     @Override
     public List<Host> execute(RoutingTable routingTable, PGridPath pathTrace) {
-        if (routingTable == null) {
-            throw new NullPointerException("Null routing table was given.");
-        }
-        if (pathTrace == null) {
-            throw new NullPointerException("Null path was given");
-        }
+        ArgumentCheck.checkNotNull(routingTable, "Null routing table was given.");
+        ArgumentCheck.checkNotNull(pathTrace, "Null path was given");
 
         logger_.info("Current path trace {}", pathTrace);
         Host localhost = routingTable.getLocalhost();

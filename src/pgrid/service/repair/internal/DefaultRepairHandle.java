@@ -26,8 +26,9 @@ import pgrid.service.corba.PeerReference;
 import pgrid.service.corba.repair.RepairHandlePOA;
 import pgrid.service.corba.repair.RepairIssue;
 import pgrid.service.corba.repair.RepairSolution;
-import pgrid.service.utilities.Deserializer;
-import pgrid.service.utilities.Serializer;
+import pgrid.utilities.ArgumentCheck;
+import pgrid.utilities.Deserializer;
+import pgrid.utilities.Serializer;
 
 /**
  * @author Vourlakis Nikolas
@@ -39,6 +40,7 @@ public class DefaultRepairHandle extends RepairHandlePOA {
     private final RepairDelegate delegate_;
 
     public DefaultRepairHandle(RepairDelegate delegate) {
+        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a DefaultRepairHandle object with a null RepairDelegate value.");
         delegate_ = delegate;
     }
 

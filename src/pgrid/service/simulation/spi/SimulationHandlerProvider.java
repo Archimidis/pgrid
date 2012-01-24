@@ -23,6 +23,7 @@ import pgrid.service.LocalPeerContext;
 import pgrid.service.corba.simulation.SimulationHandlePOA;
 import pgrid.service.simulation.internal.DefaultSimulationHandler;
 import pgrid.service.simulation.internal.SimulationDelegate;
+import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -35,6 +36,11 @@ public class SimulationHandlerProvider implements Provider<SimulationHandlePOA> 
 
     @Inject
     public SimulationHandlerProvider(LocalPeerContext context, PersistencyDelegate persistency) {
+        ArgumentCheck.checkNotNull(context, "Cannot initialize a SimulationProvider object with a null LocalPeerContext value.");
+        ArgumentCheck.checkNotNull(persistency, "Cannot initialize a SimulationProvider object with a null PersistencyDelegate value.");
+        ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to SimulationRegistration.");
+        ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to SimulationRegistration.");
+
         SimulationDelegate delegate = new SimulationDelegate(context.getCorba(), context.getLocalRT(), persistency);
         poa_ = new DefaultSimulationHandler(delegate);
     }

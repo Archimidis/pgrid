@@ -25,6 +25,7 @@ import pgrid.entity.PGridPath;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.spi.ReplaceStrategy;
+import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
 
@@ -63,12 +64,8 @@ public class TwinsReplaceStrategy implements ReplaceStrategy {
 
     @Override
     public void execute(RoutingTable routingTable, PGridPath failedPath) {
-        if (routingTable == null) {
-            throw new NullPointerException("A null routing table was given.");
-        }
-        if (failedPath == null) {
-            throw new NullPointerException("A null failed path was given");
-        }
+        ArgumentCheck.checkNotNull(routingTable, "Null routing table was given.");
+        ArgumentCheck.checkNotNull(failedPath, "Null path was given");
 
         PGridPath localhostPath = routingTable.getLocalhost().getHostPath();
 

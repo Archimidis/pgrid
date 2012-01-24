@@ -20,6 +20,7 @@
 package pgrid.service.exchange.spi;
 
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.utilities.ArgumentCheck;
 
 /**
  * This is a simple class that stores information needed for exchange. Objects
@@ -49,9 +50,7 @@ public class ExchangeContext {
      * @param maxRef  maximum references a level in the routing table can hold.
      */
     public ExchangeContext(RoutingTable localRT, boolean invited, int maxRef) {
-        if (localRT == null) {
-            throw new NullPointerException("Null RoutingTable given.");
-        }
+        ArgumentCheck.checkNotNull(localRT, "Null RoutingTable given.");
         if (maxRef < 0) {
             throw new IllegalArgumentException("Negative maxRef given");
         }
@@ -89,9 +88,7 @@ public class ExchangeContext {
      * @param remoteRT the routing table of the remote peer.
      */
     public void setRemoteInfo(RoutingTable remoteRT) {
-        if (remoteRT == null) {
-            throw new NullPointerException("Null RoutingTable given.");
-        }
+        ArgumentCheck.checkNotNull(remoteRT, "Null RoutingTable given.");
 
         remoteRoutingTable_ = remoteRT;
         readyForExchange_ = true;

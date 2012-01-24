@@ -26,6 +26,7 @@ import pgrid.entity.PGridPath;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeContext;
+import pgrid.utilities.ArgumentCheck;
 
 /**
  * This implementation encapsulates the exchange algorithm exactly as
@@ -41,11 +42,9 @@ public class AbererExchangeAlgorithm implements ExchangeAlgorithm {
     private static final Logger logger_ = LoggerFactory.getLogger(AbererExchangeAlgorithm.class);
 
     public void execute(ExchangeContext context) {
-        if (context == null) {
-            throw new NullPointerException("ExchangeContext cannot by null");
-        }
+        ArgumentCheck.checkNotNull(context, "Passed a null ExchangeContext for execution in AbererExchangeAlgorithm.");
         if (!context.isReadyForExchange()) {
-            throw new IllegalStateException("The ExchangeContext object is not properly initialized.");
+            throw new IllegalStateException("The ExchangeContext object is not properly initialized and cannot execute the exchange algorithm.");
         }
 
         final RoutingTable localRoutingTable = context.getLocalRoutingTable();

@@ -25,6 +25,7 @@ import pgrid.service.corba.repair.RepairHandlePOA;
 import pgrid.service.repair.internal.DefaultRepairHandle;
 import pgrid.service.repair.internal.RepairDelegate;
 import pgrid.service.repair.internal.RepairIssueRegistry;
+import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -38,6 +39,11 @@ public class RepairHandleProvider implements Provider<RepairHandlePOA> {
 
     @Inject
     public RepairHandleProvider(LocalPeerContext context, RepairIssueRegistry registry, @MaxRef int maxRef) {
+        ArgumentCheck.checkNotNull(context, "Cannot initialize a RepairHandleProvider object with a null LocalPeerContext value.");
+        ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to RepairHandleProvider.");
+        ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to RepairHandleProvider.");
+        ArgumentCheck.checkNotNull(registry, "Cannot initialize a RepairHandleProvider object with a null RepairIssueRegistry value.");
+
         delegate_ = new RepairDelegate(context.getCorba(), context.getLocalRT(), registry);
         delegate_.setMaxRef(maxRef);
         poa_ = null;
@@ -45,11 +51,13 @@ public class RepairHandleProvider implements Provider<RepairHandlePOA> {
 
     @Inject
     protected void setFixNodeAlgorithm(FixNodeAlgorithm fix) {
+        ArgumentCheck.checkNotNull(fix, "Tried to pass a null FixNodeAlgorithm object at RepairHandleProvider.");
         delegate_.setFixNodeAlgorithm(fix);
     }
 
     @Inject
     protected void setReplaceStrategy(ReplaceStrategy replace) {
+        ArgumentCheck.checkNotNull(replace, "Tried to pass a null ReplaceStrategy object at RepairHandleProvider.");
         delegate_.setReplaceStrategy(replace);
     }
 

@@ -25,9 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.service.CommunicationException;
+import pgrid.service.corba.PeerReference;
 import pgrid.service.corba.simulation.SimulationHandle;
 import pgrid.service.corba.simulation.SimulationHandleHelper;
 import pgrid.service.simulation.SimulationService;
+import pgrid.utilities.ArgumentCheck;
+import pgrid.utilities.Deserializer;
 
 /**
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
@@ -40,6 +43,9 @@ public class TucGridSimulationService implements SimulationService {
     private final SimulationDelegate delegate_;
 
     public TucGridSimulationService(ORB orb, SimulationDelegate simulationDelegate) {
+        ArgumentCheck.checkNotNull(orb, "Cannot initialize a DefaultSimulationHandler object with a null ORB value.");
+        ArgumentCheck.checkNotNull(simulationDelegate, "Cannot initialize a DefaultSimulationHandler object with a null SimulationDelegate value.");
+
         orb_ = orb;
         delegate_ = simulationDelegate;
     }
@@ -61,9 +67,12 @@ public class TucGridSimulationService implements SimulationService {
 
     @Override
     public void terminateSimulation(Host... network) {
+        logger_.debug("Hello");
         for (Host host : network) {
+            logger_.debug("Trying to get a handle to {}:{}", host, host.getPort());
             try {
                 SimulationHandle simulationHandle = getRemoteHandle(host);
+                logger_.debug("I have a handle to {}:{}", host, host.getPort());
                 simulationHandle.terminateSimulation();
                 logger_.info("{}:{} terminated.", host, host.getPort());
             } catch (CommunicationException e) {
@@ -72,20 +81,44 @@ public class TucGridSimulationService implements SimulationService {
         }
     }
 
+    @Override
+    public Host info(Host host) throws CommunicationException {
+        if (host == null) {
+            throw new NullPointerException("A null host was given.");
+        }
+
+        try {
+            SimulationHandle simulationHandle = getRemoteHandle(host);
+            PeerReference peerReference = simulationHandle.getInfo();
+            Host result = Deserializer.deserializeHost(peerReference);
+            return result;
+        } catch (CommunicationException e) {
+            throw new CommunicationException(
+                    "Host " + host + ":" + host.getPort() + " cannot be reached.");
+        }
+    }
+
     private SimulationHandle getRemoteHandle(Host host) throws CommunicationException {
+        ArgumentCheck.checkNotNull(host, "Cannot retrieve a SimulationHandle for a null host.");
+
         String[] simulationHandleID = SimulationHandleHelper.id().split(":");
         String corbaloc = "corbaloc:iiop:[" +
                 host.getAddress().getHostAddress() + "]:" + host.getPort()
                 + "/" + simulationHandleID[1];
         logger_.debug("CORBALOC: {}", corbaloc);
-        org.omg.CORBA.Object object = orb_.string_to_object(corbaloc);
+        org.omg.CORBA.Object object = null;
+        object = orb_.string_to_object(corbaloc);
 
-        SimulationHandle handle;
+        System.out.println("pass 1");
+        SimulationHandle handle = null;
         try {
             handle = SimulationHandleHelper.narrow(object);
+            System.out.println("pass 2");
         } catch (SystemException e) {
+            System.out.println("error");
             throw new CommunicationException(e.getCause());
         }
+        System.out.println("pass 3");
         return handle;
     }
 }

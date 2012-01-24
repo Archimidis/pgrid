@@ -35,6 +35,7 @@ import pgrid.service.corba.repair.RepairHandleHelper;
 import pgrid.service.corba.repair.RepairHandlePOA;
 import pgrid.service.exchange.internal.ExchangeRegistration;
 import pgrid.service.repair.spi.RepairHandleProvider;
+import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
 
@@ -49,6 +50,11 @@ public class RepairRegistration implements ServiceRegistration {
 
     @Inject
     public RepairRegistration(RepairHandleProvider provider, LocalPeerContext context) {
+        ArgumentCheck.checkNotNull(context, "Cannot initialize a RepairRegistration object with a null LocalPeerContext value.");
+        ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to RepairRegistration.");
+        ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to RepairRegistration.");
+        ArgumentCheck.checkNotNull(provider, "Cannot initialize a RepairRegistration object with a null RepairHandleProvider value.");
+
         orb_ = context.getCorba();
         provider_ = provider;
     }

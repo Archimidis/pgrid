@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.entity.utilities.IOUtilities;
 import pgrid.service.simulation.PersistencyException;
 import pgrid.service.simulation.spi.PersistencyDelegate;
+import pgrid.utilities.IOUtilities;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.*;
@@ -137,6 +137,7 @@ public class XMLPersistencyService implements PersistencyDelegate {
                     if (event.asStartElement().getName().getLocalPart().equals(PATH)) {
                         event = eventReader.nextEvent();
                         path = event.asCharacters().getData();
+                        path = path.equals(" ") ? "" : path;
                         continue;
                     }
 
@@ -254,7 +255,8 @@ public class XMLPersistencyService implements PersistencyDelegate {
 
             createNode(eventWriter, doubleTab, ADDRESS, localpeer.getAddress().getHostName());
             createNode(eventWriter, doubleTab, PORT, Integer.toString(localpeer.getPort()));
-            createNode(eventWriter, doubleTab, PATH, localpeer.getHostPath().toString());
+            String xmlPath = localpeer.getHostPath().toString();
+            createNode(eventWriter, doubleTab, PATH, (xmlPath.isEmpty() ? " " : xmlPath));
             createNode(eventWriter, doubleTab, TIMESTAMP, Long.toString(localpeer.getTimestamp()));
             createNode(eventWriter, doubleTab, UUID_STR, localpeer.getUUID().toString());
 
@@ -272,9 +274,10 @@ public class XMLPersistencyService implements PersistencyDelegate {
                     eventWriter.add(attribute);
                     eventWriter.add(end);
 
+                    xmlPath = host.getHostPath().toString();
                     createNode(eventWriter, doubleTab, ADDRESS, host.getAddress().getHostName());
                     createNode(eventWriter, doubleTab, PORT, Integer.toString(host.getPort()));
-                    createNode(eventWriter, doubleTab, PATH, host.getHostPath().toString());
+                    createNode(eventWriter, doubleTab, PATH, (xmlPath.isEmpty() ? " " : xmlPath));
                     createNode(eventWriter, doubleTab, TIMESTAMP, Long.toString(host.getTimestamp()));
                     createNode(eventWriter, doubleTab, UUID_STR, host.getUUID().toString());
 

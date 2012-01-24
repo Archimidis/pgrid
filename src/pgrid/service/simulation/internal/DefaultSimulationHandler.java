@@ -19,7 +19,9 @@
 
 package pgrid.service.simulation.internal;
 
+import pgrid.service.corba.PeerReference;
 import pgrid.service.corba.simulation.SimulationHandlePOA;
+import pgrid.utilities.ArgumentCheck;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -29,7 +31,13 @@ public class DefaultSimulationHandler extends SimulationHandlePOA {
     private final SimulationDelegate delegate_;
 
     public DefaultSimulationHandler(SimulationDelegate simulationDelegate) {
+        ArgumentCheck.checkNotNull(simulationDelegate, "Cannot initialize a DefaultSimulationHandler object with a null SimulationDelegate value.");
         delegate_ = simulationDelegate;
+    }
+
+    @Override
+    public PeerReference getInfo() {
+        return delegate_.sendInfo();
     }
 
     @Override

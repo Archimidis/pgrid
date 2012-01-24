@@ -31,8 +31,9 @@ import pgrid.service.corba.PeerReference;
 import pgrid.service.corba.repair.*;
 import pgrid.service.repair.spi.FixNodeAlgorithm;
 import pgrid.service.repair.spi.ReplaceStrategy;
-import pgrid.service.utilities.Deserializer;
-import pgrid.service.utilities.Serializer;
+import pgrid.utilities.ArgumentCheck;
+import pgrid.utilities.Deserializer;
+import pgrid.utilities.Serializer;
 
 import java.util.*;
 
@@ -54,6 +55,10 @@ public class RepairDelegate {
     private int maxRef_;
 
     public RepairDelegate(ORB orb, RoutingTable routingTable, RepairIssueRegistry registry) {
+        ArgumentCheck.checkNotNull(orb, "Cannot initialize a RepairDelegate object with a null ORB value.");
+        ArgumentCheck.checkNotNull(routingTable, "Cannot initialize a RepairDelegate object with a null RoutingTable value.");
+        ArgumentCheck.checkNotNull(registry, "Cannot initialize a RepairDelegate object with a null RepairIssueRegistry value.");
+
         orb_ = orb;
         routingTable_ = routingTable;
         registry_ = registry;
@@ -78,9 +83,7 @@ public class RepairDelegate {
      * @param algorithm a fully initialized object of the repair algorithm.
      */
     public void setFixNodeAlgorithm(FixNodeAlgorithm algorithm) {
-        if (algorithm == null) {
-            throw new NullPointerException("A null object was given instead of a valid FixNodeAlgorithm.");
-        }
+        ArgumentCheck.checkNotNull(algorithm, "Tried to pass a null FixNodeAlgorithm object at RepairDelegate.");
         fix_ = algorithm;
     }
 
@@ -90,9 +93,7 @@ public class RepairDelegate {
      * @param replace a fully initialized object of the replace strategy.
      */
     public void setReplaceStrategy(ReplaceStrategy replace) {
-        if (replace == null) {
-            throw new NullPointerException("A null object was given instead of a valid ReplaceStrategy.");
-        }
+        ArgumentCheck.checkNotNull(replace, "Tried to pass a null ReplaceStrategy object at RepairDelegate.");
         replace_ = replace;
     }
 
@@ -509,12 +510,8 @@ public class RepairDelegate {
      * algorithm objects.
      */
     private void validateService() {
-        if (replace_ == null) {
-            throw new NullPointerException("Repair service is not in a valid state. No ReplaceStrategy was found.");
-        }
-        if (fix_ == null) {
-            throw new NullPointerException("Repair service is not in a valid state. No FixNodeAlgorithm was found.");
-        }
+        ArgumentCheck.checkNotNull(replace_, "Repair service is not in a valid state. No ReplaceStrategy was found.");
+        ArgumentCheck.checkNotNull(fix_, "Repair service is not in a valid state. No FixNodeAlgorithm was found.");
     }
 
     /**

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.utilities;
+package pgrid.utilities;
 
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;

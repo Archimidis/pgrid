@@ -24,6 +24,7 @@ import pgrid.service.anotations.constants.MaxRecursions;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.exchange.internal.DefaultExchangeService;
+import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -50,6 +51,11 @@ public class ExchangeProvider implements Provider<ExchangeService> {
      */
     @Inject
     public ExchangeProvider(LocalPeerContext context, ExchangeAlgorithm algo, @MaxRef int maxRef, @MaxRecursions int maxRecur) {
+        ArgumentCheck.checkNotNull(context, "Cannot initialize a ExchangeProvider object with a null LocalPeerContext value.");
+        ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to ExchangeProvider.");
+        ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to ExchangeProvider.");
+        ArgumentCheck.checkNotNull(algo, "Cannot initialize a ExchangeProvider object with a null ExchangeAlgorithm value.");
+
         context_ = context;
         algorithm_ = algo;
         MAX_RECURSIONS = maxRecur;

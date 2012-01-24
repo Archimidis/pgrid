@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.service.repair.RepairService;
+import pgrid.utilities.ArgumentCheck;
 
 /**
  * @author Vourlakis Nikolas
@@ -35,14 +36,13 @@ public class DefaultRepairService implements RepairService {
     private final RepairDelegate delegate_;
 
     public DefaultRepairService(RepairDelegate delegate) {
+        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a DefaultRepairHandle object with a null RepairDelegate value.");
         delegate_ = delegate;
     }
 
     @Override
     public void fixNode(Host failedHost) {
-        if (failedHost == null) {
-            throw new NullPointerException("Cannot execute repair service with a null failed host.");
-        }
+        ArgumentCheck.checkNotNull(failedHost, "Cannot execute repair service with a null failed host.");
 
         delegate_.fixNode(delegate_.algorithmPathExecution(failedHost.getHostPath()).toString(),
                 failedHost);
@@ -50,12 +50,9 @@ public class DefaultRepairService implements RepairService {
 
     @Override
     public void fixSubtree(String subtreePath, Host... failedGroup) {
-        if (failedGroup == null) {
-            throw new NullPointerException("Cannot execute repair service with a null failed host.");
-        }
-        if (subtreePath == null) {
-            throw new NullPointerException("Cannot execute repair service with a null failed host.");
-        }
+        ArgumentCheck.checkNotNull(failedGroup, "Cannot execute repair service with a null failed host.");
+        ArgumentCheck.checkNotNull(subtreePath, "Cannot execute repair service with a null failed host.");
+
         delegate_.fixSubtree(delegate_.algorithmPathExecution(new PGridPath(subtreePath)).toString(),
                 subtreePath,
                 failedGroup);

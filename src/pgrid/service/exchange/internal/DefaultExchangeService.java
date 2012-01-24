@@ -31,8 +31,9 @@ import pgrid.service.corba.exchange.ExchangeHandleHelper;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeContext;
-import pgrid.service.utilities.Deserializer;
-import pgrid.service.utilities.Serializer;
+import pgrid.utilities.ArgumentCheck;
+import pgrid.utilities.Deserializer;
+import pgrid.utilities.Serializer;
 
 import java.util.Collection;
 
@@ -50,6 +51,10 @@ public class DefaultExchangeService implements ExchangeService {
     private final int MAX_REF;
 
     public DefaultExchangeService(ORB orb, RoutingTable routingTable, ExchangeAlgorithm algorithm, int maxRef, int maxRecur) {
+        ArgumentCheck.checkNotNull(orb, "Cannot initialize a DefaultExchangeService object with a null ORB value.");
+        ArgumentCheck.checkNotNull(routingTable, "Cannot initialize a DefaultExchangeService object with a null RoutingTable value.");
+        ArgumentCheck.checkNotNull(algorithm, "Cannot initialize a DefaultExchangeService object with a null ExchangeAlgorithm value.");
+
         orb_ = orb;
         routingTable_ = routingTable;
         algorithm_ = algorithm;
@@ -104,7 +109,6 @@ public class DefaultExchangeService implements ExchangeService {
             handle = ExchangeHandleHelper.narrow(object);
         } catch (SystemException e) {
             logger_.warn("Cannot reach the host {}:{} that was asked to exchange with.", host, host.getPort());
-            logger_.warn("[Exception] {}", e.getCause().getMessage());
             throw new CommunicationException(e.getCause());
         }
         return handle;

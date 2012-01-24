@@ -34,6 +34,7 @@ import pgrid.service.ServiceRegistrationException;
 import pgrid.service.corba.simulation.SimulationHandleHelper;
 import pgrid.service.corba.simulation.SimulationHandlePOA;
 import pgrid.service.simulation.spi.SimulationHandlerProvider;
+import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
 
@@ -48,6 +49,10 @@ public class SimulationRegistration implements ServiceRegistration {
 
     @Inject
     public SimulationRegistration(SimulationHandlerProvider provider, LocalPeerContext context) {
+        ArgumentCheck.checkNotNull(provider, "Cannot initialize a SimulationRegistration object with a null SimulationHandlerProvider value.");
+        ArgumentCheck.checkNotNull(context, "Cannot initialize a SimulationRegistration object with a null LocalPeerContext value.");
+        ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to SimulationRegistration.");
+        ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to SimulationRegistration.");
         orb_ = context.getCorba();
         provider_ = provider;
     }

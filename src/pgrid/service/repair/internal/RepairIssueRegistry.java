@@ -25,8 +25,8 @@ import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.service.corba.repair.IssueState;
 import pgrid.service.corba.repair.RepairIssue;
-import pgrid.service.utilities.Deserializer;
-import pgrid.service.utilities.Serializer;
+import pgrid.utilities.Deserializer;
+import pgrid.utilities.Serializer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

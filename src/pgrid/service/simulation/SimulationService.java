@@ -20,6 +20,7 @@
 package pgrid.service.simulation;
 
 import pgrid.entity.Host;
+import pgrid.service.CommunicationException;
 
 /**
  * A simulation service that will be used at the tuc grid experiments.
@@ -53,4 +54,14 @@ public interface SimulationService {
      *                peer.
      */
     public void terminateSimulation(Host... network);
+
+
+    /**
+     * Updates the information about the state (e.g. path) of the the given
+     * host.
+     *
+     * @param host to be contacted and get his state.
+     * @return an updated version of the given host.
+     */
+    public Host info(Host host) throws CommunicationException;
 }

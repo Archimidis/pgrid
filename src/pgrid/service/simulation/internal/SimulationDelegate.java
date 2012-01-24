@@ -23,7 +23,10 @@ import org.omg.CORBA.ORB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.corba.PeerReference;
 import pgrid.service.simulation.spi.PersistencyDelegate;
+import pgrid.utilities.ArgumentCheck;
+import pgrid.utilities.Serializer;
 
 import java.io.FileNotFoundException;
 
@@ -38,29 +41,40 @@ public class SimulationDelegate {
     private final PersistencyDelegate delegate_;
 
     public SimulationDelegate(ORB orb, RoutingTable routingTable, PersistencyDelegate delegate) {
+        ArgumentCheck.checkNotNull(orb, "Cannot initialize a SimulationDelegate object with a null ORB value.");
+        ArgumentCheck.checkNotNull(routingTable, "Cannot initialize a SimulationDelegate object with a null RoutingTable value.");
+        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a SimulationDelegate object with a null PersistencyDelegate value.");
+
         orb_ = orb;
         routingTable_ = routingTable;
         delegate_ = delegate;
+        System.out.println("Delegate: " + orb_ + "," + routingTable_ + "," + delegate_);
     }
 
     public void die() {
         logger_.info("Local peer is shutting down");
+        System.out.println(routingTable_);
+        System.out.println(orb_);
         String filename = routingTable_.getLocalhost().toString() + ".xml";
         try {
             delegate_.store(filename, routingTable_);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException ignored) {
         }
         logger_.info("Routing table stored in {}", filename);
         orb_.shutdown(false);
-        //orb_.destroy();
+        orb_.destroy();
         logger_.info("Corba facility terminated");
 
         logger_.info("Local peer {}:{} is terminating",
                 routingTable_.getLocalhost(), routingTable_.getLocalhost().getPort());
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
         System.exit(0);
+    }
+
+    public PeerReference sendInfo() {
+        return Serializer.serializeHost(routingTable_.getLocalhost());
     }
 }

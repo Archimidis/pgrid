@@ -20,14 +20,25 @@
 package pgrid.service;
 
 import com.google.inject.AbstractModule;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
+import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pgrid.entity.CorbaFactory;
+import pgrid.entity.Host;
+import pgrid.entity.internal.PGridHost;
+import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.anotations.constants.MaxRecursions;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.anotations.constants.RepairTimeout;
 import pgrid.service.exchange.ExchangeModule;
 import pgrid.service.repair.RepairModule;
 import pgrid.service.simulation.SimulationModule;
+
+import java.net.UnknownHostException;
 
 /**
  * @author Vourlakis Nikolas
@@ -36,19 +47,54 @@ public class ServiceModule extends AbstractModule {
 
     private static final Logger logger_ = LoggerFactory.getLogger(ServiceModule.class);
     private final int maxRef_;
+    private final String address_;
+    private final int port_;
 
-    public ServiceModule(int maxRef) {
+    public ServiceModule(String address, int port, int maxRef) {
+        address_ = address;
+        port_ = port;
         maxRef_ = maxRef;
+    }
+
+
+    protected void bindLocalPeerContext() throws UnknownHostException {
+        System.out.println("GETS CALLED!!!!!");
+        Host localhost = new PGridHost(address_, port_);
+        RoutingTable rt = new RoutingTable();
+        rt.setLocalhost(localhost);
+
+        CorbaFactory corbaFactory = new CorbaFactory();
+        ORB orb = corbaFactory.getInstance(address_, port_);
+        try {
+            POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootPOA.the_POAManager().activate();
+        } catch (InvalidName invalidName) {
+            logger_.error("{}", invalidName);
+        } catch (AdapterInactive adapterInactive) {
+            logger_.error("{}", adapterInactive);
+        }
+
+        LocalPeerContext instance = new LocalPeerContext();
+        instance.setOrb(orb);
+        instance.setRoutingTable(rt);
+        bind(LocalPeerContext.class).toInstance(instance);
     }
 
     @Override
     protected void configure() {
         logger_.debug("Setting up service module");
-        bind(LocalPeerContext.class).asEagerSingleton();
+        //bind(LocalPeerContext.class);
 
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());
         binder().install(new SimulationModule());
+
+        try {
+            bindLocalPeerContext();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        //bind(LocalPeerContextFactory.class);
 
         bindConstant()
                 .annotatedWith(MaxRef.class)

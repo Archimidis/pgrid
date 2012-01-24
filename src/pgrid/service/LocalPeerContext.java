@@ -21,6 +21,7 @@ package pgrid.service;
 
 import org.omg.CORBA.ORB;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.utilities.ArgumentCheck;
 
 /**
  * A context where information about the local peer are stored, like references
@@ -39,6 +40,7 @@ public class LocalPeerContext {
      * @param localRT a reference to the RoutingTable.
      */
     public synchronized void setRoutingTable(RoutingTable localRT) {
+        ArgumentCheck.checkNotNull(localRT, "Passed a null RoutingTable to LocalPeerContext");
         localRT_ = localRT;
     }
 
@@ -49,6 +51,7 @@ public class LocalPeerContext {
      * @param orb a reference to the corba facility.
      */
     public synchronized void setOrb(ORB orb) {
+        ArgumentCheck.checkNotNull(orb, "Passed a null ORB to LocalPeerContext");
         orb_ = orb;
     }
 

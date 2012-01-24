@@ -20,7 +20,6 @@
 package pgrid.service.simulation;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceRegistration;
@@ -45,11 +44,11 @@ public class SimulationModule extends AbstractModule {
 
         // returns the same instance
         bind(SimulationService.class).toProvider(SimulationProvider.class);
-        bind(SimulationProvider.class).in(Scopes.SINGLETON);
+//        bind(SimulationProvider.class).in(Scopes.SINGLETON);
 
         // returns the same handle every time
         bind(SimulationHandlePOA.class).toProvider(SimulationHandlerProvider.class);
-        bind(SimulationHandlerProvider.class).in(Scopes.SINGLETON);
+//        bind(SimulationHandlerProvider.class).in(Scopes.SINGLETON);
 
         bind(ServiceRegistration.class)
                 .annotatedWith(Simulation.class)

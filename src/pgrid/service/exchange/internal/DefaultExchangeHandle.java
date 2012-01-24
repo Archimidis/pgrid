@@ -26,8 +26,9 @@ import pgrid.service.corba.CorbaRoutingTable;
 import pgrid.service.corba.exchange.ExchangeHandlePOA;
 import pgrid.service.exchange.spi.ExchangeAlgorithm;
 import pgrid.service.exchange.spi.ExchangeContext;
-import pgrid.service.utilities.Deserializer;
-import pgrid.service.utilities.Serializer;
+import pgrid.utilities.ArgumentCheck;
+import pgrid.utilities.Deserializer;
+import pgrid.utilities.Serializer;
 
 /**
  * @author Vourlakis Nikolas
@@ -43,6 +44,9 @@ public class DefaultExchangeHandle extends ExchangeHandlePOA {
     private final int MAX_RECURSIONS;
 
     public DefaultExchangeHandle(RoutingTable localRoutingTable, ExchangeAlgorithm algo, int maxRef, int maxRecur) {
+        ArgumentCheck.checkNotNull(localRoutingTable, "Cannot initialize a DefaultExchangeHandle object with a null RoutingTable value.");
+        ArgumentCheck.checkNotNull(algo, "Cannot initialize a DefaultExchangeHandle object with a null ExchangeAlgorithm value.");
+
         localRoutingTable_ = localRoutingTable;
         algo_ = algo;
         REF_MAX = maxRef;
