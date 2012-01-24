@@ -25,14 +25,21 @@ import com.google.inject.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.EntityModule;
+import pgrid.entity.Host;
+import pgrid.entity.routingtable.RoutingTable;
 import pgrid.process.ProcessModule;
 import pgrid.process.initialization.SystemInitializationProcess;
+import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceModule;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.exchange.Exchange;
 import pgrid.service.repair.Repair;
+import pgrid.service.simulation.PersistencyException;
 import pgrid.service.simulation.Simulation;
+import pgrid.service.simulation.internal.XMLPersistencyService;
+import pgrid.service.simulation.spi.PersistencyDelegate;
 
+import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
 
 /**
@@ -48,17 +55,38 @@ public class GridPeer {
 
     private static final Logger logger_ = LoggerFactory.getLogger(GridPeer.class);
 
-    // arg[0] -> xml file where the routing table will be loaded from.
+    public static RoutingTable load(String file) throws PersistencyException, FileNotFoundException {
+        RoutingTable routingTable = new RoutingTable();
+        PersistencyDelegate bootstrapService = new XMLPersistencyService();
+        bootstrapService.load(file, routingTable);
+        return routingTable;
+    }
+
+    // arg[0] -> xml file where the peer's routing table will be loaded from.
     public static void main(String[] args) throws UnknownHostException {
         if (args.length != 1) {
             logger_.error("No file given to load and store routing table.");
             System.exit(1);
         }
 
+        RoutingTable rt = null;
+        try {
+            rt = load(args[0]);
+        } catch (PersistencyException e) {
+            logger_.error("{}", e);
+            System.exit(1);
+        } catch (FileNotFoundException e) {
+            logger_.error("{}", e);
+            System.exit(1);
+        }
+
         Injector injector = Guice.createInjector(
                 new EntityModule(),
-                new ServiceModule(10),
+                new ServiceModule(rt.getLocalhost().getAddress().getHostName(), rt.getLocalhost().getPort(), 10),
                 new ProcessModule());
+
+        LocalPeerContext context = injector.getInstance(LocalPeerContext.class);
+        context.setRoutingTable(rt);
 
         SystemInitializationProcess initProcess =
                 injector.getInstance(SystemInitializationProcess.class);
@@ -74,6 +102,15 @@ public class GridPeer {
         } catch (Exception e) {
             logger_.error("Error during service registration. {}", e);
             System.exit(2);
+        }
+
+        Host localhost = context.getLocalRT().getLocalhost();
+
+        logger_.debug("Localhost");
+        logger_.debug("[{}] {}:{} - '{}'", new Object[]{localhost.getHostPath(), localhost, localhost.getPort(), localhost.getUUID()});
+        logger_.debug("Routing Table");
+        for (Host host : context.getLocalRT().getAllHosts()) {
+            logger_.debug("[{}] {}:{} - '{}'", new Object[]{host.getHostPath(), host, host.getPort(), host.getUUID()});
         }
 
         initProcess.startServer();
