@@ -31,4 +31,6 @@ public interface SystemInitializationProcess {
     public void serviceRegistration(ServiceRegistration... registrations) throws ServiceRegistrationException;
 
     public void startServer();
+
+    public void shutdownServer();
 }

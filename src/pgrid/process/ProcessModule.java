@@ -20,6 +20,9 @@
 package pgrid.process;
 
 import com.google.inject.AbstractModule;
+import pgrid.process.initialization.InitializationModule;
+import pgrid.process.initialization.internal.DefaultInitializationProcess;
+import pgrid.process.meeting.MeetingModule;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -27,6 +30,10 @@ import com.google.inject.AbstractModule;
 public class ProcessModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(SystemInitializationProcess.class);
+        install(new MeetingModule());
+        install(new InitializationModule());
+
+        bind(DefaultInitializationProcess.class);
+        bind(ControlProcess.class);
     }
 }
