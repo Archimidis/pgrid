@@ -26,6 +26,7 @@ import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.corba.CorbaRoutingTable;
 import pgrid.service.corba.PeerReference;
+import pgrid.utilities.Serializer;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
