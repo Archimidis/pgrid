@@ -21,20 +21,26 @@
 
 <configuration>
 
+    <property name="defaultPattern"
+              value="%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
 
-    <appender name="RootConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>debug</level>
-        </filter>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </layout>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>pgrid.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>${defaultPattern}</pattern>
+        </encoder>
     </appender>
 
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-    <root>
-        <level value="info"/>
-        <appender-ref ref="RootConsoleAppender"/>
+    <!-- Output Configuration -->
+    <root level="${root-level:-DEBUG}">
+        <appender-ref ref="FILE"/>
     </root>
 
 </configuration>

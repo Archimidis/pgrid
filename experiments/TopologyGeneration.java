@@ -22,9 +22,9 @@ import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.simulation.internal.XMLPersistencyService;
 import pgrid.service.simulation.spi.PersistencyDelegate;
+import pgrid.utilities.IOUtilities;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.UnknownHostException;
 
 /**
@@ -34,7 +34,14 @@ import java.net.UnknownHostException;
  */
 public class TopologyGeneration {
 
-    public static void main(String[] args) throws UnknownHostException, FileNotFoundException {
+    private static RoutingTable controllerRT_;
+
+    public static void main(String[] args) throws IOException {
+        controllerRT_ = new RoutingTable();
+        Host controller = new PGridHost("ui.grid.tuc.gr", 3000);
+        controller.setHostPath("");
+        controllerRT_.setLocalhost(controller);
+
         topology1();
         topology2();
         topology3();
@@ -87,7 +94,10 @@ public class TopologyGeneration {
         delegate.store(filePrefix + "B.xml", routingTableB);
         delegate.store(filePrefix + "C.xml", routingTableC);
         delegate.store(filePrefix + "D.xml", routingTableD);
+        delegate.store(filePrefix + "controller.xml", controllerRT_);
+        storeNetwork(filePrefix + "network", A, B, C, D);
     }
+
 
     public static void topology2() throws UnknownHostException, FileNotFoundException {
         Host A = new PGridHost("wn010.grid.tuc.gr", 3000);
@@ -137,6 +147,8 @@ public class TopologyGeneration {
         delegate.store(filePrefix + "B.xml", routingTableB);
         delegate.store(filePrefix + "C.xml", routingTableC);
         delegate.store(filePrefix + "D.xml", routingTableD);
+        delegate.store(filePrefix + "controller.xml", controllerRT_);
+        storeNetwork(filePrefix + "network", A, B, C, D);
     }
 
     public static void topology3() throws UnknownHostException, FileNotFoundException {
@@ -152,7 +164,7 @@ public class TopologyGeneration {
         Host D = new PGridHost("wn013.grid.tuc.gr", 3000);
         D.setHostPath("01");
 
-        Host E = new PGridHost("wn013.grid.tuc.gr", 3000);
+        Host E = new PGridHost("wn014.grid.tuc.gr", 3000);
         E.setHostPath("1");
 
 
@@ -202,5 +214,23 @@ public class TopologyGeneration {
         delegate.store(filePrefix + "C.xml", routingTableC);
         delegate.store(filePrefix + "D.xml", routingTableD);
         delegate.store(filePrefix + "E.xml", routingTableE);
+        delegate.store(filePrefix + "controller.xml", controllerRT_);
+        storeNetwork(filePrefix + "network", A, B, C, D, E);
+    }
+
+    private static void storeNetwork(String filePath, Host... hosts) {
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(filePath));
+            for (Host host : hosts) {
+                writer.write(host.getAddress().getHostName() + ","
+                        + host.getPort() + ","
+                        + host.getHostPath() + ","
+                        + host.getUUID() + "\n");
+            }
+        } catch (IOException ignored) {
+        } finally {
+            IOUtilities.closeQuietly(writer);
+        }
     }
 }

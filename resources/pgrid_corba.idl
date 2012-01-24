@@ -77,12 +77,22 @@ module pgrid {
                 };
             }; // end module repair
 
+//            module trigger {
+//                interface TriggerProcess {
+//                    oneway void execute(in PeerReference peer);
+//                };
+//            }; // end module trigger
+
             module simulation {
                 interface SimulationHandle {
+                    PeerReference getInfo();
                     oneway void die();
                     oneway void terminateSimulation();
                 };
             }; // end module simulation
         }; // end module corba
     }; // end module service
+
+
+
 }; // end module pgrid
