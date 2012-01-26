@@ -91,7 +91,18 @@ public class DefaultExchangeService implements ExchangeService {
                 return;
             }
             for (Host toExchange : level) {
-                execute(toExchange);
+                // XXX: This is a temporary code duplication. Fixed an infinite recursion.
+                ExchangeHandle recHandle = getRemoteHandle(host);
+                // send local routing table
+                recHandle.exchange(Serializer.serializeRoutingTable(routingTable_));
+                // receive remote routing table
+                RoutingTable recRemoteRT = Deserializer.deserializeRoutingTable(handle.routingTable());
+
+                ExchangeContext recContext = new ExchangeContext(routingTable_, false, MAX_REF);
+                recContext.setRemoteInfo(remoteRT);
+
+                logger_.debug("[Recursive] Local peer has all the information needed to execute the exchange algorithm.");
+                algorithm_.execute(recContext);
             }
         }
     }
