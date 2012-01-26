@@ -21,23 +21,38 @@ package pgrid;
 
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class Play {
     @Test
-    public void test() {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("test/pgrid/network"));
-            String strLine;
-            while ((strLine = bufferedReader.readLine()) != null) {
-                System.out.println(strLine);
+    public void test() throws InterruptedException {
+//        Injector injector = Guice.createInjector(
+//                new EntityModule(),
+//                new ServiceModule("127.0.0.1", 3000, 5),
+//                new ProcessModule());
+//
+//        PeerMeetingProcess process = injector.getProvider(PeerMeetingProcess.class).get();
+//        System.out.println(process);
+//
+//        process = injector.getProvider(Key.get(PeerMeetingProcess.class, Scheduled.class)).get();
+//        System.out.println(process);
+//
+//        Thread work = new Thread((Runnable) process);
+//        work.start();
+//        try {
+//            work.join(500);
+//        } catch (InterruptedException e) {}
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println(System.currentTimeMillis() / 1000.0);
             }
-        } catch (IOException e) {
-        }
+        }, 0, 500);
+        Thread.sleep(2000);
     }
 }
