@@ -20,6 +20,7 @@
 package pgrid.process;
 
 import com.google.inject.AbstractModule;
+import pgrid.process.control.ControlProcess;
 import pgrid.process.initialization.InitializationModule;
 import pgrid.process.initialization.internal.DefaultInitializationProcess;
 import pgrid.process.meeting.MeetingModule;

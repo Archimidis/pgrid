@@ -20,6 +20,9 @@
 package pgrid.process.meeting;
 
 import com.google.inject.AbstractModule;
+import pgrid.process.annotations.Scheduled;
+import pgrid.process.meeting.internal.MeetingProvider;
+import pgrid.process.meeting.internal.ScheduledMeetingProvider;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -27,6 +30,9 @@ import com.google.inject.AbstractModule;
 public class MeetingModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(PeerMeetingProcess.class).toProvider(PeerMeetingProvider.class);
+        bind(PeerMeetingProcess.class).toProvider(MeetingProvider.class);
+        bind(PeerMeetingProcess.class)
+                .annotatedWith(Scheduled.class)
+                .toProvider(ScheduledMeetingProvider.class);
     }
 }

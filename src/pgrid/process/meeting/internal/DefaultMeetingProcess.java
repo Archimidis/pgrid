@@ -26,6 +26,7 @@ import pgrid.process.meeting.PeerMeetingProcess;
 import pgrid.service.CommunicationException;
 import pgrid.service.exchange.ExchangeService;
 import pgrid.service.repair.RepairService;
+import pgrid.utilities.ArgumentCheck;
 
 /**
  * The default implementation includes an execution attempt of the exchange
@@ -35,9 +36,9 @@ import pgrid.service.repair.RepairService;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public class DefaultPeerMeetingProcess implements PeerMeetingProcess {
+public class DefaultMeetingProcess implements PeerMeetingProcess {
 
-    private static final Logger logger_ = LoggerFactory.getLogger(DefaultPeerMeetingProcess.class);
+    private static final Logger logger_ = LoggerFactory.getLogger(DefaultMeetingProcess.class);
 
     private ExchangeService exchange_;
     private RepairService repair_;
@@ -48,13 +49,9 @@ public class DefaultPeerMeetingProcess implements PeerMeetingProcess {
      * @param exchange a fully initialized exchange service object.
      * @param repair   a fully initialized repair service object.
      */
-    public DefaultPeerMeetingProcess(ExchangeService exchange, RepairService repair) {
-        if (exchange == null) {
-            throw new NullPointerException("Instead of an ExchangeService object a null value was given.");
-        }
-        if (repair == null) {
-            throw new NullPointerException("Instead of an RepairService object a null value was given.");
-        }
+    public DefaultMeetingProcess(ExchangeService exchange, RepairService repair) {
+        ArgumentCheck.checkNotNull(exchange, "Instead of an ExchangeService object a null value was given.");
+        ArgumentCheck.checkNotNull(repair, "Instead of an RepairService object a null value was given.");
 
         exchange_ = exchange;
         repair_ = repair;
@@ -68,9 +65,7 @@ public class DefaultPeerMeetingProcess implements PeerMeetingProcess {
      */
     @Override
     public void meetWith(Host host) {
-        if (host == null) {
-            throw new NullPointerException("A null host was given.");
-        }
+        ArgumentCheck.checkNotNull(host, "A null host was given.");
 
         try {
             exchange_.execute(host);
