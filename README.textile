@@ -16,12 +16,14 @@ h3. Libraries in use
 * logback 1.0
 * slf4j 1.6.4
 
-h3. Before Compilation
+h3. Compilation
 
 Run the following commands to produce all the needed corba interfaces and
 classes before compilation.
-1. cd libpgrid
+1. cd pgrid
 2. idlj -fall -td src/ resources/pgrid_corba.idl
+
+Finally run the ant script.
 
 h1. License
 
