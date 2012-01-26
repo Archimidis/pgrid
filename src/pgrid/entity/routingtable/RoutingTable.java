@@ -178,7 +178,10 @@ public class RoutingTable {
             }
         }
 
-        // if it shouldn't be added it will be fixed by refresh(...)
+        if (commonLength < 0) {
+            commonLength = 0;
+        }
+        // if it shouldn't be added it will be fixed by refresh(...) anyway
         references_.get(commonLength).add(routingTable.getLocalhost());
         refresh(refMax);
     }
