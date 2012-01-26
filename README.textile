@@ -1,3 +1,5 @@
+h1. Middleware for Fault Tolerant PGrid Networks
+
 P-Grid is a self-organizing structured peer-to-peer system, which can
 accommodate arbitrary key distributions, still providing storage load-balancing
 and efficient search by using randomized routing. This project is an
@@ -6,12 +8,40 @@ to add a fault-tolerant protocol. The implementation is based on SOA
 principles.
 This project is part of my dissertation.
 
-Libraries that this projects uses.
-1) Google guice 3.0
-2) logback 1.0
-3) slf4j 1.6.4
+h2. Getting started
+
+h3. Libraries in use
+
+* Google guice 3.0
+* logback 1.0
+* slf4j 1.6.4
+
+h3. Before Compilation
 
 Run the following commands to produce all the needed corba interfaces and
 classes before compilation.
-1) cd libpgrid
-2) idlj -fall -td src/ resources/pgrid_corba.idl
+1. cd libpgrid
+2. idlj -fall -td src/ resources/pgrid_corba.idl
+
+h1. License
+
+<pre>
+
+This software is licensed under the Apache 2 license, quoted below.
+
+Copyright 2009-2011 Shay Banon and ElasticSearch <http://www.elasticsearch.org>
+
+This program is free software: you can redistribute it and/or modify it under 
+the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+</pre>
