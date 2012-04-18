@@ -18,6 +18,10 @@
  */
 package pgrid.service.repair.internal;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
 import org.slf4j.Logger;
@@ -34,11 +38,8 @@ import pgrid.utilities.ArgumentCheck;
 import pgrid.utilities.Deserializer;
 import pgrid.utilities.Serializer;
 
-import java.util.*;
-
 /**
- * XXX: [REFACTOR] fixNode code is partial duplicated by fixSubtree, DRY
- * violation! This class is a monstrosity!!!!!!!!!!
+ * XXX: [REFACTOR] fixNode code is partial duplicated by fixSubtree, DRY violation!
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
@@ -96,10 +97,14 @@ public class RepairDelegate {
     }
 
     /**
-     * TODO: Write documentation.
+     * When a failed host has been found by the localhost, this method will be
+     * executed. The failed host reference is passed along with a path needed
+     * by the fix node algorithm. This path represents the subtree that the
+     * algorithm will search for a solution. See {@link ThesisFixNodeAlgorithm}
+     * for more information about the footpath argument.
      *
-     * @param footpath
-     * @param failedHost
+     * @param footpath to be followed by the fix node algorithm.
+     * @param failedHost the failed host to be fixed.
      */
     public void fixNode(String footpath, Host failedHost) {
         logger_.info("Fixing node {}", failedHost.getHostPath());
@@ -126,7 +131,7 @@ public class RepairDelegate {
 
         List<Host> continuation = fix_.execute(routingTable_, new PGridPath(footpath));
         PGridPath failedHostPath = failedHost.getHostPath();
-        if (continuation.size() == 0) {
+        if (continuation.isEmpty()) {
             logger_.debug("The localhost doesn't know anyone that can fix the problem");
             // XXX: wait ????
             String pathToCheck = failedHostPath.subPath(0, failedHostPath.length() - 1);
@@ -144,12 +149,12 @@ public class RepairDelegate {
                 updatedHosts.add(routingTable_.getLocalhost());
 
                 if (!failedHostPath.isConjugateTo(routingTable_.getLocalhost().getHostPath())) {
-                    logger_.debug("Informing the localhost's conjugate for the issue");
+                    logger_.debug("Informing the localhost's conjugate for failed path {}", failedHostPath);
                     Host conjugate = routingTable_.getLevelArray(routingTable_.levelNumber() - 1)[0];
                     try {
                         RepairHandle repairHandle = getRemoteHandle(conjugate);
                         PeerReference updatedConjugateRef = repairHandle.replace(failedHostPath.toString(),
-                                new RepairIssue[]{registry_.getIssue(failedHostPath.toString())});// TODO: Test rpc to conjugate
+                                new RepairIssue[]{registry_.getIssue(failedHostPath.toString())});
                         conjugate = Deserializer.deserializeHost(updatedConjugateRef);
                         updatedHosts.add(conjugate);
                         routingTable_.updateReference(conjugate);
@@ -169,7 +174,7 @@ public class RepairDelegate {
                 logger_.debug("The localhost must forward a request to {}:{}", host, host.getPort());
                 try {
                     RepairHandle repairHandle = getRemoteHandle(host);
-                    repairHandle.fixNode(footpath, registry_.getIssue(failedHostPath.toString())); // TODO: Test rpc to host
+                    repairHandle.fixNode(footpath, registry_.getIssue(failedHostPath.toString()));
                 } catch (CommunicationException e) {
                     logger_.debug("{}:{} is not reachable.", host, host.getPort());
                     fixNode(algorithmPathExecution(host.getHostPath()).toString(), host);
@@ -190,7 +195,7 @@ public class RepairDelegate {
                         selectedHost, selectedHost.getPort(), selectedHost.getHostPath()});
             try {
                 RepairHandle repairHandle = getRemoteHandle(selectedHost);
-                repairHandle.fixNode(footpath, registry_.getIssue(failedHostPath.toString())); // TODO: Test rpc to host
+                repairHandle.fixNode(footpath, registry_.getIssue(failedHostPath.toString()));
             } catch (CommunicationException e) {
                 if (selectedHost.getHostPath().isConjugateTo(failedHostPath)) {
                     String commonPrefix = failedHostPath.commonPrefix(selectedHost.getHostPath());
@@ -226,7 +231,7 @@ public class RepairDelegate {
         List<Host> continuation = fix_.execute(routingTable_, new PGridPath(footpath));
         PGridPath prefixPath = new PGridPath(prefix);
 
-        if (continuation.size() == 0) {
+        if (continuation.isEmpty()) {
             logger_.debug("The localhost doesn't know anyone that can fix the problem");
             // wait till timeout then keep generalizing till replacement
         } else if (continuation.size() == 1) {
@@ -246,7 +251,7 @@ public class RepairDelegate {
                         for (int i = 0; i < failedHosts.length; i++) {
                             repairIssues[i] = registry_.getIssue(failedHosts[i].getUUID());
                         }
-                        PeerReference updatedConjugateRef = repairHandle.replace(prefix, repairIssues);// TODO: Test rpc to host
+                        PeerReference updatedConjugateRef = repairHandle.replace(prefix, repairIssues);
                         conjugate = Deserializer.deserializeHost(updatedConjugateRef);
                         updatedHosts.add(conjugate);
                         routingTable_.updateReference(conjugate);
@@ -270,7 +275,7 @@ public class RepairDelegate {
                     for (int i = 0; i < failedHosts.length; i++) {
                         repairIssues[i] = registry_.getIssue(failedHosts[i].getUUID());
                     }
-                    repairHandle.fixSubtree(footpath, prefix, repairIssues); // TODO: Test rpc to host
+                    repairHandle.fixSubtree(footpath, prefix, repairIssues);
                 } catch (CommunicationException e) {
                     logger_.debug("{}:{} is not reachable.", host, host.getPort());
                     if (host.getHostPath().isConjugateTo(prefixPath)) {
@@ -305,7 +310,7 @@ public class RepairDelegate {
                 for (int i = 0; i < failedHosts.length; i++) {
                     repairIssues[i] = registry_.getIssue(failedHosts[i].getUUID());
                 }
-                repairHandle.fixSubtree(footpath, prefix, repairIssues); // TODO: Test rpc to host
+                repairHandle.fixSubtree(footpath, prefix, repairIssues);
             } catch (CommunicationException e) {
                 if (selectedHost.getHostPath().isConjugateTo(prefixPath)) {
                     String commonPrefix = prefixPath.commonPrefix(selectedHost.getHostPath());
@@ -400,7 +405,7 @@ public class RepairDelegate {
 
         PGridPath localPath = routingTable_.getLocalhost().getHostPath();
         
-        for (int i = 0; i <= localPath.length(); i++) {
+        for (int i = 0; i < localPath.length(); i++) {
             Random r = new Random(System.currentTimeMillis());
             Host[] level = routingTable_.getLevelArray(i);
             Host host = level[r.nextInt(level.length)];
@@ -439,26 +444,34 @@ public class RepairDelegate {
         // Update routing table.
         for (PeerReference ref : solution.failedHosts) {
             Host failedHost = Deserializer.deserializeHost(ref);
+            logger_.debug("Removing failed host {}:{}", failedHost, failedHost.getPort());
             routingTable_.removeReference(failedHost);
             registry_.removeIssue(failedHost.getUUID());
         }
 
         for (PeerReference ref : solution.updatedHosts) {
             Host updatedHost = Deserializer.deserializeHost(ref);
+            logger_.debug("Updating host {}:{}", updatedHost, updatedHost.getPort());
             routingTable_.updateReference(updatedHost);
         }
 
         routingTable_.refresh(maxRef_);
         logger_.debug("Routing table updated.");
 
+        if (solution.levelPrefix.compareTo(routingTable_.getLocalhost().getHostPath().toString()) == 0) {
+            // sanity included...
+            logger_.debug("Broadcasting cannot proceed. {} is the final point.", solution.levelPrefix);
+            return;
+        }
+
         // Continue solution broadcasting.
         PGridPath levelPrefix = new PGridPath(solution.levelPrefix);
         PGridPath localPath = routingTable_.getLocalhost().getHostPath();
         int startLevel = localPath.commonPrefix(levelPrefix).length() + 1;
 
-        for (int i = startLevel; i <= localPath.length(); i++) {
+        for (int i = startLevel; i < localPath.length(); i++) {
             Random r = new Random(System.currentTimeMillis());
-            Host[] level = routingTable_.getLevelArray(i);
+            Host[] level = routingTable_.getLevelArray(i - 1);
             Host host = level[r.nextInt(level.length)];
             PGridPath responsibility = new PGridPath(localPath.subPath(0, i));
             solution.levelPrefix = responsibility.toString();
@@ -474,6 +487,10 @@ public class RepairDelegate {
                 // will happen with all the host that already got the
                 // solution?
                 logger_.debug("{}:{} is not reachable.", host, host.getPort());
+            }
+            if (i >= localPath.length()) {
+                logger_.error("From {} to {} ({})", new Object[]{startLevel, localPath.length(), i});
+                System.exit(i);
             }
         }
     }
