@@ -58,8 +58,7 @@ module pgrid {
                 };
 
                 struct RepairSolution {
-                    StringArray uuidSent;
-                    long pushCount;
+                    string levelPrefix;
                     PeerArray failedHosts;
                     PeerArray updatedHosts;
                     string failedPath;
