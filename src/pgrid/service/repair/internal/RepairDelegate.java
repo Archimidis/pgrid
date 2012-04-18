@@ -350,7 +350,9 @@ public class RepairDelegate {
         replace_.execute(routingTable_, new PGridPath(failedPath));
         routingTable_.refresh(maxRef_);
         for (Host failedHost : failedHosts) {
-            registry_.getIssue(failedHost.getHostPath().toString()).issueState = IssueState.SOLVED;
+            if (registry_.containsPath(failedHost.getHostPath().toString())) {
+                registry_.getIssue(failedHost.getHostPath().toString()).issueState = IssueState.SOLVED;
+            }
         }
         return routingTable_.getLocalhost();
     }
