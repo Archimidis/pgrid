@@ -39,7 +39,7 @@ import pgrid.utilities.Deserializer;
 import pgrid.utilities.Serializer;
 
 /**
- * XXX: [REFACTOR] fixNode code is partial duplicated by fixSubtree, DRY violation!
+ * XXX: [REFACTOR] DRY violation in fixNode and fixSubtree!
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
@@ -133,14 +133,13 @@ public class RepairDelegate {
         PGridPath failedHostPath = failedHost.getHostPath();
         if (continuation.isEmpty()) {
             logger_.debug("The localhost doesn't know anyone that can fix the problem");
-            // XXX: wait ????
             String pathToCheck = failedHostPath.subPath(0, failedHostPath.length() - 1);
             if (registry_.isCompleteSubtree(new PGridPath(pathToCheck))) {
                 logger_.debug("Generalizing to path {}", pathToCheck);
                 List<Host> hosts = registry_.commonPrefixIssues(pathToCheck);
                 fixSubtree(algorithmPathExecution(new PGridPath(pathToCheck)).toString(),
                         pathToCheck, hosts.toArray(new Host[hosts.size()]));
-            } // XXX: else solve by fixNode (?)
+            } // XXX: else wait some time and solve by fixNode (complicated)
         } else if (continuation.size() == 1) {
             Host host = continuation.get(0);
             if (routingTable_.getLocalhost().compareTo(host) == 0) { // or conjugate (?)
@@ -157,7 +156,10 @@ public class RepairDelegate {
                                 new RepairIssue[]{registry_.getIssue(failedHostPath.toString())});
                         conjugate = Deserializer.deserializeHost(updatedConjugateRef);
                         updatedHosts.add(conjugate);
-                        routingTable_.updateReference(conjugate);
+                        routingTable_.removeReference(conjugate);
+                        routingTable_.addReference(0, conjugate);
+                        routingTable_.refresh(maxRef_);
+                        //routingTable_.updateReference(conjugate);
                     } catch (CommunicationException e) {
                         logger_.debug("{}:{} cannot be reached.", conjugate, conjugate.getPort());
                         fixNode(algorithmPathExecution(conjugate.getHostPath()).toString(), conjugate);
@@ -233,7 +235,7 @@ public class RepairDelegate {
 
         if (continuation.isEmpty()) {
             logger_.debug("The localhost doesn't know anyone that can fix the problem");
-            // wait till timeout then keep generalizing till replacement
+            // TODO: wait till timeout then keep generalizing till replacement
         } else if (continuation.size() == 1) {
             Host host = continuation.get(0);
             if (routingTable_.getLocalhost().compareTo(host) == 0) {
@@ -254,7 +256,10 @@ public class RepairDelegate {
                         PeerReference updatedConjugateRef = repairHandle.replace(prefix, repairIssues);
                         conjugate = Deserializer.deserializeHost(updatedConjugateRef);
                         updatedHosts.add(conjugate);
-                        routingTable_.updateReference(conjugate);
+                        routingTable_.removeReference(conjugate);
+                        routingTable_.addReference(0, conjugate);
+                        routingTable_.refresh(maxRef_);
+                        //routingTable_.updateReference(conjugate);
                     } catch (CommunicationException e) {
                         logger_.debug("{}:{} cannot be reached.", conjugate, conjugate.getPort());
                         fixNode(algorithmPathExecution(conjugate.getHostPath()).toString(), conjugate);
@@ -403,6 +408,8 @@ public class RepairDelegate {
             routingTable_.removeReference(failedHosts[i]); // sanity
         }
 
+        routingTable_.refresh(maxRef_);
+
         PGridPath localPath = routingTable_.getLocalhost().getHostPath();
         
         for (int i = 0; i < localPath.length(); i++) {
@@ -452,7 +459,9 @@ public class RepairDelegate {
         for (PeerReference ref : solution.updatedHosts) {
             Host updatedHost = Deserializer.deserializeHost(ref);
             logger_.debug("Updating host {}:{}", updatedHost, updatedHost.getPort());
-            routingTable_.updateReference(updatedHost);
+            routingTable_.removeReference(updatedHost);
+            routingTable_.addReference(0, updatedHost);
+            //routingTable_.updateReference(updatedHost);
         }
 
         routingTable_.refresh(maxRef_);
@@ -472,7 +481,9 @@ public class RepairDelegate {
         for (int i = startLevel; i < localPath.length(); i++) {
             Random r = new Random(System.currentTimeMillis());
             Host[] level = routingTable_.getLevelArray(i - 1);
-            Host host = level[r.nextInt(level.length)];
+            int nextInt = r.nextInt(level.length + 1);
+            nextInt = nextInt <= 0 ? 0 : nextInt - 1;
+            Host host = level[nextInt];
             PGridPath responsibility = new PGridPath(localPath.subPath(0, i));
             solution.levelPrefix = responsibility.toString();
 
