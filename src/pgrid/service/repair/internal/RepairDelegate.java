@@ -119,6 +119,7 @@ public class RepairDelegate {
             logger_.debug("The failed peer is either "
                     + "(a) solved and the replacer is already in the routing table or "
                     + "(b) solved but the replacer is missing cause of refMax constant.");
+            logger_.debug("[{}] - {}:{}", new Object[] {failedHost.getHostPath(), failedHost, failedHost.getPort()});
             return;
         }
 
@@ -159,7 +160,8 @@ public class RepairDelegate {
                         routingTable_.removeReference(conjugate);
                         routingTable_.addReference(0, conjugate);
                         routingTable_.refresh(maxRef_);
-                        //routingTable_.updateReference(conjugate);
+//                        routingTable_.updateReference(conjugate);
+//                        routingTable_.refresh(maxRef_);
                     } catch (CommunicationException e) {
                         logger_.debug("{}:{} cannot be reached.", conjugate, conjugate.getPort());
                         fixNode(algorithmPathExecution(conjugate.getHostPath()).toString(), conjugate);
@@ -259,7 +261,8 @@ public class RepairDelegate {
                         routingTable_.removeReference(conjugate);
                         routingTable_.addReference(0, conjugate);
                         routingTable_.refresh(maxRef_);
-                        //routingTable_.updateReference(conjugate);
+//                        routingTable_.updateReference(conjugate);
+//                        routingTable_.refresh(maxRef_);
                     } catch (CommunicationException e) {
                         logger_.debug("{}:{} cannot be reached.", conjugate, conjugate.getPort());
                         fixNode(algorithmPathExecution(conjugate.getHostPath()).toString(), conjugate);
@@ -416,7 +419,8 @@ public class RepairDelegate {
             Random r = new Random(System.currentTimeMillis());
             Host[] level = routingTable_.getLevelArray(i);
             Host host = level[r.nextInt(level.length)];
-            PGridPath responsibility = new PGridPath(localPath.subPath(0, i));
+            PGridPath responsibility = new PGridPath(localPath.subPath(0, i>0?(i-1):0));
+            responsibility.revertAndAppend(localPath.value(i));
             solution.levelPrefix = responsibility.toString();
             try {
                 RepairHandle repairHandle = getRemoteHandle(host);
@@ -476,15 +480,18 @@ public class RepairDelegate {
         // Continue solution broadcasting.
         PGridPath levelPrefix = new PGridPath(solution.levelPrefix);
         PGridPath localPath = routingTable_.getLocalhost().getHostPath();
-        int startLevel = localPath.commonPrefix(levelPrefix).length() + 1;
-
+        logger_.debug("Common with level prefix '{}': {}", levelPrefix, localPath.commonPrefix(levelPrefix));
+        int startLevel = localPath.commonPrefix(levelPrefix).length();
+        logger_.debug("Starting from level {}", startLevel);
         for (int i = startLevel; i < localPath.length(); i++) {
+            logger_.debug("Informing level {} ({})", i, localPath.subPath(0, i));
             Random r = new Random(System.currentTimeMillis());
-            Host[] level = routingTable_.getLevelArray(i - 1);
+            Host[] level = routingTable_.getLevelArray(i);
             int nextInt = r.nextInt(level.length + 1);
             nextInt = nextInt <= 0 ? 0 : nextInt - 1;
             Host host = level[nextInt];
             PGridPath responsibility = new PGridPath(localPath.subPath(0, i));
+            responsibility.revertAndAppend(localPath.value(i));
             solution.levelPrefix = responsibility.toString();
 
             try {

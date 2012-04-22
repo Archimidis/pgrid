@@ -338,8 +338,8 @@ public class RoutingTable {
             for (Set<Host> treeSet : references_) {
                 if (treeSet.contains(host)) {
                     treeSet.remove(host); // remove the old version object based on UUID
-                    treeSet.add(host); // add the new version object based on UUID
                     uuidRefs_.remove(host.getUUID());
+                    treeSet.add(host); // add the new version object based on UUID
                     uuidRefs_.put(host.getUUID(), host);
                 }
             }
