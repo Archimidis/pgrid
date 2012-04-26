@@ -20,6 +20,7 @@ package pgrid.service.repair.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import org.omg.CORBA.ORB;
@@ -108,7 +109,9 @@ public class RepairDelegate {
      */
     public void fixNode(String footpath, Host failedHost) {
         logger_.info("Fixing node {}", failedHost.getHostPath());
+        logger_.debug("(BEGIN) Uniques: {}", routingTable_.uniqueHostsNumber());
         validateService();
+        logger_.debug("Failure = [{}]{}:{} - {}", new Object[]{failedHost.getHostPath(), failedHost, failedHost.getPort(), failedHost.getUUID()});
 
         if (registry_.containsHost(failedHost.getUUID())) {
             logger_.info("The localhost has already seen the issue and run the algorithm.");
@@ -119,12 +122,11 @@ public class RepairDelegate {
             logger_.debug("The failed peer is either "
                     + "(a) solved and the replacer is already in the routing table or "
                     + "(b) solved but the replacer is missing cause of refMax constant.");
-            logger_.debug("[{}] - {}:{}", new Object[] {failedHost.getHostPath(), failedHost, failedHost.getPort()});
-            return;
         }
 
         logger_.debug("It is not solved and the local peer must execute the algorithm");
         routingTable_.removeReference(failedHost);
+        logger_.debug("[{}] {}:{} removed from routing table.", new Object[]{failedHost.getHostPath(), failedHost, failedHost.getPort()});
         if (!registry_.containsHost(failedHost.getUUID())) {
             logger_.debug("Localhost is storing the issue in the registry");
             registry_.newIssue(failedHost);
@@ -132,6 +134,7 @@ public class RepairDelegate {
 
         List<Host> continuation = fix_.execute(routingTable_, new PGridPath(footpath));
         PGridPath failedHostPath = failedHost.getHostPath();
+
         if (continuation.isEmpty()) {
             logger_.debug("The localhost doesn't know anyone that can fix the problem");
             String pathToCheck = failedHostPath.subPath(0, failedHostPath.length() - 1);
@@ -157,11 +160,8 @@ public class RepairDelegate {
                                 new RepairIssue[]{registry_.getIssue(failedHostPath.toString())});
                         conjugate = Deserializer.deserializeHost(updatedConjugateRef);
                         updatedHosts.add(conjugate);
-                        routingTable_.removeReference(conjugate);
-                        routingTable_.addReference(0, conjugate);
+                        routingTable_.updateReference(conjugate);
                         routingTable_.refresh(maxRef_);
-//                        routingTable_.updateReference(conjugate);
-//                        routingTable_.refresh(maxRef_);
                     } catch (CommunicationException e) {
                         logger_.debug("{}:{} cannot be reached.", conjugate, conjugate.getPort());
                         fixNode(algorithmPathExecution(conjugate.getHostPath()).toString(), conjugate);
@@ -258,11 +258,8 @@ public class RepairDelegate {
                         PeerReference updatedConjugateRef = repairHandle.replace(prefix, repairIssues);
                         conjugate = Deserializer.deserializeHost(updatedConjugateRef);
                         updatedHosts.add(conjugate);
-                        routingTable_.removeReference(conjugate);
-                        routingTable_.addReference(0, conjugate);
+                        routingTable_.updateReference(conjugate);
                         routingTable_.refresh(maxRef_);
-//                        routingTable_.updateReference(conjugate);
-//                        routingTable_.refresh(maxRef_);
                     } catch (CommunicationException e) {
                         logger_.debug("{}:{} cannot be reached.", conjugate, conjugate.getPort());
                         fixNode(algorithmPathExecution(conjugate.getHostPath()).toString(), conjugate);

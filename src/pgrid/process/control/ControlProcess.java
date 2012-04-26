@@ -111,7 +111,7 @@ public class ControlProcess {
         }
         network_ = newList;
         if (network_.isEmpty()) {
-            System.out.println("No are hosts present in the network.");
+            System.out.println("No hosts are present in the network.");
         }
         for (Host host : network_) {
             System.out.println("[" + host.getHostPath() + "] " + host + ":" + host.getPort());
