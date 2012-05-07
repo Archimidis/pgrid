@@ -20,7 +20,6 @@ package pgrid.service.repair.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import org.omg.CORBA.ORB;
@@ -99,19 +98,24 @@ public class RepairDelegate {
 
     /**
      * When a failed host has been found by the localhost, this method will be
-     * executed. The failed host reference is passed along with a path needed
-     * by the fix node algorithm. This path represents the subtree that the
-     * algorithm will search for a solution. See {@link ThesisFixNodeAlgorithm}
-     * for more information about the footpath argument.
+     * executed. The failed host reference is passed along with a path needed by
+     * the fix node algorithm. This path represents the subtree that the
+     * algorithm will search for a solution. The completion of the distributed
+     * algorithm guarantees that a host is found and the issue is fixed by
+     * him. See {@link ThesisFixNodeAlgorithm} for more information about the
+     * footpath argument.
      *
-     * @param footpath to be followed by the fix node algorithm.
+     * @param footpath to be followed by the fix-node algorithm.
      * @param failedHost the failed host to be fixed.
      */
     public void fixNode(String footpath, Host failedHost) {
-        logger_.info("Fixing node {}", failedHost.getHostPath());
-        logger_.debug("(BEGIN) Uniques: {}", routingTable_.uniqueHostsNumber());
+        logger_.debug("Fixing node [{}]{}:{} - {}",
+                new Object[]{
+                    failedHost.getHostPath(),
+                    failedHost,
+                    failedHost.getPort(),
+                    failedHost.getUUID()});
         validateService();
-        logger_.debug("Failure = [{}]{}:{} - {}", new Object[]{failedHost.getHostPath(), failedHost, failedHost.getPort(), failedHost.getUUID()});
 
         if (registry_.containsHost(failedHost.getUUID())) {
             logger_.info("The localhost has already seen the issue and run the algorithm.");
@@ -119,7 +123,7 @@ public class RepairDelegate {
         }
 
         if (!routingTable_.contains(failedHost)) {
-            logger_.debug("The failed peer is either "
+            logger_.info("The failed peer is either "
                     + "(a) solved and the replacer is already in the routing table or "
                     + "(b) solved but the replacer is missing cause of refMax constant.");
         }
@@ -215,15 +219,22 @@ public class RepairDelegate {
     }
 
     /**
-     * TODO: Write documentation.
+     * If a certain subtree of the pgrid network has failed then this method
+     * will run. The path prefix of the subtree and all the failed hosts it
+     * contains along with the footpath needed by the algorithm are passed. The
+     * completion of the distributed algorithm guarantees that a host is found
+     * and the issue is fixed by him.
+     * See {@link ThesisFixNodeAlgorithm} for more information about the
+     * footpath argument.
      *
-     * @param footpath
-     * @param prefix
-     * @param failedHosts
+     * TODO: Check if the _failedHosts_ have the _prefix_ in their path.
+     *
+     * @param footpath to be followed by the fix-subtree algorithm.
+     * @param prefix of the failed subtree
+     * @param failedHosts that the failed subtree contains.
      */
     public void fixSubtree(String footpath, String prefix, Host... failedHosts) {
         logger_.info("Fixing subtree {}", prefix);
-
 
         for (Host failedHost : failedHosts) {
             routingTable_.removeReference(failedHost);
@@ -268,7 +279,6 @@ public class RepairDelegate {
 
                 logger_.info("Replacing subtree with prefix {}", prefix);
                 replace_.execute(routingTable_, prefixPath);
-                // XXX: transform all affected issues to SOLVED
                 routingTable_.refresh(maxRef_);
                 // broadcast
                 pushSolution(prefix, updatedHosts.toArray(new Host[updatedHosts.size()]), failedHosts);
@@ -411,12 +421,12 @@ public class RepairDelegate {
         routingTable_.refresh(maxRef_);
 
         PGridPath localPath = routingTable_.getLocalhost().getHostPath();
-        
+
         for (int i = 0; i < localPath.length(); i++) {
             Random r = new Random(System.currentTimeMillis());
             Host[] level = routingTable_.getLevelArray(i);
             Host host = level[r.nextInt(level.length)];
-            PGridPath responsibility = new PGridPath(localPath.subPath(0, i>0?(i-1):0));
+            PGridPath responsibility = new PGridPath(localPath.subPath(0, i > 0 ? (i - 1) : 0));
             responsibility.revertAndAppend(localPath.value(i));
             solution.levelPrefix = responsibility.toString();
             try {
