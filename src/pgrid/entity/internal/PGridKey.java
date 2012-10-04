@@ -71,8 +71,8 @@ public class PGridKey implements Key {
         }
 
         int length = Math.min(key_.length(), otherKey.length());
-        return Integer.valueOf(key_.substring(0, length), 2)
-                .compareTo(Integer.valueOf(otherKey.substring(0, length), 2));
+        return Long.valueOf(key_.substring(0, length), 2)
+                .compareTo(Long.valueOf(otherKey.substring(0, length), 2));
     }
 
     @Override
