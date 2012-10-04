@@ -30,6 +30,9 @@ import pgrid.entity.internal.PGridKey;
 import pgrid.entity.internal.PGridKeyRange;
 import pgrid.entity.routingtable.RoutingTableFactory;
 import pgrid.entity.routingtable.internal.DefaultRoutingTableFactory;
+import pgrid.entity.storage.FilenameHashAlgorithm;
+import pgrid.entity.storage.Storage;
+import pgrid.entity.storage.internal.FileStorage;
 
 import javax.inject.Singleton;
 
@@ -57,5 +60,8 @@ public class EntityModule extends AbstractModule {
         //bind(RoutingTable.class); // force the client to use the factory
 
         bind(CorbaFactory.class).in(Singleton.class);
+
+        bind(FilenameHashAlgorithm.class).to(FilenameHashAlgorithm.class);
+        bind(Storage.class).to(FileStorage.class);
     }
 }
