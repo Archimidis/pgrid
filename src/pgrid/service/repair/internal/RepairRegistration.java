@@ -33,7 +33,6 @@ import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
 import pgrid.service.corba.repair.RepairHandleHelper;
 import pgrid.service.corba.repair.RepairHandlePOA;
-import pgrid.service.exchange.internal.ExchangeRegistration;
 import pgrid.service.repair.spi.RepairHandleProvider;
 import pgrid.utilities.ArgumentCheck;
 
@@ -43,7 +42,7 @@ import javax.inject.Inject;
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
 public class RepairRegistration implements ServiceRegistration {
-    private static final Logger logger_ = LoggerFactory.getLogger(ExchangeRegistration.class);
+    private static final Logger logger_ = LoggerFactory.getLogger(RepairRegistration.class);
 
     private final ORB orb_;
     private final RepairHandleProvider provider_;
