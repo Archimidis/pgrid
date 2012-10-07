@@ -1,0 +1,26 @@
+#include <pgrid_corba.idl>
+
+module pgrid {
+    module service {
+        module corba {
+            module storage {
+                struct SearchRequest {
+                    string key;
+                    string filename;
+                };
+
+                struct SearchResponse {
+                    boolean found;
+                    PeerReference peer;
+                };
+
+                interface StorageHandle {
+                    // method for storing a file does not exists yet.
+                    SearchResponse search(in SearchRequest request);
+                };
+            }; // end module storage
+        }; // end module corba
+    }; // end module service
+}; // end module pgrid
+
+// compile with: idlj -fall -i resources/ -td src/ resources/demo_pgrid_corba.idl
