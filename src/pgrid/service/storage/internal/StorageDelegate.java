@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.StorageService.internal;
+package pgrid.service.storage.internal;
 
 
 import org.omg.CORBA.ORB;
@@ -40,6 +40,7 @@ import pgrid.utilities.ArgumentCheck;
 import pgrid.utilities.Deserializer;
 import pgrid.utilities.Serializer;
 
+import java.io.File;
 import java.util.Collection;
 
 /**
@@ -81,6 +82,16 @@ public class StorageDelegate {
     }
 
     /**
+     * This method stores just the filename string (not the while path) in the
+     * storage entity.
+     *
+     * @param filename to extract the filename and store it.
+     */
+    public void store(File filename) {
+        storage_.put(filename.getName());
+    }
+
+    /**
      * The local host will begin a search operation. The search is performed
      * iteratively. The local host asks one remote host at a time. He then
      * decides if he will continue the search or not based on the response of
@@ -90,7 +101,8 @@ public class StorageDelegate {
      *
      * @param filename that will be searched.
      * @return the host that owns the file.
-     * @throws CommunicationException in case of a communication error.
+     * @throws pgrid.service.CommunicationException
+     *          in case of a communication error.
      */
     public Host iterativeSearch(String filename) throws CommunicationException {
         ArgumentCheck.checkNotNull(filename, "Cannot initiate or continue a search operation with a null filename.");
@@ -100,13 +112,22 @@ public class StorageDelegate {
         Host probableOwner = continuation(fileKey);
         Host localhost = routingTable_.getLocalhost();
 
-        if (!(localhost.compareTo(probableOwner) == 0) ||
-                !(localhost.getHostPath().isConjugateTo(probableOwner.getHostPath()))) {
+        logger_.debug("Probable owner= {}:{} [path: {}]",
+                new Object[]{probableOwner.getAddress(), probableOwner.getPort(), probableOwner.getHostPath()});
+        logger_.debug("Is localhost? {}", localhost.equals(probableOwner));
+        logger_.debug("Is conjugate? {}", localhost.getHostPath().isConjugateTo(probableOwner.getHostPath()));
+
+        if (!localhost.equals(probableOwner) ||
+                (localhost.getHostPath().isConjugateTo(probableOwner.getHostPath()))) {
+            logger_.debug("Asking remote host {}:{} for \"{}\"",
+                    new Object[]{probableOwner.getAddress(), probableOwner.getPort(), filename});
             StorageHandle handle = getRemoteHandle(probableOwner);
             SearchResponse response = handle.search(request);
             if (response.found) {
+                logger_.debug("The file was found");
                 probableOwner = Deserializer.deserializeHost(response.peer);
             } else {
+                logger_.debug("The file was not found and continuing iteratively");
                 probableOwner = iterativeSearch(filename);
             }
         }
@@ -126,6 +147,7 @@ public class StorageDelegate {
      */
     public SearchResponse serveRequest(SearchRequest request) {
         ArgumentCheck.checkNotNull(request, "Cannot serve a request if a null object is given.");
+        logger_.debug("A request was received for filename {}", request.filename);
 
         Host probableOwner = continuation(new PGridKey(request.key));
         Host localhost = routingTable_.getLocalhost();
@@ -137,11 +159,13 @@ public class StorageDelegate {
                 storage_.containsFile(request.filename) ||
                 storage_.containsFileKey(request.key);
 
+        logger_.debug("The probable owner that was found is {}:{} [path: {}]",
+                new Object[]{probableOwner.getAddress(), probableOwner.getPort(), probableOwner.getHostPath()});
         return response;
     }
 
     /**
-     * Given a {@link Key}, it will find a host known to the local host that is
+     * Given a {@link pgrid.entity.Key}, it will find a host known to the local host that is
      * a probable owner of the file or knows the owner.
      *
      * @param fileKey based on which the next host will be found.
@@ -152,6 +176,7 @@ public class StorageDelegate {
 
         Host nextHost = null;
         Collection<Host> list = routingTable_.closestHosts(fileKey.toString());
+
         Host[] hosts = list.toArray(new Host[list.size()]);
         if (hosts.length == 1) {
             nextHost = hosts[0];

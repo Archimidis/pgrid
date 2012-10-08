@@ -21,6 +21,7 @@ package pgrid.entity.storage.internal;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import pgrid.entity.Key;
 import pgrid.entity.internal.PGridKey;
@@ -52,5 +53,24 @@ public class BinaryFilenameHashingTest {
         Key key = hashing_.produceKey(value);
         Assert.assertTrue(key.size() > 0);
         Assert.assertTrue(key.equals(expectedKey));
+    }
+
+    @Ignore
+    public void test() {
+        System.out.println("[01]: " + hashing_.produceKey("Coast to Coast"));
+        System.out.println("[01]: " + hashing_.produceKey("1234"));
+        System.out.println("[01]: " + hashing_.produceKey("Arduino"));
+        System.out.println("[01]: " + hashing_.produceKey("Elegant"));
+
+        System.out.println("[1]: " + hashing_.produceKey("Al Di Meola"));
+        System.out.println("[1]: " + hashing_.produceKey("Led Zeppelin"));
+        System.out.println("[1]: " + hashing_.produceKey("Dogs"));
+        System.out.println("[1]: " + hashing_.produceKey("How to build a house"));
+
+        System.out.println("[001]: " + hashing_.produceKey("Games"));
+        System.out.println("[001]: " + hashing_.produceKey("Knight"));
+        System.out.println("[001]: " + hashing_.produceKey("Games2"));
+
+        System.out.println("[000]: " + hashing_.produceKey("Going to california"));
     }
 }

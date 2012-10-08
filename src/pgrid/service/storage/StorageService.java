@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.StorageService;
+package pgrid.service.storage;
 
 import pgrid.entity.Host;
 
 import java.io.File;
 
 /**
- * StorageService is a simple abstraction over the P-Grid network. The network
+ * storage is a simple abstraction over the P-Grid network. The network
  * is represented as a large storage device.
  * <p/>
  * <h1> This service is a demo for the presentation of the thesis only. Don't

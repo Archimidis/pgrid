@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.StorageService.spi;
+package pgrid.service.storage.spi;
 
 import pgrid.entity.storage.FilenameHashAlgorithm;
 import pgrid.entity.storage.Storage;
 import pgrid.service.LocalPeerContext;
-import pgrid.service.StorageService.internal.FileStorageHandle;
-import pgrid.service.StorageService.internal.StorageDelegate;
 import pgrid.service.corba.storage.StorageHandlePOA;
+import pgrid.service.storage.internal.FileStorageHandle;
+import pgrid.service.storage.internal.StorageDelegate;
 import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;

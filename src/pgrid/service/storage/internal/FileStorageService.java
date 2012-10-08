@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.StorageService.internal;
+package pgrid.service.storage.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.service.CommunicationException;
-import pgrid.service.StorageService.StorageService;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import pgrid.service.storage.StorageService;
 
 import java.io.File;
 
@@ -48,7 +47,7 @@ public class FileStorageService implements StorageService {
 
     @Override
     public void store(File filename) {
-        throw new NotImplementedException();
+        delegate_.store(filename);
     }
 
     @Override
@@ -56,6 +55,8 @@ public class FileStorageService implements StorageService {
         Host owner = null;
         try {
             owner = delegate_.iterativeSearch(filename);
+            logger_.debug("{}:{} [path: {}] should know about the file \"{}\"",
+                    new Object[]{owner.getAddress(), owner.getPort(), owner.getHostPath(), filename});
         } catch (CommunicationException e) {
             logger_.info("An error occurred in the network during the search of the filename.");
         }
