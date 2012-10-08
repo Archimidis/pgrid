@@ -25,6 +25,7 @@ import pgrid.entity.storage.FilenameHashAlgorithm;
 import pgrid.entity.storage.Storage;
 import pgrid.utilities.ArgumentCheck;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class FileStorage implements Storage {
             Collections.synchronizedMap(new HashMap<Key, String>());
     private static FilenameHashAlgorithm hashing_;
 
+    @Inject
     public FileStorage(FilenameHashAlgorithm hashing) {
         ArgumentCheck.checkNotNull(hashing, "Cannot initialize a FileStorage object with a null FilenameHashAlgorithm.");
         hashing_ = hashing;

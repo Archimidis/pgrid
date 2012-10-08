@@ -31,6 +31,7 @@ import pgrid.entity.CorbaFactory;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
+import pgrid.service.storage.StorageServiceModule;
 import pgrid.service.anotations.constants.MaxRecursions;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.anotations.constants.RepairTimeout;
@@ -92,6 +93,7 @@ public class ServiceModule extends AbstractModule {
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());
         binder().install(new SimulationModule());
+        binder().install(new StorageServiceModule());
 
         try {
             bindLocalPeerContext();

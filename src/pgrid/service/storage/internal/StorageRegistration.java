@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.StorageService.internal;
+package pgrid.service.storage.internal;
 
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
-import pgrid.service.StorageService.spi.StorageHandleProvider;
 import pgrid.service.corba.storage.StorageHandleHelper;
 import pgrid.service.corba.storage.StorageHandlePOA;
+import pgrid.service.storage.spi.StorageHandleProvider;
 import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;

@@ -17,17 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.StorageService;
+package pgrid.service.storage;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceRegistration;
-import pgrid.service.StorageService.internal.StorageRegistration;
-import pgrid.service.StorageService.spi.StorageHandleProvider;
-import pgrid.service.StorageService.spi.StorageProvider;
 import pgrid.service.corba.storage.StorageHandlePOA;
+import pgrid.service.storage.internal.StorageRegistration;
+import pgrid.service.storage.spi.StorageHandleProvider;
+import pgrid.service.storage.spi.StorageProvider;
 
 /**
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
