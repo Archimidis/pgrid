@@ -22,7 +22,7 @@ package pgrid.entity.storage.internal;
 import pgrid.entity.Key;
 import pgrid.entity.internal.PGridKey;
 import pgrid.entity.storage.FilenameHashAlgorithm;
-import pgrid.entity.storage.Storage;
+import pgrid.entity.storage.StorageSpace;
 import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
@@ -36,15 +36,15 @@ import java.util.Map;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public class FileStorage implements Storage {
+public class FileStorageSpace implements StorageSpace {
 
     private final Map<Key, String> storage_ =
             Collections.synchronizedMap(new HashMap<Key, String>());
     private static FilenameHashAlgorithm hashing_;
 
     @Inject
-    public FileStorage(FilenameHashAlgorithm hashing) {
-        ArgumentCheck.checkNotNull(hashing, "Cannot initialize a FileStorage object with a null FilenameHashAlgorithm.");
+    public FileStorageSpace(FilenameHashAlgorithm hashing) {
+        ArgumentCheck.checkNotNull(hashing, "Cannot initialize a FileStorageSpace object with a null FilenameHashAlgorithm.");
         hashing_ = hashing;
     }
 

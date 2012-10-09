@@ -24,7 +24,7 @@ import pgrid.entity.Key;
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public interface Storage {
+public interface StorageSpace {
     /**
      * Stores the given filename.
      *

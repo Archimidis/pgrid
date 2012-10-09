@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.storage.internal;
+package pgrid.service.fileTransfer.internal;
 
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
-import pgrid.service.corba.storage.StorageHandleHelper;
-import pgrid.service.corba.storage.StorageHandlePOA;
-import pgrid.service.storage.spi.StorageHandleProvider;
+import pgrid.service.corba.fileTransfer.TransferHandleHelper;
+import pgrid.service.corba.fileTransfer.TransferHandlePOA;
+import pgrid.service.fileTransfer.spi.FileTransferHandleProvider;
 import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
@@ -43,14 +43,15 @@ import javax.inject.Inject;
  *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class StorageRegistration implements ServiceRegistration {
-    private static final Logger logger_ = LoggerFactory.getLogger(StorageRegistration.class);
+public class FileTransferRegistration implements ServiceRegistration {
+
+    private static final Logger logger_ = LoggerFactory.getLogger(FileTransferRegistration.class);
 
     private final ORB orb_;
-    private final StorageHandleProvider provider_;
+    private final FileTransferHandleProvider provider_;
 
     @Inject
-    public StorageRegistration(StorageHandleProvider provider, LocalPeerContext context) {
+    public FileTransferRegistration(FileTransferHandleProvider provider, LocalPeerContext context) {
         ArgumentCheck.checkNotNull(context, "Cannot initialize a StorageRegistration object with a null LocalPeerContext value.");
         ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to StorageRegistration.");
         ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to StorageRegistration.");
@@ -64,14 +65,14 @@ public class StorageRegistration implements ServiceRegistration {
     public void register() throws ServiceRegistrationException {
         try {
             POA rootPOA = POAHelper.narrow(orb_.resolve_initial_references("RootPOA"));
-            StorageHandlePOA repairServant = provider_.get();
-            rootPOA.activate_object(repairServant);
-            String[] ID = StorageHandleHelper.id().split(":");
+            TransferHandlePOA transferServant = provider_.get();
+            rootPOA.activate_object(transferServant);
+            String[] ID = TransferHandleHelper.id().split(":");
             ((com.sun.corba.se.spi.orb.ORB) orb_).register_initial_reference(
                     ID[1],
-                    rootPOA.servant_to_reference(repairServant)
+                    rootPOA.servant_to_reference(transferServant)
             );
-            logger_.info("Storage service registered");
+            logger_.info("Transfer service registered");
         } catch (InvalidName invalidName) {
             throw new ServiceRegistrationException(invalidName);
         } catch (WrongPolicy wrongPolicy) {

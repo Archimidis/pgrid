@@ -17,29 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.storage.internal;
+package pgrid.service.fileTransfer.internal;
 
-import pgrid.service.corba.storage.SearchRequest;
-import pgrid.service.corba.storage.SearchResponse;
-import pgrid.service.corba.storage.StorageHandlePOA;
+import pgrid.entity.Host;
+import pgrid.service.CommunicationException;
+import pgrid.service.fileTransfer.FileTransferService;
 import pgrid.utilities.ArgumentCheck;
+
+import java.io.File;
 
 /**
  * <b>This class is for internal use only.</b>
  *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class FileStorageHandle extends StorageHandlePOA {
+public class SimpleFileTransferService implements FileTransferService {
 
-    private final StorageDelegate delegate_;
+    private final FileTransferDelegate delegate_;
 
-    public FileStorageHandle(StorageDelegate delegate) {
-        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a FileStorageHandle object with a null StorageDelegate value.");
+    public SimpleFileTransferService(FileTransferDelegate delegate) {
+        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a SimpleFileTransferService object with a null FileTransferDelegate value.");
+
         delegate_ = delegate;
     }
 
     @Override
-    public SearchResponse search(SearchRequest request) {
-        return delegate_.serveRequest(request);
+    public File transfer(String filename, Host fileOwner) throws CommunicationException {
+        ArgumentCheck.checkNotNull(filename, "Cannot initiate a transfer operation with a null filename.");
+        ArgumentCheck.checkNotNull(fileOwner, "Cannot initiate a transfer operation with a null owner host.");
+
+        return delegate_.receiveFile(filename, fileOwner);
     }
 }

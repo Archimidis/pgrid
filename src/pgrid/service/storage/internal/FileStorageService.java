@@ -32,6 +32,8 @@ import java.io.File;
  * If an error occurred while executing the method {@link #ownerOf(String)}, a
  * null {@link Host} will be returned. No repair will be initiated. That's not
  * the purpose of the file sharing demo.
+ * <p/>
+ * <b>This class is for internal use only.</b>
  *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */

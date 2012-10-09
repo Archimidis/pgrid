@@ -31,9 +31,9 @@ import pgrid.entity.internal.PGridKeyRange;
 import pgrid.entity.routingtable.RoutingTableFactory;
 import pgrid.entity.routingtable.internal.DefaultRoutingTableFactory;
 import pgrid.entity.storage.FilenameHashAlgorithm;
-import pgrid.entity.storage.Storage;
+import pgrid.entity.storage.StorageSpace;
 import pgrid.entity.storage.internal.BinaryFilenameHashing;
-import pgrid.entity.storage.internal.FileStorage;
+import pgrid.entity.storage.internal.FileStorageSpace;
 
 import javax.inject.Singleton;
 
@@ -62,7 +62,7 @@ public class EntityModule extends AbstractModule {
 
         bind(CorbaFactory.class).in(Singleton.class);
 
-        bind(Storage.class).to(FileStorage.class);
+        bind(StorageSpace.class).to(FileStorageSpace.class);
         bind(FilenameHashAlgorithm.class).to(BinaryFilenameHashing.class);
     }
 }

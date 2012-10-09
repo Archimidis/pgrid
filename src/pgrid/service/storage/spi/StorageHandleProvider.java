@@ -20,7 +20,7 @@
 package pgrid.service.storage.spi;
 
 import pgrid.entity.storage.FilenameHashAlgorithm;
-import pgrid.entity.storage.Storage;
+import pgrid.entity.storage.StorageSpace;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.corba.storage.StorageHandlePOA;
 import pgrid.service.storage.internal.FileStorageHandle;
@@ -39,11 +39,11 @@ public class StorageHandleProvider implements Provider<StorageHandlePOA> {
     private final StorageDelegate delegate_;
 
     @Inject
-    public StorageHandleProvider(LocalPeerContext context, Storage storage) {
+    public StorageHandleProvider(LocalPeerContext context, StorageSpace storage) {
         ArgumentCheck.checkNotNull(context, "Cannot initialize a StorageHandleProvider object with a null LocalPeerContext value.");
         ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to StorageHandleProvider.");
         ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to StorageHandleProvider.");
-        ArgumentCheck.checkNotNull(storage, "Cannot initialize a StorageHandleProvider object with a null Storage value.");
+        ArgumentCheck.checkNotNull(storage, "Cannot initialize a StorageHandleProvider object with a null StorageSpace value.");
 
         delegate_ = new StorageDelegate(context.getLocalRT(), storage, context.getCorba());
         poa_ = null;

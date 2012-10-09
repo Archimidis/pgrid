@@ -19,8 +19,34 @@
 
 package pgrid.service.fileTransfer;
 
+import pgrid.entity.Host;
+import pgrid.service.CommunicationException;
+
+import java.io.File;
+
 /**
+ * A service that implements a very basic file transferring protocol.
+ * <p/>
+ * <h1> This service is a demo for the presentation of the thesis only. Don't
+ * expect serious and complete functionality. <h1/>
+ *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class FileTransferService {
+public interface FileTransferService {
+
+    /**
+     * The local host will communicate with the given remote host and ask to
+     * transfer the file. The remote host is supposed to be the physical owner
+     * of the file, if not a null value will be returned.
+     * When this method returns, the local host has a copy of the remote file
+     * locally.
+     *
+     * @param filename  to be transferred from the remote host.
+     * @param fileOwner of the file.
+     * @return the {@link File} object associated with the file that was
+     *         downloaded.
+     * @throws CommunicationException if a communication error occurs between
+     *                                the local host and the owner of the file.
+     */
+    public File transfer(String filename, Host fileOwner) throws CommunicationException;
 }

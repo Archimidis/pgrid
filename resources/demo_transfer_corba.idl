@@ -1,0 +1,16 @@
+#include <pgrid_corba.idl>
+
+module pgrid {
+    module service {
+        module corba {
+            module fileTransfer {
+                interface TransferHandle {
+                   typedef sequence<octet> Data;
+                   Data transfer(in string fileName);
+                };
+            }; // end module file transfer
+        }; // end module corba
+    }; // end module service
+}; // end module pgrid
+
+// compile with: idlj -fall -i resources/ -td src/ resources/demo_transfer_corba.idl

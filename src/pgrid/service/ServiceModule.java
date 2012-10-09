@@ -31,13 +31,12 @@ import pgrid.entity.CorbaFactory;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.storage.StorageServiceModule;
-import pgrid.service.anotations.constants.MaxRecursions;
-import pgrid.service.anotations.constants.MaxRef;
-import pgrid.service.anotations.constants.RepairTimeout;
+import pgrid.service.anotations.constants.*;
 import pgrid.service.exchange.ExchangeModule;
+import pgrid.service.fileTransfer.FileTransferModule;
 import pgrid.service.repair.RepairModule;
 import pgrid.service.simulation.SimulationModule;
+import pgrid.service.storage.StorageServiceModule;
 
 import java.net.UnknownHostException;
 
@@ -94,6 +93,7 @@ public class ServiceModule extends AbstractModule {
         binder().install(new RepairModule());
         binder().install(new SimulationModule());
         binder().install(new StorageServiceModule());
+        binder().install(new FileTransferModule());
 
         try {
             bindLocalPeerContext();
@@ -111,5 +111,11 @@ public class ServiceModule extends AbstractModule {
         bindConstant()
                 .annotatedWith(RepairTimeout.class)
                 .to(1000); // milliseconds
+        bindConstant()
+                .annotatedWith(SharedDir.class)
+                .to("./shared");
+        bindConstant()
+                .annotatedWith(DownloadDir.class)
+                .to("./downloads");
     }
 }

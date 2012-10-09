@@ -30,7 +30,7 @@ import pgrid.entity.PGridPath;
 import pgrid.entity.internal.PGridKey;
 import pgrid.entity.routingtable.RoutingTable;
 import pgrid.entity.storage.FilenameHashAlgorithm;
-import pgrid.entity.storage.Storage;
+import pgrid.entity.storage.StorageSpace;
 import pgrid.service.CommunicationException;
 import pgrid.service.corba.storage.SearchRequest;
 import pgrid.service.corba.storage.SearchResponse;
@@ -56,14 +56,14 @@ public class StorageDelegate {
     private static final Logger logger_ = LoggerFactory.getLogger(StorageDelegate.class);
 
     private final RoutingTable routingTable_;
-    private final Storage storage_;
+    private final StorageSpace storage_;
     private final ORB orb_;
 
     private FilenameHashAlgorithm hashingAlgo_;
 
-    public StorageDelegate(RoutingTable routingTable, Storage storage, ORB orb) {
+    public StorageDelegate(RoutingTable routingTable, StorageSpace storage, ORB orb) {
         ArgumentCheck.checkNotNull(routingTable, "Cannot initialize a RepairDelegate object with a null RoutingTable value.");
-        ArgumentCheck.checkNotNull(storage, "Cannot initialize a RepairDelegate object with a null Storage value.");
+        ArgumentCheck.checkNotNull(storage, "Cannot initialize a RepairDelegate object with a null StorageSpace value.");
         ArgumentCheck.checkNotNull(orb, "Cannot initialize a RepairDelegate object with a null ORB value.");
 
         routingTable_ = routingTable;
@@ -203,10 +203,10 @@ public class StorageDelegate {
      * @throws CommunicationException if the remote host cannot be reached.
      */
     public StorageHandle getRemoteHandle(Host host) throws CommunicationException {
-        String[] repairHandleID = StorageHandleHelper.id().split(":");
+        String[] storageHandleID = StorageHandleHelper.id().split(":");
         String corbaloc = "corbaloc:iiop:["
                 + host.getAddress().getHostAddress() + "]:" + host.getPort()
-                + "/" + repairHandleID[1];
+                + "/" + storageHandleID[1];
         logger_.debug("CORBALOC: {}", corbaloc);
         org.omg.CORBA.Object object = orb_.string_to_object(corbaloc);
 

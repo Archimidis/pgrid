@@ -17,29 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.storage.internal;
+package pgrid.service.fileTransfer;
 
-import pgrid.service.corba.storage.SearchRequest;
-import pgrid.service.corba.storage.SearchResponse;
-import pgrid.service.corba.storage.StorageHandlePOA;
-import pgrid.utilities.ArgumentCheck;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * <b>This class is for internal use only.</b>
- *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class FileStorageHandle extends StorageHandlePOA {
-
-    private final StorageDelegate delegate_;
-
-    public FileStorageHandle(StorageDelegate delegate) {
-        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a FileStorageHandle object with a null StorageDelegate value.");
-        delegate_ = delegate;
-    }
-
-    @Override
-    public SearchResponse search(SearchRequest request) {
-        return delegate_.serveRequest(request);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.PARAMETER})
+@BindingAnnotation
+public @interface FileTransfer {
 }

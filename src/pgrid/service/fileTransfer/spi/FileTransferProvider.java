@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.storage.spi;
+package pgrid.service.fileTransfer.spi;
 
-import pgrid.entity.storage.FilenameHashAlgorithm;
-import pgrid.entity.storage.StorageSpace;
 import pgrid.service.LocalPeerContext;
-import pgrid.service.storage.StorageService;
-import pgrid.service.storage.internal.FileStorageService;
-import pgrid.service.storage.internal.StorageDelegate;
+import pgrid.service.anotations.constants.DownloadDir;
+import pgrid.service.anotations.constants.SharedDir;
+import pgrid.service.fileTransfer.FileTransferService;
+import pgrid.service.fileTransfer.internal.FileTransferDelegate;
+import pgrid.service.fileTransfer.internal.SimpleFileTransferService;
 import pgrid.utilities.ArgumentCheck;
 
 import javax.inject.Inject;
@@ -33,35 +33,29 @@ import javax.inject.Provider;
 /**
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class StorageProvider implements Provider<StorageService> {
+public class FileTransferProvider implements Provider<FileTransferService> {
 
     private final LocalPeerContext context_;
-    private final StorageSpace storage_;
-
-    private FilenameHashAlgorithm hashAlgorithm_;
+    private static String DOWNLOAD_DIR;
+    private static String SHARED_DIR;
 
     @Inject
-    public StorageProvider(LocalPeerContext context, StorageSpace storage) {
+    public FileTransferProvider(LocalPeerContext context, @DownloadDir String downDir, @SharedDir String sharedDir) {
         ArgumentCheck.checkNotNull(context, "Cannot initialize a StorageProvider object with a null LocalPeerContext value.");
         ArgumentCheck.checkNotNull(context.getCorba(), "Uninitialized ORB in LocalPeerContext object passed to StorageProvider.");
         ArgumentCheck.checkNotNull(context.getLocalRT(), "Uninitialized RoutingTable in LocalPeerContext object passed to StorageProvider.");
-        ArgumentCheck.checkNotNull(storage, "Cannot initialize a StorageProvider object with a null StorageSpace value.");
+        ArgumentCheck.checkNotNull(downDir, "Cannot initialize a StorageProvider object with a null value as download directory.");
+        ArgumentCheck.checkNotNull(sharedDir, "Cannot initialize a StorageProvider object with a null value as shared directory.");
 
         context_ = context;
-        storage_ = storage;
-    }
-
-    @Inject
-    protected void setHashingAlgorithm(FilenameHashAlgorithm hashAlgorithm) {
-        ArgumentCheck.checkNotNull(hashAlgorithm, "Tried to pass a null FilenameHashAlgorithm object at StorageProvider.");
-        hashAlgorithm_ = hashAlgorithm;
+        DOWNLOAD_DIR = downDir;
+        SHARED_DIR = sharedDir;
     }
 
     @Override
-    public StorageService get() {
-        StorageDelegate delegate_ = new StorageDelegate(context_.getLocalRT(), storage_, context_.getCorba());
-        delegate_.setHashingAlgorithm(hashAlgorithm_);
-
-        return new FileStorageService(delegate_);
+    public FileTransferService get() {
+        FileTransferDelegate delegate = new FileTransferDelegate(context_.getCorba());
+        delegate.setDirectories(DOWNLOAD_DIR, SHARED_DIR);
+        return new SimpleFileTransferService(delegate);
     }
 }

@@ -23,4 +23,4 @@ module pgrid {
     }; // end module service
 }; // end module pgrid
 
-// compile with: idlj -fall -i resources/ -td src/ resources/demo_pgrid_corba.idl
+// compile with: idlj -fall -i resources/ -td src/ resources/demo_storage_corba.idl

@@ -24,9 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pgrid.entity.Key;
 import pgrid.entity.storage.FilenameHashAlgorithm;
-import pgrid.entity.storage.Storage;
-import pgrid.entity.storage.internal.BinaryFilenameHashing;
-import pgrid.entity.storage.internal.FileStorage;
+import pgrid.entity.storage.StorageSpace;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -42,47 +40,47 @@ public class FileStorageTest {
 
     @Test(expected = NullPointerException.class)
     public void WhenPutNullFilename_ExpectNullPointerException() {
-        Storage storage = new FileStorage(hashing_);
+        StorageSpace storage = new FileStorageSpace(hashing_);
         storage.put(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenGetNullFileKey_ExpectNullPointerException() {
-        Storage storage = new FileStorage(hashing_);
+        StorageSpace storage = new FileStorageSpace(hashing_);
         Key key = null;
         storage.get(key);
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenGetNullFileKeyStr_ExpectNullPointerException() {
-        Storage storage = new FileStorage(hashing_);
+        StorageSpace storage = new FileStorageSpace(hashing_);
         String key = null;
         storage.get(key);
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenAskingWithNullFileKey_ExpectNullPointerException() {
-        Storage storage = new FileStorage(hashing_);
+        StorageSpace storage = new FileStorageSpace(hashing_);
         Key key = null;
         storage.containsFileKey(key);
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenAskingWithNullFileKeyStr_ExpectNullPointerException() {
-        Storage storage = new FileStorage(hashing_);
+        StorageSpace storage = new FileStorageSpace(hashing_);
         String key = null;
         storage.containsFileKey(key);
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenAskingWithNullFilename_ExpectNullPointerException() {
-        Storage storage = new FileStorage(hashing_);
+        StorageSpace storage = new FileStorageSpace(hashing_);
         storage.containsFile(null);
     }
 
     @Test
     public void WhenPutFilename_ExpectToBeContained() {
-        FileStorage storage = new FileStorage(hashing_);
+        FileStorageSpace storage = new FileStorageSpace(hashing_);
         String filename = "Here I come!";
         Key key = hashing_.produceKey(filename);
         storage.put(filename);

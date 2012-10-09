@@ -74,7 +74,7 @@ public class StorageTest {
     @Test
     public void execute() throws UnknownHostException {
 
-        logger_.info("[Storage test start]");
+        logger_.info("[StorageSpace test start]");
         StorageService storageService = injector_.getInstance(StorageService.class);
         storageService.store(new File("Going to california"));
 
@@ -103,7 +103,7 @@ public class StorageTest {
             }
             rootPOA.the_POAManager().activate();
 
-            //********** Storage Service Registration  **********//
+            //********** StorageSpace Service Registration  **********//
             StorageHandlePOA storageServant = injector_.getProvider(StorageHandlePOA.class).get();
             rootPOA.activate_object(storageServant);
             String[] ID = StorageHandleHelper.id().split(":");
@@ -111,7 +111,7 @@ public class StorageTest {
                     ID[1],
                     rootPOA.servant_to_reference(storageServant)
             );
-            logger_.info("Storage service registered");
+            logger_.info("StorageSpace service registered");
         } catch (ServantNotActive servantNotActive) {
             servantNotActive.printStackTrace();
         } catch (WrongPolicy wrongPolicy) {
@@ -186,7 +186,7 @@ public class StorageTest {
 }
 
 /**
- * Storage file per paths:
+ * StorageSpace file per paths:
  * [1] => "Al Di Meola"
  * [1] => "Led Zeppelin"
  * [1] => "Dogs"

@@ -17,11 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.service.storage.internal;
+package pgrid.service.fileTransfer.internal;
 
-import pgrid.service.corba.storage.SearchRequest;
-import pgrid.service.corba.storage.SearchResponse;
-import pgrid.service.corba.storage.StorageHandlePOA;
+import pgrid.service.corba.fileTransfer.TransferHandlePOA;
 import pgrid.utilities.ArgumentCheck;
 
 /**
@@ -29,17 +27,18 @@ import pgrid.utilities.ArgumentCheck;
  *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class FileStorageHandle extends StorageHandlePOA {
+public class FileTransferHandle extends TransferHandlePOA {
 
-    private final StorageDelegate delegate_;
+    private final FileTransferDelegate delegate_;
 
-    public FileStorageHandle(StorageDelegate delegate) {
-        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a FileStorageHandle object with a null StorageDelegate value.");
+    public FileTransferHandle(FileTransferDelegate delegate) {
+        ArgumentCheck.checkNotNull(delegate, "Cannot initialize a FileTransferHandle object with a null FileTransferDelegate value.");
+
         delegate_ = delegate;
     }
 
     @Override
-    public SearchResponse search(SearchRequest request) {
-        return delegate_.serveRequest(request);
+    public byte[] transfer(String fileName) {
+        return delegate_.sendFile(fileName);
     }
 }
