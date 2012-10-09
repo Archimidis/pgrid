@@ -73,7 +73,6 @@ public class StorageTest {
 
     @Test
     public void execute() throws UnknownHostException {
-
         logger_.info("[StorageSpace test start]");
         StorageService storageService = injector_.getInstance(StorageService.class);
         storageService.store(new File("Going to california"));

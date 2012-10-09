@@ -45,6 +45,7 @@ public class FileStorageSpace implements StorageSpace {
     @Inject
     public FileStorageSpace(FilenameHashAlgorithm hashing) {
         ArgumentCheck.checkNotNull(hashing, "Cannot initialize a FileStorageSpace object with a null FilenameHashAlgorithm.");
+
         hashing_ = hashing;
     }
 
