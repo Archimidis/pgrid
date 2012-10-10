@@ -52,6 +52,12 @@ import java.io.IOException;
  */
 public class DownloadFileTest {
 
+    private static final String SHARED_DIR = "test/demo/process/shared";
+    private static final String DOWNLOAD_DIR = "test/demo/process/downloads";
+    private static final String FILE_NAME = "Pirated_Document.txt";
+    private static final String FILE_CONTENT = "Hello PGrid! Yaaarrr";
+
+    //----------------------- Example of library usage ----------------------//
     private static final Logger logger_ = LoggerFactory.getLogger(DownloadFileTest.class);
 
     private String address_ = "127.0.0.1";
@@ -59,10 +65,6 @@ public class DownloadFileTest {
     private String path_ = "";
     private int maxRef_ = 2;
 
-    private static final String SHARED_DIR = "test/demo/process/shared";
-    private static final String DOWNLOAD_DIR = "test/demo/process/downloads";
-    private static final String FILE_NAME = "Pirated_Document.txt";
-    private static final String FILE_CONTENT = "Hello PGrid! Yaaarrr";
 
     @Test
     public void main() {
@@ -119,6 +121,7 @@ public class DownloadFileTest {
         }
     }
 
+    //-----------------------------------------------------------------------//
     @BeforeClass
     public static void initialize() {
         new File(SHARED_DIR).mkdir();
