@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<RoutingTable>
+    <localpeer>
+        <address>localhost</address>
+        <port>3000</port>
+        <path></path>
+        <timestamp>0</timestamp>
+        <uuid>5f14e27d-7b26-49a1-aa39-489c8bd7567a</uuid>
+    </localpeer>
+</RoutingTable>
+

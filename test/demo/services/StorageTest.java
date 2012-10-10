@@ -17,13 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package demo;
+package demo.services;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.hamcrest.core.Is;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,100 +41,65 @@ import pgrid.entity.EntityFactory;
 import pgrid.entity.EntityModule;
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.CommunicationException;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceModule;
-import pgrid.service.corba.fileTransfer.TransferHandleHelper;
-import pgrid.service.corba.fileTransfer.TransferHandlePOA;
-import pgrid.service.fileTransfer.FileTransferModule;
-import pgrid.service.fileTransfer.FileTransferService;
+import pgrid.service.corba.storage.StorageHandleHelper;
+import pgrid.service.corba.storage.StorageHandlePOA;
+import pgrid.service.storage.StorageService;
+import pgrid.service.storage.StorageServiceModule;
 
-import java.io.*;
+import java.io.File;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 
 /**
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public class TransferTest {
+public class StorageTest {
     private static final Logger logger_ = LoggerFactory.getLogger(StorageTest.class);
 
     private static Injector injector_;
 
     private static final String localIP_ = "127.0.0.1";
     private static final int localPort_ = 3000;
-    private static final String LOCAL_PATH = "";
-    private static Host localhost_;
-    private static final String FILE_CONTENT =
-            "If you can read this line then the file was downloaded successfully :)";
+    private static final String LOCAL_PATH = "000";
 
     @BeforeClass
     public static void initialize() {
-        new File("test/demo/shared").mkdir();
-        new File("test/demo/downloads").mkdir();
-        File test = new File("test/demo/shared/Pirated_Document.txt");
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(test));
-            writer.write(FILE_CONTENT, 0, FILE_CONTENT.length());
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            logger_.error("Something went wrong during the creation of the test files");
-        }
-
         injector_ = Guice.createInjector(
                 new EntityModule(),
                 new ServiceModule(localIP_, localPort_, Integer.MAX_VALUE),
-                new FileTransferModule("test/demo/shared", "test/demo/downloads"));
+                new StorageServiceModule());
         try {
-            CorbaFactory corbaFactory = injector_.getInstance(CorbaFactory.class);
-            ORB orb = corbaFactory.getInstance(localIP_, localPort_);
-
-            EntityFactory entityFactory = injector_.getInstance(EntityFactory.class);
-            localhost_ = entityFactory.newHost(localIP_, localPort_);
-            localhost_.setHostPath(LOCAL_PATH);
-            RoutingTable routingTable = injector_.getInstance(RoutingTable.class);
-            routingTable.setLocalhost(localhost_);
-
-            LocalPeerContext context = injector_.getInstance(LocalPeerContext.class);
-            context.setOrb(orb);
-            context.setRoutingTable(routingTable);
+            localPeerContextInit();
+            routingTableInit(injector_);
             serviceRegistration();
         } catch (UnknownHostException e) {
             logger_.error("Something went wrong with the initialization of CORBA.");
         }
     }
 
-    @AfterClass
-    public static void deleteTestFiles() {
-        new File("test/demo/shared/Pirated_Document.txt").delete();
-        new File("test/demo/shared").delete();
-        new File("test/demo/downloads/Pirated_Document.txt").delete();
-        new File("test/demo/downloads").delete();
-    }
-
     @Test
-    public void execute() throws CommunicationException {
-        // Scenario: Download a file from self.
-        logger_.info("[Transfer service test start]");
-        FileTransferService transferService = injector_.getInstance(FileTransferService.class);
-        File downloaded = transferService.transfer("Pirated_Document.txt", localhost_);
-        logger_.debug("Downloaded file {}", downloaded.getName());
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(downloaded));
-            String downloadedContent = reader.readLine();
-            logger_.debug("File contains: {}", downloadedContent);
-            Assert.assertThat(downloadedContent, Is.is(FILE_CONTENT));
-        } catch (FileNotFoundException e) {
-            logger_.error("File {} does not exists. Failed to download it!", downloaded.getAbsolutePath());
-        } catch (IOException e) {
-            logger_.error("Failed to read from file {}.", downloaded.getAbsolutePath());
-        }
+    public void execute() throws UnknownHostException {
+        // Scenario: Search a file that its owner is the local host.
+        logger_.info("[Storage service test start]");
+        StorageService storageService = injector_.getInstance(StorageService.class);
+        storageService.store(new File("Going to california"));
 
+        Host probableOwner = storageService.ownerOf("Going to california");
+        logger_.info("Owner found => {}:{} [path: {}]",
+                new Object[]{probableOwner.getAddress(), probableOwner.getPort(), probableOwner.getHostPath()});
+        Host localhost = injector_.getInstance(LocalPeerContext.class).getLocalRT().getLocalhost();
+
+        Assert.assertThat(probableOwner, Is.is(localhost));
     }
 
     private static void localPeerContextInit() throws UnknownHostException {
+        LocalPeerContext context = injector_.getInstance(LocalPeerContext.class);
+        CorbaFactory corbaFactory = injector_.getInstance(CorbaFactory.class);
+        ORB orb = corbaFactory.getInstance(localIP_, localPort_);
 
+        context.setOrb(orb);
     }
 
     private static void serviceRegistration() {
@@ -150,15 +114,15 @@ public class TransferTest {
             }
             rootPOA.the_POAManager().activate();
 
-            //********** Transfer Service Registration  **********//
-            TransferHandlePOA storageServant = injector_.getProvider(TransferHandlePOA.class).get();
+            //********** Storage Service Registration  **********//
+            StorageHandlePOA storageServant = injector_.getProvider(StorageHandlePOA.class).get();
             rootPOA.activate_object(storageServant);
-            String[] ID = TransferHandleHelper.id().split(":");
+            String[] ID = StorageHandleHelper.id().split(":");
             ((com.sun.corba.se.spi.orb.ORB) orb).register_initial_reference(
                     ID[1],
                     rootPOA.servant_to_reference(storageServant)
             );
-            logger_.info("Transfer service registered");
+            logger_.info("Storage service registered");
         } catch (ServantNotActive servantNotActive) {
             servantNotActive.printStackTrace();
         } catch (WrongPolicy wrongPolicy) {
@@ -185,4 +149,68 @@ public class TransferTest {
         // shutdown logging
         ((com.sun.corba.se.spi.orb.ORB) orb).getLogger(CORBALogDomains.RPC).setLevel(Level.OFF);
     }
+
+    private static void routingTableInit(Injector injector) throws UnknownHostException {
+        EntityFactory entityFactory = injector.getInstance(EntityFactory.class);
+        Host localhost = entityFactory.newHost(localIP_, localPort_);
+        localhost.setHostPath(LOCAL_PATH);
+
+        RoutingTable routingTable = injector.getInstance(RoutingTable.class);
+        routingTable.setLocalhost(localhost);
+
+        Host A = entityFactory.newHost(localIP_, 1111);
+        A.setHostPath("001");
+        routingTable.addReference(0, A);
+
+        Host B = entityFactory.newHost(localIP_, 2222);
+        B.setHostPath("01");
+        routingTable.addReference(0, B);
+
+        Host C = entityFactory.newHost(localIP_, 3333);
+        C.setHostPath("1");
+        routingTable.addReference(0, C);
+        routingTable.refresh(3);
+
+        LocalPeerContext context = injector.getInstance(LocalPeerContext.class);
+        CorbaFactory corbaFactory = injector.getInstance(CorbaFactory.class);
+        ORB orb = corbaFactory.getInstance(localIP_, localPort_);
+
+//        int index = 0;
+//        for (Collection<Host> hosts : routingTable.getAllHostsByLevels()) {
+//            for (Host host : hosts) {
+//                logger_.debug("{}: {}:{} [path: {}]",
+//                        new Object[]{
+//                                index, host.getAddress(), host.getPort(), host.getHostPath()
+//                        });
+//            }
+//            index++;
+//        }
+
+        context.setOrb(orb);
+        context.setRoutingTable(routingTable);
+//        logger_.info("Localhost instance: {}:{} [path: {}]",
+//                new Object[]{
+//                        context.getLocalRT().getLocalhost().getAddress(),
+//                        context.getLocalRT().getLocalhost().getPort(),
+//                        context.getLocalRT().getLocalhost().getHostPath()});
+    }
 }
+
+/**
+ * StorageSpace file per paths:
+ * [1] => "Al Di Meola"
+ * [1] => "Led Zeppelin"
+ * [1] => "Dogs"
+ * [1] => "How to build a house"
+ *
+ * [01] => "Coast to Coast"
+ * [01] => "1234"
+ * [01] => "Arduino"
+ * [01] => "Elegant"
+ *
+ * [001] => "Games"
+ * [001] => "Knight"
+ * [001] => "Games2"
+ *
+ * [000] => "Going to california"
+ */

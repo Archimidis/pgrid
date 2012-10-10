@@ -19,7 +19,6 @@
 
 package pgrid.service.repair.internal;
 
-import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.PGridPath;
@@ -27,6 +26,8 @@ import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.repair.spi.ReplaceStrategy;
 import pgrid.utilities.ArgumentCheck;
+
+import javax.inject.Inject;
 
 /**
  * <h1>The implementation of the Thesis replace algorithm.</h1>
