@@ -24,6 +24,8 @@ import com.google.inject.Scopes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.service.ServiceRegistration;
+import pgrid.service.anotations.constants.DownloadDir;
+import pgrid.service.anotations.constants.SharedDir;
 import pgrid.service.corba.fileTransfer.TransferHandlePOA;
 import pgrid.service.fileTransfer.internal.FileTransferRegistration;
 import pgrid.service.fileTransfer.spi.FileTransferHandleProvider;
@@ -35,10 +37,24 @@ import pgrid.service.fileTransfer.spi.FileTransferProvider;
 public class FileTransferModule extends AbstractModule {
 
     private static final Logger logger_ = LoggerFactory.getLogger(FileTransferModule.class);
+    private static String sharedDir_;
+    private static String downloadDir_;
+
+    public FileTransferModule(String sharedDir, String downloadDir) {
+        sharedDir_ = sharedDir;
+        downloadDir_ = downloadDir;
+    }
 
     @Override
     protected void configure() {
         logger_.debug("Setting up transfer service module");
+
+        bindConstant()
+                .annotatedWith(SharedDir.class)
+                .to(sharedDir_);
+        bindConstant()
+                .annotatedWith(DownloadDir.class)
+                .to(downloadDir_);
 
         bind(FileTransferService.class).toProvider(FileTransferProvider.class);
         bind(TransferHandlePOA.class).toProvider(FileTransferHandleProvider.class);

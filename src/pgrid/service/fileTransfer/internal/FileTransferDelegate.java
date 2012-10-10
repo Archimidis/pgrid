@@ -86,7 +86,7 @@ public class FileTransferDelegate {
         File transferredFile = null;
         TransferHandle remoteHandle = getRemoteHandle(fileOwner);
         byte[] data = remoteHandle.transfer(filename);
-        String filePath = DOWNLOAD_DIR + File.pathSeparator + filename;
+        String filePath = DOWNLOAD_DIR + File.separator + filename;
         logger_.debug("Transferring has completed, {} bytes received.", data.length);
         try {
             BufferedOutputStream output =
@@ -112,20 +112,27 @@ public class FileTransferDelegate {
      * @return a byte stream of the file.
      */
     public byte[] sendFile(String filename) {
-        String filePath = SHARED_DIR + File.pathSeparator + filename;
+        String filePath = SHARED_DIR + File.separator + filename;
         logger_.info("Requested a transfer operation of file {}.", filePath);
-
-        File file = new File(filePath);
-        byte buffer[] = new byte[(int) file.length()];
+        int i;
+        StringBuilder sValue = new StringBuilder();
         try {
-            BufferedInputStream input = new
-                    BufferedInputStream(new FileInputStream(filename));
-            input.read(buffer, 0, buffer.length);
-            input.close();
-        } catch (FileNotFoundException ignored) {
+            FileInputStream fin = new FileInputStream(filePath);
+
+            /*Transfer the file to a string variable*/
+            do {
+                i = fin.read(); //Read the file contents
+                if (i != -1)
+                    sValue.append((char) i);
+            } while (i != -1);
+            //Until end of the file is reached, copy the contents
+            fin.close();
+        } catch (FileNotFoundException e) {
+            logger_.error("File {} that was requested not found.", filePath);
         } catch (IOException ignored) {
         }
-        return (buffer);
+        //return sValue; //Return the file as string to the client
+        return sValue.toString().getBytes();
     }
 
     /**

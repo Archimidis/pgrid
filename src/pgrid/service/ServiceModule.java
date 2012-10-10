@@ -92,8 +92,6 @@ public class ServiceModule extends AbstractModule {
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());
         binder().install(new SimulationModule());
-        binder().install(new StorageServiceModule());
-        binder().install(new FileTransferModule());
 
         try {
             bindLocalPeerContext();
@@ -111,11 +109,5 @@ public class ServiceModule extends AbstractModule {
         bindConstant()
                 .annotatedWith(RepairTimeout.class)
                 .to(1000); // milliseconds
-        bindConstant()
-                .annotatedWith(SharedDir.class)
-                .to("./shared");
-        bindConstant()
-                .annotatedWith(DownloadDir.class)
-                .to("./downloads");
     }
 }

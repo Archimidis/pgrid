@@ -22,6 +22,9 @@ package demo;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sun.corba.se.spi.logging.CORBALogDomains;
+import org.hamcrest.core.Is;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -43,6 +46,7 @@ import pgrid.service.ServiceModule;
 import pgrid.service.corba.storage.StorageHandleHelper;
 import pgrid.service.corba.storage.StorageHandlePOA;
 import pgrid.service.storage.StorageService;
+import pgrid.service.storage.StorageServiceModule;
 
 import java.io.File;
 import java.net.UnknownHostException;
@@ -60,8 +64,12 @@ public class StorageTest {
     private static final int localPort_ = 3000;
     private static final String LOCAL_PATH = "000";
 
-    static {
-        injector_ = Guice.createInjector(new EntityModule(), new ServiceModule(localIP_, localPort_, Integer.MAX_VALUE));
+    @BeforeClass
+    public static void initialize() {
+        injector_ = Guice.createInjector(
+                new EntityModule(),
+                new ServiceModule(localIP_, localPort_, Integer.MAX_VALUE),
+                new StorageServiceModule());
         try {
             localPeerContextInit();
             routingTableInit(injector_);
@@ -73,13 +81,17 @@ public class StorageTest {
 
     @Test
     public void execute() throws UnknownHostException {
-        logger_.info("[StorageSpace test start]");
+        // Scenario: Search a file that its owner is the local host.
+        logger_.info("[Storage service test start]");
         StorageService storageService = injector_.getInstance(StorageService.class);
         storageService.store(new File("Going to california"));
 
-        Host host = storageService.ownerOf("Going to california");
+        Host probableOwner = storageService.ownerOf("Going to california");
         logger_.info("Owner found => {}:{} [path: {}]",
-                new Object[]{host.getAddress(), host.getPort(), host.getHostPath()});
+                new Object[]{probableOwner.getAddress(), probableOwner.getPort(), probableOwner.getHostPath()});
+        Host localhost = injector_.getInstance(LocalPeerContext.class).getLocalRT().getLocalhost();
+
+        Assert.assertThat(probableOwner, Is.is(localhost));
     }
 
     private static void localPeerContextInit() throws UnknownHostException {
@@ -102,7 +114,7 @@ public class StorageTest {
             }
             rootPOA.the_POAManager().activate();
 
-            //********** StorageSpace Service Registration  **********//
+            //********** Storage Service Registration  **********//
             StorageHandlePOA storageServant = injector_.getProvider(StorageHandlePOA.class).get();
             rootPOA.activate_object(storageServant);
             String[] ID = StorageHandleHelper.id().split(":");
@@ -110,7 +122,7 @@ public class StorageTest {
                     ID[1],
                     rootPOA.servant_to_reference(storageServant)
             );
-            logger_.info("StorageSpace service registered");
+            logger_.info("Storage service registered");
         } catch (ServantNotActive servantNotActive) {
             servantNotActive.printStackTrace();
         } catch (WrongPolicy wrongPolicy) {
