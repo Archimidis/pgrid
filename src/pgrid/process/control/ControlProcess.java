@@ -19,13 +19,6 @@
 
 package pgrid.process.control;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.EntityFactory;
@@ -34,6 +27,14 @@ import pgrid.service.CommunicationException;
 import pgrid.service.simulation.SimulationService;
 import pgrid.service.simulation.spi.SimulationProvider;
 import pgrid.utilities.IOUtilities;
+
+import javax.inject.Inject;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>

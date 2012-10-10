@@ -31,12 +31,12 @@ import pgrid.entity.CorbaFactory;
 import pgrid.entity.Host;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.anotations.constants.*;
+import pgrid.service.anotations.constants.MaxRecursions;
+import pgrid.service.anotations.constants.MaxRef;
+import pgrid.service.anotations.constants.RepairTimeout;
 import pgrid.service.exchange.ExchangeModule;
-import pgrid.service.fileTransfer.FileTransferModule;
 import pgrid.service.repair.RepairModule;
 import pgrid.service.simulation.SimulationModule;
-import pgrid.service.storage.StorageServiceModule;
 
 import java.net.UnknownHostException;
 

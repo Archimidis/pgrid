@@ -19,8 +19,6 @@
 
 package pgrid.service.repair.internal;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
@@ -29,6 +27,9 @@ import pgrid.service.corba.repair.IssueState;
 import pgrid.service.corba.repair.RepairIssue;
 import pgrid.utilities.Deserializer;
 import pgrid.utilities.Serializer;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A register that will hold all the unsolved issues occurred from failed

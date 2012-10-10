@@ -18,10 +18,6 @@
  */
 package pgrid.service.repair.internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.SystemException;
 import org.slf4j.Logger;
@@ -37,6 +33,11 @@ import pgrid.service.repair.spi.ReplaceStrategy;
 import pgrid.utilities.ArgumentCheck;
 import pgrid.utilities.Deserializer;
 import pgrid.utilities.Serializer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 /**
  * XXX: [REFACTOR] DRY violation in fixNode and fixSubtree!
@@ -105,16 +106,16 @@ public class RepairDelegate {
      * him. See {@link ThesisFixNodeAlgorithm} for more information about the
      * footpath argument.
      *
-     * @param footpath to be followed by the fix-node algorithm.
+     * @param footpath   to be followed by the fix-node algorithm.
      * @param failedHost the failed host to be fixed.
      */
     public void fixNode(String footpath, Host failedHost) {
         logger_.debug("Fixing node [{}]{}:{} - {}",
                 new Object[]{
-                    failedHost.getHostPath(),
-                    failedHost,
-                    failedHost.getPort(),
-                    failedHost.getUUID()});
+                        failedHost.getHostPath(),
+                        failedHost,
+                        failedHost.getPort(),
+                        failedHost.getUUID()});
         validateService();
 
         if (registry_.containsHost(failedHost.getUUID())) {
@@ -200,7 +201,7 @@ public class RepairDelegate {
                 }
             }
             logger_.debug("Selected {}:{} [{}] to continue", new Object[]{
-                        selectedHost, selectedHost.getPort(), selectedHost.getHostPath()});
+                    selectedHost, selectedHost.getPort(), selectedHost.getHostPath()});
             try {
                 RepairHandle repairHandle = getRemoteHandle(selectedHost);
                 repairHandle.fixNode(footpath, registry_.getIssue(failedHostPath.toString()));
@@ -226,11 +227,11 @@ public class RepairDelegate {
      * and the issue is fixed by him.
      * See {@link ThesisFixNodeAlgorithm} for more information about the
      * footpath argument.
-     *
+     * <p/>
      * TODO: Check if the _failedHosts_ have the _prefix_ in their path.
      *
-     * @param footpath to be followed by the fix-subtree algorithm.
-     * @param prefix of the failed subtree
+     * @param footpath    to be followed by the fix-subtree algorithm.
+     * @param prefix      of the failed subtree
      * @param failedHosts that the failed subtree contains.
      */
     public void fixSubtree(String footpath, String prefix, Host... failedHosts) {
@@ -318,7 +319,7 @@ public class RepairDelegate {
                 }
             }
             logger_.debug("Selected {}:{} [{}] to continue", new Object[]{
-                        selectedHost, selectedHost.getPort(), selectedHost.getHostPath()});
+                    selectedHost, selectedHost.getPort(), selectedHost.getHostPath()});
             try {
                 RepairHandle repairHandle = getRemoteHandle(selectedHost);
                 RepairIssue[] repairIssues = new RepairIssue[failedHosts.length];
@@ -350,11 +351,11 @@ public class RepairDelegate {
      * A number of hosts known to have failed associated with a certain path,
      * will be replaced. This method is called in response to an rpc.
      *
-     * @param failedPath the failed path of a single host or a complete subtree.
+     * @param failedPath  the failed path of a single host or a complete subtree.
      * @param failedHosts all the hosts known to have failed.
      * @return the host needed to sent it back to the remote caller. He needs
-     * the updated version of the local host to form the Solution object and
-     * start broadcasting it.
+     *         the updated version of the local host to form the Solution object and
+     *         start broadcasting it.
      */
     public Host replace(String failedPath, Host... failedHosts) {
         for (Host failedHost : failedHosts) {
@@ -385,10 +386,10 @@ public class RepairDelegate {
      * broadcast protocol is already complicated. If a new repair session starts
      * before the current solution is broadcasted then things get messy.
      *
-     * @param failedPath that is now fixed.
+     * @param failedPath   that is now fixed.
      * @param updatedHosts all the hosts that altered their paths to solve the
-     * issue.
-     * @param failedHosts all the hosts that have failed.
+     *                     issue.
+     * @param failedHosts  all the hosts that have failed.
      */
     public void pushSolution(String failedPath, Host[] updatedHosts, Host... failedHosts) {
         ArgumentCheck.checkNotNull(failedPath, "Cannot broadcast a null failed path.");
@@ -560,7 +561,7 @@ public class RepairDelegate {
      * It is essential for the algorithm.
      *
      * @param failedHostPath the failed path of a single host or a complete
-     * subtree.
+     *                       subtree.
      * @return the path that the algorithm will start searching from.
      */
     public PGridPath algorithmPathExecution(PGridPath failedHostPath) {
