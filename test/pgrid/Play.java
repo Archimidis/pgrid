@@ -21,15 +21,15 @@ package pgrid;
 
 import org.junit.Test;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
 public class Play {
     @Test
-    public void test() throws InterruptedException {
+    public void test() throws IOException {
 //        Injector injector = Guice.createInjector(
 //                new EntityModule(),
 //                new ServiceModule("127.0.0.1", 3000, 5),
@@ -46,13 +46,10 @@ public class Play {
 //        try {
 //            work.join(500);
 //        } catch (InterruptedException e) {}
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println(System.currentTimeMillis() / 1000.0);
-            }
-        }, 0, 500);
-        Thread.sleep(2000);
+        File file = new File("/home/ern/Thesis/pgrid/test/pgrid/Play.java");
+        System.out.println("Absolute Path:  " + file.getAbsolutePath());
+        System.out.println("Canonical Path: " + file.getCanonicalPath());
+        System.out.println("Path:           " + file.getPath());
+        System.out.println("Name:           " + file.getName());
     }
 }

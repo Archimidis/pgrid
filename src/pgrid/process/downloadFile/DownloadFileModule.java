@@ -17,31 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.process.doanloadFile;
+package pgrid.process.downloadFile;
+
+import com.google.inject.AbstractModule;
+import pgrid.process.downloadFile.internal.DemoDownloadFileProcess;
 
 /**
- * This process searches and downloads a file that exists in the pgrid network.
- * <p/>
- * <p/>
- * <h1> This service is a demo for the presentation of the thesis only. Don't
- * expect serious and complete functionality. <h1/>
- *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
-public interface DownloadFileProcess {
+public class DownloadFileModule extends AbstractModule {
 
-    /**
-     * Given a filename it searches for existence in the network.If the file
-     * exists then it gets downloaded and stored to a specific folder of the
-     * localhost. If a network error arises it must be fixed.
-     *
-     * @param filename to be downloaded.
-     */
-    public Status download(String filename);
-
-    enum Status {
-        FILE_NOT_FOUND,
-        NETWORK_ERROR,
-        FILE_DOWNLOADED
+    @Override
+    protected void configure() {
+        bind(DownloadFileProcess.class).to(DemoDownloadFileProcess.class);
     }
 }

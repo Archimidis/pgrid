@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.process.doanloadFile.internal;
+package pgrid.process.downloadFile.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
-import pgrid.process.doanloadFile.DownloadFileProcess;
+import pgrid.process.downloadFile.DownloadFileProcess;
 import pgrid.service.CommunicationException;
 import pgrid.service.fileTransfer.FileTransferService;
 import pgrid.service.repair.RepairService;
