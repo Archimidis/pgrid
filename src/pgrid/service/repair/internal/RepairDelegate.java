@@ -423,8 +423,11 @@ public class RepairDelegate {
         PGridPath localPath = routingTable_.getLocalhost().getHostPath();
 
         for (int i = 0; i < localPath.length(); i++) {
-            Random r = new Random(System.currentTimeMillis());
             Host[] level = routingTable_.getLevelArray(i);
+            if (level.length == 0) {
+                return;
+            }
+            Random r = new Random(System.currentTimeMillis());
             Host host = level[r.nextInt(level.length)];
             PGridPath responsibility = new PGridPath(localPath.subPath(0, i > 0 ? (i - 1) : 0));
             responsibility.revertAndAppend(localPath.value(i));
