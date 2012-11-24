@@ -23,7 +23,7 @@ import pgrid.entity.Host;
 import pgrid.service.CommunicationException;
 
 /**
- * A simulation service that will be used at the tuc grid experiments.
+ * A simulation service that will be used during the experiments.
  *
  * @author Nikolas Vourlakis <nvourlakis@gmail.com>
  */
