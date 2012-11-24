@@ -24,7 +24,7 @@ import pgrid.entity.Host;
 /**
  * This interface defines the repair service. During the life of a pgrid
  * network, peer failures will occur. This services gives the capability to the
- * local peer can to a repair session. In cooperation with part or all the
+ * local peer to a repair session. In cooperation with part or all the
  * network, these failures will be fixed. By fixing it is meant the maintenance
  * of the trie topology that the pgrid network forms. Finally the local peer
  * may have started the repair session, but may not be the one that will
