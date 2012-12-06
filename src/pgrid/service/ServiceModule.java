@@ -35,6 +35,7 @@ import pgrid.service.anotations.constants.MaxRecursions;
 import pgrid.service.anotations.constants.MaxRef;
 import pgrid.service.anotations.constants.RepairTimeout;
 import pgrid.service.exchange.ExchangeModule;
+import pgrid.service.initialization.InitializationModule;
 import pgrid.service.repair.RepairModule;
 import pgrid.service.simulation.SimulationModule;
 
@@ -92,6 +93,7 @@ public class ServiceModule extends AbstractModule {
         binder().install(new ExchangeModule());
         binder().install(new RepairModule());
         binder().install(new SimulationModule());
+        binder().install(new InitializationModule());
 
         try {
             bindLocalPeerContext();

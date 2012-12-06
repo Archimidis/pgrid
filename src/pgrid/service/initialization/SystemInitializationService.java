@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.process.initialization;
+package pgrid.service.initialization;
 
 import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
@@ -25,7 +25,7 @@ import pgrid.service.ServiceRegistrationException;
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public interface SystemInitializationProcess {
+public interface SystemInitializationService {
     public void load(String file) throws Exception;
 
     public void serviceRegistration(ServiceRegistration... registrations) throws ServiceRegistrationException;

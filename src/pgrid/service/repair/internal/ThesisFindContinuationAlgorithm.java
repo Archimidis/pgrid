@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.repair.spi.FixNodeAlgorithm;
+import pgrid.service.repair.spi.FindContinuationAlgorithm;
 import pgrid.utilities.ArgumentCheck;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <h1>The implementation of the Thesis fault tolerant protocol.</h1>
+ * <h1>The implementation of the Thesis find continuation algorithm.</h1>
  * <p/>
  * The idea is to find a host that has zero or less than one host reference at
  * its conjugate tree according to its full path. To find this host, the
@@ -59,9 +59,9 @@ import java.util.List;
  *
  * @author Vourlakis Nikolas
  */
-public class ThesisFixNodeAlgorithm implements FixNodeAlgorithm {
+public class ThesisFindContinuationAlgorithm implements FindContinuationAlgorithm {
 
-    private static final Logger logger_ = LoggerFactory.getLogger(ThesisFixNodeAlgorithm.class);
+    private static final Logger logger_ = LoggerFactory.getLogger(ThesisFindContinuationAlgorithm.class);
 
     @Override
     public List<Host> execute(RoutingTable routingTable, PGridPath pathTrace) {

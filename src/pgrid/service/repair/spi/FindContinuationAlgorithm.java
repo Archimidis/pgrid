@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author Vourlakis Nikolas
  */
-public interface FixNodeAlgorithm {
+public interface FindContinuationAlgorithm {
 
     /**
      * Given a path trace followed till now by the algorithm in the network, it

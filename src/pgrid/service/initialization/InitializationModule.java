@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.process.initialization;
+package pgrid.service.initialization;
 
 import com.google.inject.AbstractModule;
-import pgrid.process.initialization.internal.DefaultInitializationProcess;
+import pgrid.service.initialization.internal.DefaultInitializationService;
 
 /**
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
@@ -28,6 +28,6 @@ import pgrid.process.initialization.internal.DefaultInitializationProcess;
 public class InitializationModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(SystemInitializationProcess.class).to(DefaultInitializationProcess.class);
+        bind(SystemInitializationService.class).to(DefaultInitializationService.class);
     }
 }

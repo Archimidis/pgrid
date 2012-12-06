@@ -25,7 +25,7 @@ import pgrid.entity.Host;
 import pgrid.entity.PGridPath;
 import pgrid.entity.internal.PGridHost;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.service.repair.spi.FixNodeAlgorithm;
+import pgrid.service.repair.spi.FindContinuationAlgorithm;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -37,14 +37,14 @@ public class ThesisFixNodeAlgorithmTest {
 
     @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullRoutingTable_ExpectException() throws UnknownHostException {
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        FindContinuationAlgorithm algorithm = new ThesisFindContinuationAlgorithm();
         algorithm.execute(null, new PGridPath(""));
     }
 
     @Test(expected = NullPointerException.class)
     public void WhenExecutingWithNullPath_ExpectException() throws UnknownHostException {
         RoutingTable rt = new RoutingTable();
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        FindContinuationAlgorithm algorithm = new ThesisFindContinuationAlgorithm();
         algorithm.execute(rt, null);
     }
 
@@ -80,7 +80,7 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        FindContinuationAlgorithm algorithm = new ThesisFindContinuationAlgorithm();
         List<Host> toContinue = algorithm.execute(routingTable, initialPath);
 
         Assert.assertTrue(toContinue.size() == 2);
@@ -121,7 +121,7 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        FindContinuationAlgorithm algorithm = new ThesisFindContinuationAlgorithm();
         List<Host> toContinue = algorithm.execute(routingTable, initialPath);
 
         Assert.assertTrue(toContinue.size() == 2);
@@ -162,7 +162,7 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        FindContinuationAlgorithm algorithm = new ThesisFindContinuationAlgorithm();
         List<Host> toContinue = algorithm.execute(routingTable, initialPath);
 
         Assert.assertTrue(toContinue.size() == 2);
@@ -204,7 +204,7 @@ public class ThesisFixNodeAlgorithmTest {
         PGridPath initialPath = new PGridPath(root);
         initialPath.revertAndAppend(lastChar);
 
-        FixNodeAlgorithm algorithm = new ThesisFixNodeAlgorithm();
+        FindContinuationAlgorithm algorithm = new ThesisFindContinuationAlgorithm();
         List<Host> toContinue = algorithm.execute(routingTable, initialPath);
 
         Assert.assertTrue(toContinue.size() == 1);

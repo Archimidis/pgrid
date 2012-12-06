@@ -24,7 +24,7 @@ import pgrid.entity.routingtable.RoutingTable;
 
 /**
  * This interface represents the strategy that will be followed when the
- * {@link FixNodeAlgorithm} will reach the appropriate hosts. These hosts are
+ * {@link FindContinuationAlgorithm} will reach the appropriate hosts. These hosts are
  * responsible for replacing the failed host.
  * This algorithm will only affect the path of the hosts involved in the
  * repairing.

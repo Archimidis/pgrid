@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pgrid.process.initialization.internal;
+package pgrid.service.initialization.internal;
 
 import com.sun.corba.se.spi.logging.CORBALogDomains;
 import org.omg.CORBA.ORB;
@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 import pgrid.entity.CorbaFactory;
 import pgrid.entity.Host;
 import pgrid.entity.routingtable.RoutingTable;
-import pgrid.process.initialization.SystemInitializationProcess;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceRegistration;
 import pgrid.service.ServiceRegistrationException;
+import pgrid.service.initialization.SystemInitializationService;
 import pgrid.service.simulation.PersistencyException;
 import pgrid.service.simulation.internal.XMLPersistencyService;
 import pgrid.service.simulation.spi.PersistencyDelegate;
@@ -48,7 +48,7 @@ import java.util.logging.Level;
  *
  * @author Vourlakis Nikolas <nvourlakis@gmail.com>
  */
-public class DefaultInitializationProcess implements SystemInitializationProcess {
+public class DefaultInitializationService implements SystemInitializationService {
 
     static class OrbRunnable implements Runnable {
         private final ORB orb_;
@@ -63,11 +63,11 @@ public class DefaultInitializationProcess implements SystemInitializationProcess
         }
     }
 
-    private static final Logger logger_ = LoggerFactory.getLogger(DefaultInitializationProcess.class);
+    private static final Logger logger_ = LoggerFactory.getLogger(DefaultInitializationService.class);
     private final LocalPeerContext context_;
 
     @Inject
-    public DefaultInitializationProcess(LocalPeerContext context) {
+    public DefaultInitializationService(LocalPeerContext context) {
         context_ = context;
     }
 

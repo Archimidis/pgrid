@@ -36,7 +36,7 @@ import javax.inject.Provider;
 public class RepairProvider implements Provider<RepairService> {
     private final LocalPeerContext context_;
     private final int MAX_REF;
-    private FixNodeAlgorithm fix_;
+    private FindContinuationAlgorithm fix_;
     private ReplaceStrategy replace_;
     private final RepairIssueRegistry registry_;
 
@@ -53,8 +53,8 @@ public class RepairProvider implements Provider<RepairService> {
     }
 
     @Inject
-    protected void setFixNodeAlgorithm(FixNodeAlgorithm fix) {
-        ArgumentCheck.checkNotNull(fix, "Tried to pass a null FixNodeAlgorithm object at RepairProvide.");
+    protected void setFixNodeAlgorithm(FindContinuationAlgorithm fix) {
+        ArgumentCheck.checkNotNull(fix, "Tried to pass a null FindContinuationAlgorithm object at RepairProvide.");
         fix_ = fix;
     }
 

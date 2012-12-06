@@ -28,7 +28,7 @@ import pgrid.entity.routingtable.RoutingTable;
 import pgrid.service.CommunicationException;
 import pgrid.service.corba.PeerReference;
 import pgrid.service.corba.repair.*;
-import pgrid.service.repair.spi.FixNodeAlgorithm;
+import pgrid.service.repair.spi.FindContinuationAlgorithm;
 import pgrid.service.repair.spi.ReplaceStrategy;
 import pgrid.utilities.ArgumentCheck;
 import pgrid.utilities.Deserializer;
@@ -50,7 +50,7 @@ public class RepairDelegate {
     private final RepairIssueRegistry registry_;
     private final RoutingTable routingTable_;
     private final ORB orb_;
-    private FixNodeAlgorithm fix_;
+    private FindContinuationAlgorithm fix_;
     private ReplaceStrategy replace_;
     private int maxRef_;
 
@@ -82,8 +82,8 @@ public class RepairDelegate {
      *
      * @param algorithm a fully initialized object of the repair algorithm.
      */
-    public void setFixNodeAlgorithm(FixNodeAlgorithm algorithm) {
-        ArgumentCheck.checkNotNull(algorithm, "Tried to pass a null FixNodeAlgorithm object at RepairDelegate.");
+    public void setFixNodeAlgorithm(FindContinuationAlgorithm algorithm) {
+        ArgumentCheck.checkNotNull(algorithm, "Tried to pass a null FindContinuationAlgorithm object at RepairDelegate.");
         fix_ = algorithm;
     }
 
@@ -103,7 +103,7 @@ public class RepairDelegate {
      * the fix node algorithm. This path represents the subtree that the
      * algorithm will search for a solution. The completion of the distributed
      * algorithm guarantees that a host is found and the issue is fixed by
-     * him. See {@link ThesisFixNodeAlgorithm} for more information about the
+     * him. See {@link ThesisFindContinuationAlgorithm} for more information about the
      * footpath argument.
      *
      * @param footpath   to be followed by the fix-node algorithm.
@@ -225,7 +225,7 @@ public class RepairDelegate {
      * contains along with the footpath needed by the algorithm are passed. The
      * completion of the distributed algorithm guarantees that a host is found
      * and the issue is fixed by him.
-     * See {@link ThesisFixNodeAlgorithm} for more information about the
+     * See {@link ThesisFindContinuationAlgorithm} for more information about the
      * footpath argument.
      * <p/>
      * TODO: Check if the _failedHosts_ have the _prefix_ in their path.
@@ -530,7 +530,7 @@ public class RepairDelegate {
      */
     private void validateService() {
         ArgumentCheck.checkNotNull(replace_, "Repair service is not in a valid state. No ReplaceStrategy was found.");
-        ArgumentCheck.checkNotNull(fix_, "Repair service is not in a valid state. No FixNodeAlgorithm was found.");
+        ArgumentCheck.checkNotNull(fix_, "Repair service is not in a valid state. No FindContinuationAlgorithm was found.");
     }
 
     /**
@@ -560,7 +560,7 @@ public class RepairDelegate {
 
     /**
      * Given a failed, this method computes the path to pass to the
-     * {@link FixNodeAlgorithm#execute(pgrid.entity.routingtable.RoutingTable, pgrid.entity.PGridPath)}.
+     * {@link pgrid.service.repair.spi.FindContinuationAlgorithm#execute(pgrid.entity.routingtable.RoutingTable, pgrid.entity.PGridPath)}.
      * It is essential for the algorithm.
      *
      * @param failedHostPath the failed path of a single host or a complete

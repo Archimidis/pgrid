@@ -27,9 +27,9 @@ import pgrid.service.ServiceRegistration;
 import pgrid.service.corba.repair.RepairHandlePOA;
 import pgrid.service.repair.internal.RepairIssueRegistry;
 import pgrid.service.repair.internal.RepairRegistration;
-import pgrid.service.repair.internal.ThesisFixNodeAlgorithm;
+import pgrid.service.repair.internal.ThesisFindContinuationAlgorithm;
 import pgrid.service.repair.internal.TwinsReplaceStrategy;
-import pgrid.service.repair.spi.FixNodeAlgorithm;
+import pgrid.service.repair.spi.FindContinuationAlgorithm;
 import pgrid.service.repair.spi.RepairHandleProvider;
 import pgrid.service.repair.spi.RepairProvider;
 import pgrid.service.repair.spi.ReplaceStrategy;
@@ -47,7 +47,7 @@ public class RepairModule extends AbstractModule {
 
         bind(RepairIssueRegistry.class).asEagerSingleton();
 
-        bind(FixNodeAlgorithm.class).to(ThesisFixNodeAlgorithm.class);
+        bind(FindContinuationAlgorithm.class).to(ThesisFindContinuationAlgorithm.class);
         bind(ReplaceStrategy.class).to(TwinsReplaceStrategy.class);
 
         bind(RepairService.class).toProvider(RepairProvider.class);

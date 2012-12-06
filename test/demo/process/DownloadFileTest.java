@@ -31,8 +31,8 @@ import pgrid.entity.EntityModule;
 import pgrid.entity.Host;
 import pgrid.process.downloadFile.DownloadFileModule;
 import pgrid.process.downloadFile.DownloadFileProcess;
-import pgrid.process.initialization.InitializationModule;
-import pgrid.process.initialization.SystemInitializationProcess;
+import pgrid.service.initialization.InitializationModule;
+import pgrid.service.initialization.SystemInitializationService;
 import pgrid.service.LocalPeerContext;
 import pgrid.service.ServiceModule;
 import pgrid.service.ServiceRegistration;
@@ -76,17 +76,17 @@ public class DownloadFileTest {
                 new InitializationModule(),
                 new DownloadFileModule());
 
-        SystemInitializationProcess initProcess =
-                injector.getInstance(SystemInitializationProcess.class);
+        SystemInitializationService initService =
+                injector.getInstance(SystemInitializationService.class);
 
         try {
-            initProcess.load("test/demo/process/routing_table.xml");
+            initService.load("test/demo/process/routing_table.xml");
             ServiceRegistration[] registrations = {
                     injector.getInstance(Key.get(ServiceRegistration.class, Repair.class)),
                     injector.getInstance(Key.get(ServiceRegistration.class, Storage.class)),
                     injector.getInstance(Key.get(ServiceRegistration.class, FileTransfer.class))
             };
-            initProcess.serviceRegistration(registrations);
+            initService.serviceRegistration(registrations);
         } catch (Exception e) {
             logger_.error("Error during service registration. {}", e);
             System.exit(1);
@@ -102,7 +102,7 @@ public class DownloadFileTest {
             logger_.debug("[{}] {}:{} - '{}'", new Object[]{host.getHostPath(), host, host.getPort(), host.getUUID()});
         }
 
-        initProcess.startServer();
+        initService.startServer();
 
         DownloadFileProcess downloadFileProcess = injector.getInstance(DownloadFileProcess.class);
         DownloadFileProcess.Status status = downloadFileProcess.download(FILE_NAME);

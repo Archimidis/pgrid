@@ -50,8 +50,8 @@ public class RepairHandleProvider implements Provider<RepairHandlePOA> {
     }
 
     @Inject
-    protected void setFixNodeAlgorithm(FixNodeAlgorithm fix) {
-        ArgumentCheck.checkNotNull(fix, "Tried to pass a null FixNodeAlgorithm object at RepairHandleProvider.");
+    protected void setFixNodeAlgorithm(FindContinuationAlgorithm fix) {
+        ArgumentCheck.checkNotNull(fix, "Tried to pass a null FindContinuationAlgorithm object at RepairHandleProvider.");
         delegate_.setFixNodeAlgorithm(fix);
     }
 
