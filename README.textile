@@ -7,6 +7,7 @@ implementation of the peer-to-peer infrastructure of P-Grid. The main goal is
 to add a fault-tolerant protocol. The implementation is based on SOA
 principles.
 This project is part of my dissertation.
+Project page at http://archimidis.github.com/pgrid
 
 h2. Getting started
 
